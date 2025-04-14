@@ -95,3 +95,7 @@ func (item PresetData) ToYaml() string {
 
 	return string(output)
 }
+
+func (p *PresetData) MergeOptions(data util.StringAnyMap) {
+	p.Options = util.MergeMap(p.Options, data)
+}

@@ -28,9 +28,9 @@ type TemplateFileContents struct {
 }
 
 type TemplateMeta struct {
-	Type        string `yaml:"type"`
-	Title       string `yaml:"title"`
-	Description string `yaml:"description"`
+	Type        string `yaml:"type" json:"type"`
+	Title       string `yaml:"title" json:"title"`
+	Description string `yaml:"description" json:"description"`
 }
 
 type TemplateItem struct {

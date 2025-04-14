@@ -17,7 +17,7 @@ import (
 
 type StringAnyMap map[string]interface{}
 
-func Merge(base StringAnyMap, other StringAnyMap) StringAnyMap {
+func MergeMap(base StringAnyMap, other StringAnyMap) StringAnyMap {
 	all := StringAnyMap{}
 
 	for k, v := range base {

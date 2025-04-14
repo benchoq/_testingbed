@@ -66,7 +66,7 @@ func createApiHandler() *gin.Engine {
 
 	r := gin.Default()
 	r.Use(cors.New(cors.Config{
-		AllowMethods:     []string{"GET", "POST", "DELETE", "OPTIONS"},
+		AllowMethods:     []string{"GET", "POST", "DELETE", "PUT", "OPTIONS"},
 		AllowHeaders:     []string{"Content-Type", "Authorization"},
 		ExposeHeaders:    []string{"Content-Length"},
 		MaxAge:           12 * time.Hour,
@@ -78,12 +78,11 @@ func createApiHandler() *gin.Engine {
 
 	v1 := r.Group("/v1")
 
-	v1.GET("/presets", GetPresets)
-	v1.GET("/presets/files", GetFilePresets)
-	v1.GET("/presets/projects", GetProjectPresets)
-	v1.POST("/files", CreateNewFileOrProject)
-	v1.POST("/projects", CreateNewFileOrProject)
-	v1.DELETE("/server", Shutdown)
+	v1.GET("/presets", getPresets)
+	v1.GET("/presets/:id", getPresetById)
+	v1.GET("/presets/:id/prompt", getPresetPromptById)
+	v1.POST("/items", postNewItem)
+	v1.DELETE("/server", shutdownServer)
 
 	return r
 }

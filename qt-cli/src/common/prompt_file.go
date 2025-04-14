@@ -4,6 +4,7 @@
 package common
 
 import (
+	"encoding/json"
 	"fmt"
 	"io/fs"
 	"qtcli/util"
@@ -77,7 +78,7 @@ func (f *PromptFile) ExtractDefaults() util.StringAnyMap {
 	}
 
 	for _, e := range f.contents.Consts {
-		all = util.Merge(all, e)
+		all = util.MergeMap(all, e)
 	}
 
 	return all
@@ -85,4 +86,28 @@ func (f *PromptFile) ExtractDefaults() util.StringAnyMap {
 
 func (f *PromptFile) GetContents() *PromptFileContents {
 	return &f.contents
+}
+
+func (f *PromptFile) ToJsonString() (string, error) {
+	// TODO: simplify implementation
+	// Marshal the struct into a YAML string
+	yamlData, err := yaml.Marshal(f.contents)
+	if err != nil {
+		return "", err
+	}
+
+	// Unmarshal YAML into an interface{} (can also be a map or struct)
+	var yamlMap interface{}
+	err = yaml.Unmarshal(yamlData, &yamlMap)
+	if err != nil {
+		return "", err
+	}
+
+	// Marshal the interface{} (which now holds the YAML data) into a JSON string
+	jsonData, err := json.MarshalIndent(yamlMap, "", "  ")
+	if err != nil {
+		return "", err
+	}
+
+	return string(jsonData), nil
 }

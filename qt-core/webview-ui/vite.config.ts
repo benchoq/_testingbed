@@ -13,12 +13,9 @@ export default defineConfig({
   ],
   build: {
     rollupOptions: {
-      input: {
-        itemWizard: './src/apps/item-wizard/main.ts',
-      },
       output: {
-        entryFileNames: '[name]/index.js',
-        assetFileNames: '[name]/index[extname]', // css, images
+        entryFileNames: 'index.js',
+        assetFileNames: 'index[extname]', // css, images, etc.
         chunkFileNames: 'chunk.js',
       }
     }

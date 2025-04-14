@@ -25,8 +25,7 @@ const PanelColumn = vscode.ViewColumn.One;
 const PanelViewType = "ViewTypeWizard";
 
 // defintions for webview-ui
-const UiName = "itemWizard";
-const UiRootDir = `webview-ui/dist/${UiName}/`;
+const UiRootDir = `webview-ui/dist/`;
 const UiJsFile = "index.js";
 const UiCssFile = "index.css";
 

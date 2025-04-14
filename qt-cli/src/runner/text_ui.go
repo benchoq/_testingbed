@@ -29,7 +29,7 @@ func RunPromptFromDir(dir string) (util.StringAnyMap, error) {
 		return util.StringAnyMap{}, nil
 	}
 
-	return promptFile.RunPrompt()
+	return RunPrompt(promptFile)
 }
 
 func RunFilePromptByExt(ext string) (common.Preset, error) {
@@ -195,4 +195,149 @@ func createPickerItems(presets []common.PresetData) []comps.ListItem {
 	}
 
 	return items
+}
+
+func RunPrompt(f *common.PromptFile) (util.StringAnyMap, error) {
+	answers := f.ExtractDefaults()
+	expander := util.NewTemplateExpander().Data(answers)
+
+	for _, step := range f.GetContents().Steps {
+		expander.Name(fmt.Sprintf("steps:%v", step.Id))
+		okayToRun, err := expander.RunStringToBool(step.When, true)
+		if err != nil {
+			return util.StringAnyMap{}, err
+		}
+
+		if !okayToRun {
+			continue
+		}
+
+		prompt, err := createPrompt(step, expander)
+		if err != nil {
+			return util.StringAnyMap{}, err
+		}
+
+		result, err := prompt.Run()
+		if err != nil {
+			return util.StringAnyMap{}, err
+		}
+
+		if !result.Done {
+			return util.StringAnyMap{}, errors.New("aborted")
+		}
+
+		answers[step.Id] = result.ValueNormalized()
+	}
+
+	return answers, nil
+}
+
+func createPrompt(
+	step common.PromptStep, expander *util.TemplateExpander) (prompt.Prompt, error) {
+	question, err := expander.RunString(step.Question)
+	if err != nil {
+		return nil, err
+	}
+
+	description, err := expander.RunString(step.Description)
+	if err != nil {
+		return nil, err
+	}
+
+	items, err := createListItems(step, expander)
+	if err != nil {
+		return nil, err
+	}
+
+	switch strings.ToLower(step.CompType) {
+	case "input":
+		validator, err := createInputValidator(step.Rules)
+		if err != nil {
+			return nil, err
+		}
+
+		return comps.NewInput().
+			Id(step.Id).
+			Question(question).
+			Description(description).
+			Value(step.Value).
+			Validator(validator), nil
+
+	case "picker":
+		return comps.NewPicker().
+			Id(step.Id).
+			Question(question).
+			Items(items), nil
+
+	case "choices":
+		return comps.NewChoices().
+			Id(step.Id).
+			Question(question).
+			Items(items), nil
+
+	case "confirm":
+		c := comps.NewConfirm().
+			Id(step.Id).
+			Question(question)
+
+		if util.ToBool(step.DefaultValue, false) {
+			c.Description("Y/n").DefaultValue("y")
+		} else {
+			c.Description("y/N").DefaultValue("n")
+		}
+
+		return c, nil
+	}
+
+	return nil, fmt.Errorf(
+		util.Msg("invalid type, given = '%v'"), step.CompType)
+}
+
+func createInputValidator(
+	inputs []common.PromptInputRules) (comps.ValidatorFunc, error) {
+	rules := comps.ValidatorRules{}
+
+	for _, input := range inputs {
+		for name, value := range input {
+			atype := comps.FindValidatorType(name)
+			if len(atype) != 0 {
+				rules[atype] = value
+			}
+		}
+	}
+
+	return comps.CreateValidator(rules)
+}
+
+func createListItems(
+	step common.PromptStep,
+	expander *util.TemplateExpander) ([]comps.ListItem, error) {
+	all := []comps.ListItem{}
+
+	for _, entry := range step.Items {
+		text, err := expander.RunString(entry.Text)
+		if err != nil {
+			return nil, err
+		}
+
+		description, err := expander.RunString(entry.Description)
+		if err != nil {
+			return nil, err
+		}
+
+		checked, err := expander.RunStringToBool(entry.Checked, false)
+		if err != nil {
+			return nil, err
+		}
+
+		item := comps.
+			NewItem(text).
+			Description(description).
+			Data(entry.Data).
+			Checked(checked)
+
+		all = append(all, item)
+	}
+
+	return all, nil
 }

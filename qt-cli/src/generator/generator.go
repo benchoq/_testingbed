@@ -6,7 +6,9 @@ package generator
 import (
 	"errors"
 	"fmt"
+	"os"
 	"path"
+	"path/filepath"
 	"qtcli/common"
 	"qtcli/formats"
 	"qtcli/util"
@@ -18,22 +20,27 @@ import (
 )
 
 type Generator struct {
-	env     *Env
-	name    string
-	preset  common.Preset
-	context Context
+	env        *Env
+	name       string
+	preset     common.Preset
+	workingDir string
+	context    Context
 }
 
 type Context struct {
-	data      util.StringAnyMap
-	funcs     template.FuncMap
-	items     []formats.TemplateItem
-	outputDir string
+	data            util.StringAnyMap
+	funcs           template.FuncMap
+	items           []formats.TemplateItem
+	outputDirOffset string
 }
 
 func NewGenerator(name string) *Generator {
+	cwd, _ := os.Getwd()
+	cwd = filepath.ToSlash(cwd)
+
 	return &Generator{
-		name: name,
+		name:       name,
+		workingDir: cwd,
 	}
 }
 
@@ -44,6 +51,11 @@ func (g *Generator) Env(env *Env) *Generator {
 
 func (g *Generator) Preset(preset common.Preset) *Generator {
 	g.preset = preset
+	return g
+}
+
+func (g *Generator) WorkingDir(dir string) *Generator {
+	g.workingDir = dir
 	return g
 }
 
@@ -59,18 +71,20 @@ func (g *Generator) Render() (Result, error) {
 	}
 
 	// check if exists
-	for _, item := range result {
-		if !util.EntryExistsFS(g.env.FS, item.InputFilePath) {
-			logrus.Fatalf("file not found, %s", item.InputFilePath)
+	for _, item := range result.items {
+		if !util.EntryExistsFS(g.env.FS, item.inputFileRel) {
+			return Result{},
+				fmt.Errorf("file not found, %s", item.inputFileRel)
 		}
 
-		if util.EntryExists(item.OutputFilePath) {
-			logrus.Fatalf("output already exists, %s", item.OutputFilePath)
+		if util.EntryExists(item.outputFileAbs) {
+			return Result{},
+				fmt.Errorf("output already exists, %s", item.outputFileAbs)
 		}
 	}
 
 	// run contents and save
-	for _, item := range result {
+	for _, item := range result.items {
 		if err := g.runContents(item); err != nil {
 			return Result{}, err
 		}
@@ -89,9 +103,9 @@ func (g *Generator) prepContext() error {
 	g.context.data["name"] = g.name
 	g.context.funcs = getApi()
 	g.context.items = files
-	g.context.outputDir = "."
+	g.context.outputDirOffset = ""
 	if g.preset.GetTypeId() == common.TargetTypeProject {
-		g.context.outputDir = g.name
+		g.context.outputDirOffset = g.name
 	}
 
 	err = g.evalFields(fields)
@@ -128,8 +142,10 @@ func (g *Generator) evalFields(fields []util.StringAnyMap) error {
 }
 
 func (g *Generator) runNames() (Result, error) {
-
-	result := Result{}
+	result := Result{
+		workingDir:   g.workingDir,
+		outputDirAbs: path.Join(g.workingDir, g.context.outputDirOffset),
+	}
 
 	for _, file := range g.context.items {
 		okay, err := g.evalWhenCondition(file)
@@ -144,16 +160,17 @@ func (g *Generator) runNames() (Result, error) {
 			continue
 		}
 
-		inputPath := g.createInputPath(file)
-		outputName, err := g.createOutputFileName(file)
+		inputRel := g.createInputFileRel(file)
+		outputRel, err := g.createOutputFileRel(file)
 		if err != nil {
 			return Result{}, err
 		}
 
-		result = append(result, ResultItem{
-			TemplateItem:   file,
-			InputFilePath:  inputPath,
-			OutputFilePath: path.Join(g.context.outputDir, outputName),
+		result.items = append(result.items, ResultItem{
+			templateItem:  file,
+			inputFileRel:  inputRel,
+			outputFileRel: outputRel,
+			outputFileAbs: path.Join(result.outputDirAbs, outputRel),
 		})
 	}
 
@@ -187,7 +204,7 @@ func (g *Generator) readFilesAndFields() (
 
 func (g *Generator) runContents(result ResultItem) error {
 	// expand input file contents
-	allBytes, err := util.ReadAllFromFS(g.env.FS, result.InputFilePath)
+	allBytes, err := util.ReadAllFromFS(g.env.FS, result.inputFileRel)
 
 	if err != nil {
 		return err
@@ -196,7 +213,7 @@ func (g *Generator) runContents(result ResultItem) error {
 	input := string(allBytes)
 	var output string
 
-	if result.TemplateItem.Bypass {
+	if result.templateItem.Bypass {
 		output = input
 	} else {
 		expander := util.NewTemplateExpander().
@@ -204,8 +221,8 @@ func (g *Generator) runContents(result ResultItem) error {
 			Funcs(g.context.funcs)
 
 		output, err = expander.
-			Name(result.OutputFilePath).
-			AddData("fileName", result.OutputFilePath).
+			Name(result.outputFileAbs).
+			AddData("fileName", result.outputFileAbs).
 			RunString(input)
 	}
 
@@ -214,12 +231,8 @@ func (g *Generator) runContents(result ResultItem) error {
 	}
 
 	// save to file
-	if len(g.context.outputDir) == 0 {
-		return errors.New("cannot determine output directory")
-	}
-
 	output = polishOutput(output)
-	_, err = util.WriteAll([]byte(output), result.OutputFilePath)
+	_, err = util.WriteAll([]byte(output), result.outputFileAbs)
 	if err != nil {
 		return err
 	}
@@ -227,7 +240,7 @@ func (g *Generator) runContents(result ResultItem) error {
 	return nil
 }
 
-func (g *Generator) createInputPath(file formats.TemplateItem) string {
+func (g *Generator) createInputFileRel(file formats.TemplateItem) string {
 	if strings.HasPrefix(file.In, "@/") {
 		return file.In[2:]
 	}
@@ -235,7 +248,7 @@ func (g *Generator) createInputPath(file formats.TemplateItem) string {
 	return path.Join(g.preset.GetTemplateDir(), file.In)
 }
 
-func (g *Generator) createOutputFileName(
+func (g *Generator) createOutputFileRel(
 	file formats.TemplateItem) (string, error) {
 	if len(file.Out) == 0 {
 		return path.Base(file.In), nil

@@ -12,7 +12,8 @@ import { createLogger, isError, OSExeSuffix } from 'qt-lib';
 
 export enum QtcliAction {
   NewFile,
-  NewProject
+  NewProject,
+  Server
 }
 
 export const QtcliExeName = 'qtcli' + OSExeSuffix;
@@ -64,7 +65,7 @@ export async function openUri(uri: vscode.Uri) {
     const stats = await fs.stat(uri.fsPath);
 
     if (stats.isFile()) {
-      void vscode.commands.executeCommand('vscode.open', uri);
+      await vscode.commands.executeCommand('vscode.open', uri);
       return;
     }
 
@@ -75,23 +76,23 @@ export async function openUri(uri: vscode.Uri) {
         { uri }
       );
 
-      const disposable = vscode.workspace.onDidChangeWorkspaceFolders(
-        async () => {
-          const fileToOpen = await findPrimaryFileUnder(uri.fsPath);
-          if (fileToOpen) {
-            void vscode.commands.executeCommand(
-              'vscode.open',
-              vscode.Uri.file(fileToOpen)
-            );
-          }
-
-          disposable.dispose();
-        }
-      );
+      const fileToOpen = await findPrimaryFileUnder(uri.fsPath);
+      if (fileToOpen) {
+        await vscode.commands.executeCommand(
+          'vscode.open',
+          vscode.Uri.file(fileToOpen)
+        );
+      }
     }
   } catch (e) {
     logger.warn('cannot open:', uri.fsPath);
   }
+}
+
+export async function openFilesUnder(baseDir: string, names: string[]) {
+  for (const name of names) {
+    await openUri(vscode.Uri.file(path.join(baseDir, name)))
+  };
 }
 
 export async function findPrimaryFileUnder(dir: string) {

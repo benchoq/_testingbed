@@ -82,6 +82,16 @@
         "command": "qt-core.createNewProject",
         "title": "%qt-core.command.createNewProject.title%",
         "category": "Qt"
+      },
+      {
+        "command": "qt-core.createNewProjectGui",
+        "title": "%qt-core.command.createNewProjectGui.title%",
+        "category": "Qt"
+      },
+      {
+        "command": "qt-core.createNewFileGui",
+        "title": "%qt-core.command.createNewFileGui.title%",
+        "category": "Qt"
       }
     ],
     "languages": [

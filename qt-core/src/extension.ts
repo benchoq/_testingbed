@@ -28,6 +28,8 @@ import { resetCommand } from '@/reset';
 import { registerQtByQtpaths } from '@/qtpaths';
 import { newFileCommand, newProjectCommand } from '@/qtcli/commands';
 import { checkVcpkg } from '@/vcpkg';
+import { ItemWizardPanel } from '@/webview/item-wizard-panel';
+
 
 const logger = createLogger('extension');
 
@@ -68,6 +70,14 @@ export async function activate(context: vscode.ExtensionContext) {
   );
   context.subscriptions.push(
     vscode.languages.registerColorProvider('qss', createColorProvider())
+  );
+  context.subscriptions.push(
+    vscode.commands.registerCommand(`${EXTENSION_ID}.createNewFileGui`, () => {
+      ItemWizardPanel.render(context.extensionUri, "file");
+    }),
+    vscode.commands.registerCommand(`${EXTENSION_ID}.createNewProjectGui`, () => {
+      ItemWizardPanel.render(context.extensionUri, "project");
+    })
   );
 
   telemetry.sendEvent(`activated`);

@@ -4,8 +4,10 @@
 package common
 
 import (
+	"errors"
 	"fmt"
 	"io/fs"
+	"path"
 	"qtcli/util"
 
 	"github.com/sirupsen/logrus"
@@ -37,6 +39,29 @@ func NewTemplateFileFS(fs fs.FS, filePath string) *TemplateFile {
 		fs:       fs,
 		filePath: filePath,
 	}
+}
+
+func OpenTemplateFileFromPreset(fs fs.FS, preset Preset) (*TemplateFile, error) {
+	dir := preset.GetTemplateDir()
+	filePath := path.Join(dir, TemplateFileName)
+
+	if len(dir) == 0 {
+		return nil, errors.New(util.Msg("cannot determine a config file path"))
+	}
+
+	if !util.EntryExistsFS(fs, filePath) {
+		return nil,
+			fmt.Errorf(
+				util.Msg("template definition does not exist, dir = '%v'"), dir)
+	}
+
+	template := NewTemplateFileFS(fs, filePath)
+	err := template.Open()
+	if err != nil {
+		return nil, err
+	}
+
+	return template, nil
 }
 
 func (f *TemplateFile) Open() error {

@@ -8,22 +8,31 @@ import "strings"
 type TargetType int
 
 const (
-	TargetTypeFile TargetType = iota
+	TargetTypeUnknown TargetType = iota
+	TargetTypeFile
 	TargetTypeProject
 )
 
 func TargetTypeFromString(s string) TargetType {
-	if strings.ToLower(s) == "project" {
-		return TargetTypeProject
-	}
+	v := strings.TrimSpace(strings.ToLower(s))
 
-	return TargetTypeFile
+	switch v {
+	case "file":
+		return TargetTypeFile
+	case "project":
+		return TargetTypeProject
+	default:
+		return TargetTypeUnknown
+	}
 }
 
 func TargetTypeToString(t TargetType) string {
-	if t == TargetTypeProject {
+	switch t {
+	case TargetTypeFile:
+		return "file"
+	case TargetTypeProject:
 		return "project"
+	default:
+		return ""
 	}
-
-	return "file"
 }

@@ -4,10 +4,8 @@
 package runner
 
 import (
-	"io/fs"
 	"os"
 	"path"
-	"qtcli/assets"
 	"qtcli/common"
 	"qtcli/generator"
 
@@ -23,13 +21,8 @@ var Presets struct {
 }
 
 func init() {
-	baseFS, err := fs.Sub(assets.Assets, "templates")
-	if err != nil {
-		logrus.Fatal(err)
-	}
-
 	GeneratorEnv = &generator.Env{
-		FS:               baseFS,
+		FS:               common.TemplatesFS,
 		FileTypesBaseDir: "types",
 		TemplateFileName: common.TemplateFileName,
 	}

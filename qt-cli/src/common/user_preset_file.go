@@ -184,12 +184,7 @@ func (f *UserPresetFile) Rename(from string, to string) error {
 			util.Msg("cannot rename, already exist, given = '%v'"), to)
 	}
 
-	err = f.Add(PresetData{
-		Name:        to,
-		TypeName:    src.TypeName,
-		TemplateDir: src.TemplateDir,
-		Options:     src.Options,
-	})
+	err = f.Add(NewPresetData(to, src.TemplateDir, src.Options))
 	if err != nil {
 		return err
 	}

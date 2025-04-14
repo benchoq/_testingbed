@@ -22,9 +22,22 @@ type Preset interface {
 
 type PresetData struct {
 	Name        string            `yaml:"name"`
-	TypeName    string            `yaml:"type"`
 	TemplateDir string            `yaml:"template"`
 	Options     util.StringAnyMap `yaml:"options"`
+
+	// private fields
+	targetTypeId TargetType
+}
+
+func NewPresetData(
+	name, templateDir string, options util.StringAnyMap) PresetData {
+	return PresetData{
+		Name:        name,
+		TemplateDir: templateDir,
+		Options:     options,
+
+		targetTypeId: TargetTypeUnknown,
+	}
 }
 
 func (p PresetData) GetName() string {
@@ -32,7 +45,14 @@ func (p PresetData) GetName() string {
 }
 
 func (p PresetData) GetTypeId() TargetType {
-	return TargetTypeFromString(p.TypeName)
+	if p.targetTypeId == TargetTypeUnknown {
+		templateFile, err := OpenTemplateFileFromPreset(TemplatesFS, p)
+		if err == nil {
+			p.targetTypeId = templateFile.GetTargetType()
+		}
+	}
+
+	return p.targetTypeId
 }
 
 func (p PresetData) GetTypeName() string {

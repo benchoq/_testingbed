@@ -46,12 +46,7 @@ func RunFilePromptByExt(ext string) (common.Preset, error) {
 		return nil, err
 	}
 
-	return common.PresetData{
-		Name:        extName,
-		TypeName:    common.TargetTypeToString(common.TargetTypeFile),
-		TemplateDir: templateDir,
-		Options:     options,
-	}, nil
+	return common.NewPresetData(extName, templateDir, options), nil
 }
 
 func FindPresetOrRunSelector(
@@ -118,12 +113,11 @@ func runManualConfig(t common.TargetType) (common.Preset, error) {
 	}
 
 	// build preset
-	presetData := common.PresetData{
-		Name:        selectedDefaultPreset.GetName(),
-		TypeName:    common.TargetTypeToString(t),
-		TemplateDir: selectedDefaultPreset.GetTemplateDir(),
-		Options:     options,
-	}
+	presetData := common.NewPresetData(
+		selectedDefaultPreset.GetName(),
+		selectedDefaultPreset.GetTemplateDir(),
+		options,
+	)
 
 	// try to save
 	newName := runPresetSavePrompt()

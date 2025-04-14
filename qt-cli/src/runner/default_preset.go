@@ -52,13 +52,7 @@ func loadPresets(baseFS fs.FS, t common.TargetType) []common.PresetData {
 
 	if err == nil {
 		for _, dir := range dirs {
-			p := common.PresetData{
-				Name:        "@" + dir,
-				TypeName:    common.TargetTypeToString(t),
-				TemplateDir: dir,
-				Options:     readDefaultOptions(baseFS, dir),
-			}
-
+			p := common.NewPresetData("@"+dir, dir, readDefaultOptions(baseFS, dir))
 			all = append(all, p)
 		}
 	}

@@ -203,7 +203,10 @@
     "prettierWrite": "npm run prettierBase -- --write \"**/*.{js,ts,json,mjs,cjs}\" --log-level silent",
     "prettierCheck": "npm run prettierBase -- --check \"**/*.{js,ts,json,mjs,cjs}\"",
     "prettierBase": "prettier --config \"../common/.prettierrc\" --ignore-path \"../common/.prettierignore\" --cache --cache-strategy metadata",
-    "package": "vsce package --out out"
+    "package": "vsce package --out out",
+    "ci:webview": "cd webview-ui && pnpm install --frozen-lockfile",
+    "install:webview": "cd webview-ui && pnpm install",
+    "compile:webview": "cd webview-ui && pnpm build"
   },
   "devDependencies": {
     "@eslint/eslintrc": "^3.3.0",

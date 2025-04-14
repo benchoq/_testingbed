@@ -1,0 +1,47 @@
+[
+	{
+		"id": "2239089261",
+		"name": "@cpp/class",
+		"meta": {
+			"type": "file",
+			"title": "C++ Class",
+			"description": "Creates a C++ header and a source file  for a new class that you can add to a C++ project."
+		}
+	},
+	{
+		"id": "1349920511",
+		"name": "@types/qml",
+		"meta": {
+			"type": "file",
+			"title": "QML File",
+			"description": "Creates a QML file with boilerplate code,  starting with \"import QtQuick\"."
+		}
+	},
+	{
+		"id": "0227751408",
+		"name": "@types/qrc",
+		"meta": {
+			"type": "file",
+			"title": "Qt Resource File",
+			"description": "Creates a Qt Resource file (.qrc)."
+		}
+	},
+	{
+		"id": "4215634460",
+		"name": "@types/ts",
+		"meta": {
+			"type": "file",
+			"title": "Qt Translation File",
+			"description": "Creates a translation file that you can add to a Qt project."
+		}
+	},
+	{
+		"id": "0524071463",
+		"name": "@types/ui",
+		"meta": {
+			"type": "file",
+			"title": "Qt Widgets UI Designer Form",
+			"description": "Creates a Qt Widgets Designer form  that you can add to a Qt Widget Project. This is useful if you already have an existing class for the UI business logic."
+		}
+	}
+]

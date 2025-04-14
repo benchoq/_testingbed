@@ -1,0 +1,62 @@
+{
+	"id": "0179519028",
+	"prompt": {
+		"consts": [],
+		"steps": [
+			{
+				"default": "6",
+				"description": "",
+				"id": "qtMajorVersion",
+				"items": [
+					{
+						"checked": "",
+						"data": "6",
+						"description": "",
+						"text": "Qt6"
+					},
+					{
+						"checked": "",
+						"data": "5",
+						"description": "",
+						"text": "Qt5"
+					}
+				],
+				"question": "Qt version:",
+				"rules": [],
+				"type": "picker",
+				"value": "",
+				"when": ""
+			},
+			{
+				"default": false,
+				"description": "",
+				"id": "useTranslation",
+				"items": [],
+				"question": "Use translation:",
+				"rules": [],
+				"type": "confirm",
+				"value": "",
+				"when": ""
+			},
+			{
+				"default": "en_US",
+				"description": "",
+				"id": "language",
+				"items": [],
+				"question": "Target language:",
+				"rules": [
+					{
+						"required": true
+					},
+					{
+						"match": "^[a-z]{2}_[A-Z]{2}$"
+					}
+				],
+				"type": "input",
+				"value": "",
+				"when": "{{ .useTranslation }}"
+			}
+		],
+		"version": "1"
+	}
+}

@@ -10,7 +10,6 @@ import (
 	"path"
 	"path/filepath"
 	"qtcli/common"
-	"qtcli/formats"
 	"qtcli/util"
 	"regexp"
 	"strings"
@@ -30,7 +29,7 @@ type Generator struct {
 type Context struct {
 	data            util.StringAnyMap
 	funcs           template.FuncMap
-	items           []formats.TemplateItem
+	items           []common.TemplateItem
 	outputDirOffset string
 }
 
@@ -178,25 +177,25 @@ func (g *Generator) runNames() (Result, error) {
 }
 
 func (g *Generator) readFilesAndFields() (
-	[]formats.TemplateItem, []util.StringAnyMap, error) {
+	[]common.TemplateItem, []util.StringAnyMap, error) {
 	dir := g.preset.GetTemplateDir()
 	filePath := path.Join(dir, g.env.TemplateFileName)
 
 	if len(dir) == 0 {
-		return []formats.TemplateItem{}, []util.StringAnyMap{},
+		return []common.TemplateItem{}, []util.StringAnyMap{},
 			errors.New(util.Msg("cannot determine a config file path"))
 	}
 
 	if !util.EntryExistsFS(g.env.FS, filePath) {
-		return []formats.TemplateItem{}, []util.StringAnyMap{},
+		return []common.TemplateItem{}, []util.StringAnyMap{},
 			fmt.Errorf(
 				util.Msg("template definition does not exist, dir = '%v'"), dir)
 	}
 
-	template := formats.NewTemplateFileFS(g.env.FS, filePath)
+	template := common.NewTemplateFileFS(g.env.FS, filePath)
 	err := template.Open()
 	if err != nil {
-		return []formats.TemplateItem{}, []util.StringAnyMap{}, err
+		return []common.TemplateItem{}, []util.StringAnyMap{}, err
 	}
 
 	return template.GetFileItems(), template.GetFields(), nil
@@ -240,7 +239,7 @@ func (g *Generator) runContents(result ResultItem) error {
 	return nil
 }
 
-func (g *Generator) createInputFileRel(file formats.TemplateItem) string {
+func (g *Generator) createInputFileRel(file common.TemplateItem) string {
 	if strings.HasPrefix(file.In, "@/") {
 		return file.In[2:]
 	}
@@ -249,7 +248,7 @@ func (g *Generator) createInputFileRel(file formats.TemplateItem) string {
 }
 
 func (g *Generator) createOutputFileRel(
-	file formats.TemplateItem) (string, error) {
+	file common.TemplateItem) (string, error) {
 	if len(file.Out) == 0 {
 		return path.Base(file.In), nil
 	}
@@ -261,7 +260,7 @@ func (g *Generator) createOutputFileRel(
 		RunString(file.Out)
 }
 
-func (g *Generator) evalWhenCondition(file formats.TemplateItem) (bool, error) {
+func (g *Generator) evalWhenCondition(file common.TemplateItem) (bool, error) {
 	return util.NewTemplateExpander().
 		Name(file.In).
 		Data(g.context.data).

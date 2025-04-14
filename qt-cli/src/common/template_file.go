@@ -1,12 +1,11 @@
 // Copyright (C) 2024 The Qt Company Ltd.
 // SPDX-License-Identifier: LicenseRef-Qt-Commercial OR LGPL-3.0-only
 
-package formats
+package common
 
 import (
 	"fmt"
 	"io/fs"
-	"qtcli/common"
 	"qtcli/util"
 
 	"github.com/sirupsen/logrus"
@@ -61,8 +60,8 @@ func (f *TemplateFile) GetTypeName() string {
 	return f.contents.TypeName
 }
 
-func (f *TemplateFile) GetTargetType() common.TargetType {
-	return common.TargetTypeFromString(f.contents.TypeName)
+func (f *TemplateFile) GetTargetType() TargetType {
+	return TargetTypeFromString(f.contents.TypeName)
 }
 
 func (f *TemplateFile) GetFileItems() []TemplateItem {

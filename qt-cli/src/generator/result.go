@@ -6,7 +6,7 @@ package generator
 import (
 	"fmt"
 	"io"
-	"qtcli/formats"
+	"qtcli/common"
 	"text/tabwriter"
 )
 
@@ -17,7 +17,7 @@ type Result struct {
 }
 
 type ResultItem struct {
-	templateItem  formats.TemplateItem
+	templateItem  common.TemplateItem
 	inputFileRel  string // relative to env.FS
 	outputFileRel string // relative to outputDirAbs
 	outputFileAbs string

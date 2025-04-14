@@ -9,7 +9,6 @@ import (
 	"path"
 	"qtcli/assets"
 	"qtcli/common"
-	"qtcli/formats"
 	"qtcli/generator"
 
 	"github.com/sirupsen/logrus"
@@ -19,7 +18,7 @@ var GeneratorEnv *generator.Env
 
 var Presets struct {
 	Default DefaultPresetManager
-	User    formats.UserPresetManager
+	User    common.UserPresetManager
 	Any     common.CompositePresetManager
 }
 
@@ -42,18 +41,18 @@ func init() {
 	}
 
 	fullPath := path.Join(home, common.UserPresetFileName)
-	userPresets := formats.NewUserPresetFile(fullPath)
+	userPresets := common.NewUserPresetFile(fullPath)
 	if err := userPresets.Open(); err != nil {
 		logrus.Fatal(err)
 	}
 
 	// preset managers
-	userPresetManager := formats.NewUserPresetManager(userPresets)
+	userPresetManager := common.NewUserPresetManager(userPresets)
 	defaultPresetManager := NewDefaultPresetManager(GeneratorEnv.FS)
 
 	Presets = struct {
 		Default DefaultPresetManager
-		User    formats.UserPresetManager
+		User    common.UserPresetManager
 		Any     common.CompositePresetManager
 	}{
 		Default: defaultPresetManager,

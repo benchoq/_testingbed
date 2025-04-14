@@ -8,7 +8,6 @@ import (
 	"fmt"
 	"path"
 	"qtcli/common"
-	"qtcli/formats"
 	"qtcli/prompt"
 	"qtcli/prompt/comps"
 	"qtcli/util"
@@ -25,7 +24,7 @@ func RunPromptFromDir(dir string) (util.StringAnyMap, error) {
 		return util.StringAnyMap{}, nil
 	}
 
-	promptFile := formats.NewPromptFileFS(GeneratorEnv.FS, fullPath)
+	promptFile := common.NewPromptFileFS(GeneratorEnv.FS, fullPath)
 	if err := promptFile.Open(); err != nil {
 		return util.StringAnyMap{}, nil
 	}

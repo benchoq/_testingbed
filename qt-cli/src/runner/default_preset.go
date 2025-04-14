@@ -8,7 +8,6 @@ import (
 	"io/fs"
 	"path"
 	"qtcli/common"
-	"qtcli/formats"
 	"qtcli/util"
 )
 
@@ -103,7 +102,7 @@ func findAllTemplateDirNames(
 
 			if d.IsDir() && walkingPath != "." {
 				fullPath := path.Join(walkingPath, common.TemplateFileName)
-				templateFile := formats.NewTemplateFileFS(baseFS, fullPath)
+				templateFile := common.NewTemplateFileFS(baseFS, fullPath)
 				err := templateFile.Open()
 
 				if err == nil && templateFile.GetTargetType() == t {
@@ -120,7 +119,7 @@ func findAllTemplateDirNames(
 func readDefaultOptions(baseFS fs.FS, templateDir string) util.StringAnyMap {
 	fullPath := path.Join(templateDir, common.PromptFileName)
 
-	f := formats.NewPromptFileFS(baseFS, fullPath)
+	f := common.NewPromptFileFS(baseFS, fullPath)
 	if err := f.Open(); err != nil {
 		return util.StringAnyMap{}
 	}

@@ -1,5 +1,15 @@
 version: "1"
-type: project
+
+meta:
+  type: project
+  title: Qt Widgets Application
+  description: >-
+    Creates a widget-based Qt application that contains
+    a Qt Widgets Designer-based main window and C++ source and header files
+    to implement the application logic.
+
+    Preselects a desktop Qt for building the application if available.
+
 files:
   - in: CMakeLists.txt
   - in: main.cpp

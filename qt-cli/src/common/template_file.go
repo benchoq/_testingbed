@@ -21,10 +21,16 @@ type TemplateFile struct {
 }
 
 type TemplateFileContents struct {
-	Version  string              `yaml:"version"`
-	TypeName string              `yaml:"type"`
-	Files    []TemplateItem      `yaml:"files"`
-	Fields   []util.StringAnyMap `yaml:"fields"`
+	Version string              `yaml:"version"`
+	Files   []TemplateItem      `yaml:"files"`
+	Fields  []util.StringAnyMap `yaml:"fields"`
+	Meta    TemplateMeta        `yaml:"meta"`
+}
+
+type TemplateMeta struct {
+	Type        string `yaml:"type"`
+	Title       string `yaml:"title"`
+	Description string `yaml:"description"`
 }
 
 type TemplateItem struct {
@@ -81,12 +87,8 @@ func (f *TemplateFile) Open() error {
 	return nil
 }
 
-func (f *TemplateFile) GetTypeName() string {
-	return f.contents.TypeName
-}
-
 func (f *TemplateFile) GetTargetType() TargetType {
-	return TargetTypeFromString(f.contents.TypeName)
+	return TargetTypeFromString(f.contents.Meta.Type)
 }
 
 func (f *TemplateFile) GetFileItems() []TemplateItem {
@@ -95,4 +97,8 @@ func (f *TemplateFile) GetFileItems() []TemplateItem {
 
 func (f *TemplateFile) GetFields() []util.StringAnyMap {
 	return f.contents.Fields
+}
+
+func (f *TemplateFile) GetMeta() TemplateMeta {
+	return f.contents.Meta
 }

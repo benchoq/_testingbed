@@ -1,5 +1,12 @@
 version: "1"
-type: file
+
+meta:
+  type: file
+  title: C++ Class
+  description: >-
+    Creates a C++ header and a source file 
+    for a new class that you can add to a C++ project.
+
 files:
   - in: cpp-class.h
     out: '{{ .headerFileName }}'

@@ -1,0 +1,9 @@
+version: "1"
+type: project
+files:
+  - in: CMakeLists.txt
+  - in: main.cpp
+
+  - in: '@/common/git.ignore'
+    out: .gitignore
+    bypass: true

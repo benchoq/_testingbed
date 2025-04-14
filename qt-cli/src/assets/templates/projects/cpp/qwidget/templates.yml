@@ -1,0 +1,14 @@
+version: "1"
+type: project
+files:
+  - in: CMakeLists.txt
+  - in: main.cpp
+  - in: mainwindow.cpp
+  - in: mainwindow.h
+
+  - in: mainwindow.ui
+    when: '{{ .useForm }}'
+
+  - in: '@/common/git.ignore'
+    out: .gitignore
+    bypass: true

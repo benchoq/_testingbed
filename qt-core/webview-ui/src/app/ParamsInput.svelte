@@ -13,7 +13,7 @@ SPDX-License-Identifier: LicenseRef-Qt-Commercial OR LGPL-3.0-only
   import { RuleId, type Rule, type RuleCheckResult } from "@/logic/inputValidator";
   import InputWithValidation from "@/comps/InputWithValidation.svelte";
   import { configs } from "./states.svelte";
-  import * as logic from "./viewlogic.svelte";
+  import * as viewlogic from "./viewlogic.svelte";
 
   let nameHasError = $state(false);
   let workingDirHasError = $state(false);
@@ -34,7 +34,7 @@ SPDX-License-Identifier: LicenseRef-Qt-Commercial OR LGPL-3.0-only
 
   function errorMessageBuilder(r: RuleCheckResult): string | undefined {
     if (r.id === RuleId.NotEmpty) {
-      return `${configs.type} must not be empty.`
+      return 'Name cannot be empty.'
     }
 
     return undefined;
@@ -69,7 +69,7 @@ SPDX-License-Identifier: LicenseRef-Qt-Commercial OR LGPL-3.0-only
     <Button
       class="qt-button px-2 py-0 rounded-r-none! z-1"
       title="Browse"
-      on:click={logic.changeWorkingDir}
+      on:click={viewlogic.changeWorkingDir}
       ><FolderOpenOutline />
     </Button>
     <InputWithValidation
@@ -86,7 +86,7 @@ SPDX-License-Identifier: LicenseRef-Qt-Commercial OR LGPL-3.0-only
       <Checkbox class="self-start qt-checkbox" 
         bind:checked={configs.saveWorkingDir}
         on:change={(e) => { 
-          logic.uploadSaveWorkDir((e.target as HTMLInputElement).checked);
+          viewlogic.uploadSaveWorkDir((e.target as HTMLInputElement).checked);
         }}>
         Use as a default project directory
       </Checkbox>
@@ -96,7 +96,7 @@ SPDX-License-Identifier: LicenseRef-Qt-Commercial OR LGPL-3.0-only
     <Button
       class="qt-button" 
       disabled={isDisabled} 
-      on:click={logic.createItemFromSelectedPreset}
+      on:click={viewlogic.createItemFromSelectedPreset}
     >
       <ArrowRightOutline class="mr-3"/>Create
     </Button>

@@ -12,14 +12,14 @@ SPDX-License-Identifier: LicenseRef-Qt-Commercial OR LGPL-3.0-only
   import PresetSelector from "./PresetSelector.svelte";
   import ParamsInput from "./ParamsInput.svelte";
   import * as states from './states.svelte';
-  import * as logic from "./viewlogic.svelte";
+  import * as viewlogic from "./viewlogic.svelte";
 
   const title = $derived((states.configs.type === "project") ? 
     "Create a new project" : "Create a new file, class");
   
   onMount(() => {
     if (import.meta.env.DEV) {
-      logic.loadPresets();
+      viewlogic.loadPresets();
     }
   });
 </script>
@@ -29,7 +29,7 @@ SPDX-License-Identifier: LicenseRef-Qt-Commercial OR LGPL-3.0-only
   color="none"
   class="qt-modal"
   style="height: 85vh;"
-  on:close={logic.notifyClosed}
+  on:close={viewlogic.notifyClosed}
 >
   <div class="w-full h-full">
     <div class="w-full h-full grid grid-cols-1 grid-rows-[1fr_auto] gap-2">

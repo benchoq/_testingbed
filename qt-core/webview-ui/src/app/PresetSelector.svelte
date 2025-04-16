@@ -5,7 +5,6 @@ SPDX-License-Identifier: LicenseRef-Qt-Commercial OR LGPL-3.0-only
 
 <script lang="ts">
   import { Label, Listgroup, ListgroupItem, P } from "flowbite-svelte";
-  import { ChevronDownOutline } from "flowbite-svelte-icons";
   import PresetOptionsTable from "./PresetOptionsTable.svelte";
   import { presets } from "./states.svelte";
   import { setSelectedPreset } from "./viewlogic.svelte";
@@ -53,14 +52,8 @@ SPDX-License-Identifier: LicenseRef-Qt-Commercial OR LGPL-3.0-only
 </script>
 
 <div class={`grid
-   grid-cols-[minmax(350px,1fr)_1fr]
-   grid-rows-[min-content_1fr]
+   grid-cols-[minmax(320px,1fr)_1fr]
    h-full`}>
-   <div class='col-span-2 flex flex-row items-center gap-1 mb-1'>
-    <ChevronDownOutline class="qt-label-highlight" />
-    <Label class="qt-label-highlight">Available presets</Label>
-   </div>
-
   <!-- preset list -->
   <Listgroup active 
     class="flex-grow overflow-y-auto qt-list"

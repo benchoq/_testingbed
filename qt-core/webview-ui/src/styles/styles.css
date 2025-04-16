@@ -192,6 +192,33 @@ body {
   border-top-width: 0px;
 }
 
+/* vertical tab */
+.qt-vtab-item {
+  color: var(--qt-button-text);
+  background: transparent;
+  border-radius: var(--qt-border-radius);
+  font-weight: var(--qt-font-weight);
+	line-height: normal;
+	cursor: pointer;
+  padding: 10px 5px;
+  @apply ring-offset-0;
+  @apply qt-focusRing;
+}
+
+.qt-vtab-item.selected {
+  background: var(--qt-list-fill);
+  /* border: 1px solid var(--qt-widget-border); */
+}
+
+.qt-vtab-item:hover {
+	background: var(--qt-button-fillHover);
+}
+
+.qt-vtab-separator {
+  height: 1px;
+  background-color: var(--qt-widget-border);
+}
+
 /* alert - for bad inputs, etc. */
 .qt-alert {
   opacity: 80%; 

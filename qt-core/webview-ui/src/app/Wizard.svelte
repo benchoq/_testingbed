@@ -7,16 +7,18 @@ SPDX-License-Identifier: LicenseRef-Qt-Commercial OR LGPL-3.0-only
   import _ from "lodash";
   import { onMount } from "svelte";
   import { Modal } from "flowbite-svelte";
-  
+
   import LoadingMask from "@/comps/LoadingMask.svelte";
+  import SectionLabel from "@/comps/SectionLabel.svelte";
+  import NameInput from "./NameInput.svelte";
+  import WorkingDirInput from "./WorkingDirInput.svelte";
+  import ControlInput from "./ControlInput.svelte";
   import PresetSelector from "./PresetSelector.svelte";
-  import ParamsInput from "./ParamsInput.svelte";
-  import * as states from './states.svelte';
+  import PresetTypeSelector from "./PresetTypeSelector.svelte";
+
+  import * as states from "./states.svelte";
   import * as viewlogic from "./viewlogic.svelte";
 
-  const title = $derived((states.configs.type === "project") ? 
-    "Create a new project" : "Create a new file, class");
-  
   onMount(() => {
     if (import.meta.env.DEV) {
       viewlogic.loadPresets();
@@ -24,18 +26,37 @@ SPDX-License-Identifier: LicenseRef-Qt-Commercial OR LGPL-3.0-only
   });
 </script>
 
-<Modal {title}
-  open size="md" backdropClass="hidden"
+<Modal
+  title="Create a new item"
+  open
+  size="md"
+  backdropClass="hidden"
   color="none"
   class="qt-modal"
-  style="height: 85vh;"
+  classBody="md:p-4"
+  classHeader="md:p-4"
+  style="height: 80vh;"
   on:close={viewlogic.notifyClosed}
 >
   <div class="w-full h-full">
-    <div class="w-full h-full grid grid-cols-1 grid-rows-[1fr_auto] gap-2">
+    <div
+      class={`w-full h-full grid 
+      grid-cols-[max-content_1fr]
+      grid-rows-[min-content_1fr_min-content_min-content_min-content]
+      gap-2`}
+    >
+      <SectionLabel text="Available Presets" class="col-span-2"/>
+      <div class="ml-3">
+        <PresetTypeSelector />
+      </div>
       <PresetSelector />
-      <ParamsInput />
+      <SectionLabel text="Name" /><NameInput />
+      <SectionLabel text="Create In" /><WorkingDirInput />
+
+      <div class="flex flex-row self-center"></div>
+      <ControlInput />
     </div>
     <LoadingMask {...states.loading} />
   </div>
 </Modal>
+

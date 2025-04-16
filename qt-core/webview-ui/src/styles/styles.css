@@ -216,7 +216,7 @@ body {
 
 .qt-vtab-separator {
   height: 1px;
-  background-color: var(--qt-widget-border);
+  background-color: var(--qt-widget-separator);
 }
 
 /* alert - for bad inputs, etc. */

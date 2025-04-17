@@ -5,9 +5,11 @@ SPDX-License-Identifier: LicenseRef-Qt-Commercial OR LGPL-3.0-only
 
 <script lang="ts">
   import { Label, Listgroup, ListgroupItem, P } from "flowbite-svelte";
-  import PresetOptionsTable from "./PresetOptionsTable.svelte";
+
   import { presets } from "./states.svelte";
   import { setSelectedPreset } from "./viewlogic.svelte";
+  import SectionLabel from "@/comps/SectionLabel.svelte";
+  import PresetOptionsTable from "./PresetOptionsTable.svelte";
   
   const createListItemText = (preset: any) => {
     if (preset.name.startsWith("@")) {
@@ -52,33 +54,37 @@ SPDX-License-Identifier: LicenseRef-Qt-Commercial OR LGPL-3.0-only
 </script>
 
 <div class={`grid
-   grid-cols-[minmax(320px,1fr)_1fr]
-   h-full`}>
+    grid-cols-[minmax(320px,1fr)_1fr]
+    h-full`}>
+  
   <!-- preset list -->
-  <Listgroup active 
-    class="flex-grow overflow-y-auto qt-list"
-    onkeydown={onKeyPressed}
-    tabindex={0}
-  >
-    {#each presets.all as preset, index}
-      <ListgroupItem
-        class="qt-list-item flex flex-row"
-        currentClass="selected"
-        current={presets.selectedIndex === index}
-        on:click={() => { setSelectedPreset(preset, index) }}
-      >
-        <div class="flex-1">{createListItemText(preset)}</div>
-        {#if !preset.name.startsWith("@")}
-          <P size="xs" class="qt-label">{preset.meta.title}</P>
-        {:else}
-          <div></div>
-        {/if}
-      </ListgroupItem>
-    {/each}
-  </Listgroup>
+  <div class="flex flex-col">
+    <Listgroup active 
+      class="flex-grow overflow-y-auto qt-list"
+      onkeydown={onKeyPressed}
+      tabindex={0}
+    >
+      {#each presets.all as preset, index}
+        <ListgroupItem
+          class="qt-list-item flex flex-row"
+          currentClass="selected"
+          current={presets.selectedIndex === index}
+          on:click={() => { setSelectedPreset(preset, index) }}
+        >
+          <div class="flex-1">{createListItemText(preset)}</div>
+          {#if !preset.name.startsWith("@")}
+            <P size="xs" class="qt-label">{preset.meta.title}</P>
+          {:else}
+            <div></div>
+          {/if}
+        </ListgroupItem>
+      {/each}
+    </Listgroup>
+  </div>
 
   <!-- description and option table -->
-  <div class="grid grid-rows-[1fr_min-content] pl-2">
+  <div class="grid grid-rows-[min-content_1fr_min-content] pl-2">
+    <SectionLabel text="Description" icon={false} class="mb-1" />
     <div>
       <Label 
         class="qt-label whitespace-pre-wrap leading-relaxed"

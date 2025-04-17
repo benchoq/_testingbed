@@ -45,7 +45,7 @@ SPDX-License-Identifier: LicenseRef-Qt-Commercial OR LGPL-3.0-only
       grid-rows-[min-content_1fr_min-content_min-content_min-content]
       gap-2`}
     >
-      <SectionLabel text="Available Presets" class="col-span-2"/>
+      <SectionLabel text="Available presets" class="col-span-2"/>
       <PresetTypeSelector />
       <PresetSelector />
       <SectionLabel text="Name" /><NameInput />

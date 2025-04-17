@@ -6,10 +6,16 @@ SPDX-License-Identifier: LicenseRef-Qt-Commercial OR LGPL-3.0-only
 <script lang="ts">
   import { Label } from "flowbite-svelte";
   import { ChevronRightOutline } from "flowbite-svelte-icons";
-  let { text, class: className = "" } = $props();
+  let { 
+    text,
+    icon = true,
+    class: className = "" 
+  } = $props();
 </script>
 
 <div class={`flex flex-row self-center ${className}`}>
-  <ChevronRightOutline class="qt-label-highlight" />
+  {#if icon}
+    <ChevronRightOutline class="qt-label-highlight" />
+  {/if}
   <Label class="qt-label-highlight">{text}</Label>
 </div>

@@ -5,12 +5,12 @@ SPDX-License-Identifier: LicenseRef-Qt-Commercial OR LGPL-3.0-only
 
 <script lang="ts">
   import { 
-    Label, Table, TableBody, TableBodyRow, TableBodyCell 
+    Label, Table, TableBody, TableBodyRow, TableBodyCell, Button
   } from "flowbite-svelte";
-  import { ChevronDownOutline } from 'flowbite-svelte-icons';
 
   import { presets } from "./states.svelte";
   import { type PromptData } from "./types.svelte";
+  import SectionLabel from "@/comps/SectionLabel.svelte";
 
   let steps = $derived.by(() => {
     if (presets.selectedPrompt) {
@@ -34,23 +34,29 @@ SPDX-License-Identifier: LicenseRef-Qt-Commercial OR LGPL-3.0-only
 
 {#if steps}
 
-<div class="flex flex-row gap-1 align-center mb-1">
-  <ChevronDownOutline class="qt-label-highlight" />
-  <Label class="qt-label-highlight">Options</Label>
-</div>
+<SectionLabel text="Options" icon={false} class="mb-1" />
 
 <Table color="custom" class="qt-simple-table">
-    <TableBody tableBodyClass="divide-y">
-      {#each steps as step}
-      <TableBodyRow>
-        <TableBodyCell class="p-0">
-          <Label class="qt-label">{step.question}</Label>
-        </TableBodyCell>
-        <TableBodyCell class="p-0">
-          <Label class="qt-label">{toDisplayValue(step.default)}</Label>
-        </TableBodyCell>
-      </TableBodyRow>
-      {/each}
-    </TableBody>
-  </Table>
+  <TableBody tableBodyClass="divide-y">
+    {#each steps as step}
+    <TableBodyRow>
+      <TableBodyCell class="p-0">
+        <Label class="qt-label">{step.question}</Label>
+      </TableBodyCell>
+      <TableBodyCell class="p-0">
+        <Label class="qt-label">{toDisplayValue(step.default)}</Label>
+      </TableBodyCell>
+    </TableBodyRow>
+    {/each}
+  </TableBody>
+</Table>
+
+{#if (presets.selected && presets.selected.name.startsWith("@"))}
+  <Button class="qt-button mt-3">
+    Customize
+  </Button>
+{:else}
+  <div></div>
+{/if}
+
 {/if}

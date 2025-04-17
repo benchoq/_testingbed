@@ -5,24 +5,32 @@ SPDX-License-Identifier: LicenseRef-Qt-Commercial OR LGPL-3.0-only
 
 <script lang="ts">
   import { Button } from "flowbite-svelte";
-  import { FileOutline } from "flowbite-svelte-icons";
 
   let {
     items,
-    currentIndex = $bindable(-1),
+    currentIndex = -1,
+    onCurrentIndexChanged = null,
   } = $props();
 
   function setCurrentIndex(i: number) {
-    if (i >= 0 && i < items.length) {
+    if (i < 0 || i >= items.length) {
+      return;
+    }
+
+    if (currentIndex !== i) {
       currentIndex = i;
+
+      if (onCurrentIndexChanged) {
+        onCurrentIndexChanged(currentIndex);
+      }
     }
   }
 
   $effect(() => {
-    if (items && items.length > 0) {
-      currentIndex = 0
-    } else {
-      currentIndex = -1;
+    if (currentIndex === -1) {
+      if (items && items.length > 0) {
+        setCurrentIndex(0);
+      }
     }
   });
 </script>

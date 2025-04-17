@@ -46,9 +46,7 @@ SPDX-License-Identifier: LicenseRef-Qt-Commercial OR LGPL-3.0-only
       gap-2`}
     >
       <SectionLabel text="Available Presets" class="col-span-2"/>
-      <div class="ml-3">
-        <PresetTypeSelector />
-      </div>
+      <PresetTypeSelector />
       <PresetSelector />
       <SectionLabel text="Name" /><NameInput />
       <SectionLabel text="Create In" /><WorkingDirInput />

@@ -18,8 +18,9 @@ type DefaultPresetManager struct {
 
 func NewDefaultPresetManager(baseFS fs.FS) DefaultPresetManager {
 	presets := map[common.TargetType][]common.PresetData{
-		common.TargetTypeFile:    loadPresets(baseFS, common.TargetTypeFile),
 		common.TargetTypeProject: loadPresets(baseFS, common.TargetTypeProject),
+		common.TargetTypeFile:    loadPresets(baseFS, common.TargetTypeFile),
+		common.TargetTypeClass:   loadPresets(baseFS, common.TargetTypeClass),
 	}
 
 	return DefaultPresetManager{
@@ -30,8 +31,11 @@ func NewDefaultPresetManager(baseFS fs.FS) DefaultPresetManager {
 
 func (m DefaultPresetManager) GetAll() []common.PresetData {
 	return append(
-		m.FindByType(common.TargetTypeProject),
-		m.FindByType(common.TargetTypeFile)...,
+		append(
+			m.FindByType(common.TargetTypeProject),
+			m.FindByType(common.TargetTypeFile)...,
+		),
+		m.FindByType(common.TargetTypeClass)...,
 	)
 }
 

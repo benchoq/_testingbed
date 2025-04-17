@@ -206,12 +206,12 @@ body {
 }
 
 .qt-vtab-item.selected {
-  background: var(--qt-list-fill);
-  /* border: 1px solid var(--qt-widget-border); */
+  color: var(--qt-itemSelection-text);
+  background-color: var(--qt-itemSelection-fill);
 }
 
 .qt-vtab-item:hover {
-	background: var(--qt-button-fillHover);
+	background: var(--qt-itemSelection-fill);
 }
 
 .qt-vtab-separator {

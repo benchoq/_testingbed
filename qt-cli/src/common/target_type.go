@@ -11,6 +11,7 @@ const (
 	TargetTypeUnknown TargetType = iota
 	TargetTypeFile
 	TargetTypeProject
+	TargetTypeClass
 )
 
 func TargetTypeFromString(s string) TargetType {
@@ -21,6 +22,8 @@ func TargetTypeFromString(s string) TargetType {
 		return TargetTypeFile
 	case "project":
 		return TargetTypeProject
+	case "class":
+		return TargetTypeClass
 	default:
 		return TargetTypeUnknown
 	}
@@ -32,6 +35,8 @@ func TargetTypeToString(t TargetType) string {
 		return "file"
 	case TargetTypeProject:
 		return "project"
+	case TargetTypeClass:
+		return "class"
 	default:
 		return ""
 	}

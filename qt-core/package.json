@@ -84,13 +84,8 @@
         "category": "Qt"
       },
       {
-        "command": "qt-core.createNewProjectGui",
-        "title": "%qt-core.command.createNewProjectGui.title%",
-        "category": "Qt"
-      },
-      {
-        "command": "qt-core.createNewFileGui",
-        "title": "%qt-core.command.createNewFileGui.title%",
+        "command": "qt-core.createNewItemGui",
+        "title": "%qt-core.command.createNewItemGui.title%",
         "category": "Qt"
       }
     ],

@@ -72,11 +72,8 @@ export async function activate(context: vscode.ExtensionContext) {
     vscode.languages.registerColorProvider('qss', createColorProvider())
   );
   context.subscriptions.push(
-    vscode.commands.registerCommand(`${EXTENSION_ID}.createNewFileGui`, () => {
+    vscode.commands.registerCommand(`${EXTENSION_ID}.createNewItemGui`, () => {
       ItemWizardPanel.render(context.extensionUri, "file");
-    }),
-    vscode.commands.registerCommand(`${EXTENSION_ID}.createNewProjectGui`, () => {
-      ItemWizardPanel.render(context.extensionUri, "project");
     })
   );
 

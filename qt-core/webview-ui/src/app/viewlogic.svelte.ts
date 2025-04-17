@@ -39,6 +39,11 @@ export const changeWorkingDir = () => {
     .catch((e) => { console.log("catch,", e) })
 };
 
+export const setPresetType = (type: string) => {
+  configs.type = type;
+  loadPresets();
+}
+
 export const setSelectedPreset = (preset: Preset, index: number) => {
   presets.selected = preset
   presets.selectedIndex = index;

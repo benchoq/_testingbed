@@ -73,7 +73,7 @@ export async function activate(context: vscode.ExtensionContext) {
   );
   context.subscriptions.push(
     vscode.commands.registerCommand(`${EXTENSION_ID}.createNewItemGui`, () => {
-      ItemWizardPanel.render(context.extensionUri, "file");
+      ItemWizardPanel.render(context.extensionUri);
     })
   );
 

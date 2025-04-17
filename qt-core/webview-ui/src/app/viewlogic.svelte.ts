@@ -14,7 +14,7 @@ const qtcli = new QtcliRestClient();
 vscodeApi.onNotification((id: MessageId, payload: unknown) => {
   if (id === MessageId.Initialize) {
     if (payload) {
-      configs.type = _.get(payload, "type",  configs.type) as string;
+      configs.type = "project";
       configs.name = _.get(payload, "name", configs.name) as string;
       configs.workingDir = _.get(payload, "workingDir", configs.workingDir) as string;
       configs.saveWorkingDir = _.get(payload, "saveWorkingDir", configs.saveWorkingDir) as boolean;

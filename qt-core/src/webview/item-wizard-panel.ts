@@ -57,7 +57,7 @@ export class ItemWizardPanel {
     }
   }
 
-  public static render(extensionUri: vscode.Uri, type: string) {
+  public static render(extensionUri: vscode.Uri) {
     if (!ItemWizardPanel.instance) {
       const p = createWebviewPanel(extensionUri);
       ItemWizardPanel.instance = new ItemWizardPanel(p, extensionUri);
@@ -67,8 +67,7 @@ export class ItemWizardPanel {
     startQtcliServer(extensionUri); 
 
     ItemWizardPanel.instance._panel.reveal(PanelColumn);
-    ItemWizardPanel.instance._notify(
-      MessageId.Initialize, createDefaultUiConfigs(type));
+    ItemWizardPanel.instance._notify(MessageId.Initialize, createInitData());
   }
 
   private async _notify(messageId: MessageId, payload: unknown) {
@@ -149,13 +148,12 @@ export class ItemWizardPanel {
 }
 
 // helpers
-function createDefaultUiConfigs(type: string) {
-  const project = (type === "project");
+function createInitData() {
+  const project = true;
   const workingDir = findWorkingDir(
     project ? QtcliAction.NewProject : QtcliAction.NewFile);
 
   return {
-    type,
     name: (project ? "untitled" : ""),
     workingDir,
     saveWorkingDir: true,

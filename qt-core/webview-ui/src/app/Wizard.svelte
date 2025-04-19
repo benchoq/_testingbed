@@ -13,7 +13,8 @@ SPDX-License-Identifier: LicenseRef-Qt-Commercial OR LGPL-3.0-only
   import NameInput from "./NameInput.svelte";
   import WorkingDirInput from "./WorkingDirInput.svelte";
   import ControlInput from "./ControlInput.svelte";
-  import PresetSelector from "./PresetSelector.svelte";
+  import PresetList from "./PresetList.svelte";
+  import PresetDetails from "./PresetDetails.svelte";
   import PresetTypeSelector from "./PresetTypeSelector.svelte";
 
   import * as states from "./states.svelte";
@@ -46,13 +47,16 @@ SPDX-License-Identifier: LicenseRef-Qt-Commercial OR LGPL-3.0-only
       gap-2`}
     >
       <SectionLabel text="Available presets" class="col-span-2"/>
+
       <PresetTypeSelector />
-      <PresetSelector />
+      <div class={`grid grid-cols-[minmax(320px,1fr)_1fr] h-full`}>
+        <PresetList />
+        <PresetDetails />
+      </div>
+
       <SectionLabel text="Name" /><NameInput />
       <SectionLabel text="Create In" /><WorkingDirInput />
-
-      <div class="flex flex-row self-center"></div>
-      <ControlInput />
+      <div class="flex flex-row self-center"></div><ControlInput />
     </div>
     <LoadingMask {...states.loading} />
   </div>

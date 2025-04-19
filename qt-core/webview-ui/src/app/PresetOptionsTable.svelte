@@ -5,9 +5,8 @@ SPDX-License-Identifier: LicenseRef-Qt-Commercial OR LGPL-3.0-only
 
 <script lang="ts">
   import { 
-    Label, Table, TableBody, TableBodyRow, TableBodyCell, Button
+    Label, Table, TableBody, TableBodyRow, TableBodyCell
   } from "flowbite-svelte";
-  import { PlusOutline } from 'flowbite-svelte-icons';
 
   import { presets } from "./states.svelte";
   import { type PromptData } from "./types.svelte";
@@ -51,14 +50,5 @@ SPDX-License-Identifier: LicenseRef-Qt-Commercial OR LGPL-3.0-only
     {/each}
   </TableBody>
 </Table>
-
-{#if (presets.selected && presets.selected.name.startsWith("@"))}
-  <Button class="qt-button mt-3">
-    <PlusOutline class="mr-2"/>
-    Customize
-  </Button>
-{:else}
-  <div></div>
-{/if}
 
 {/if}

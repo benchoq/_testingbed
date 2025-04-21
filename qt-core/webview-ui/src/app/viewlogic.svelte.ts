@@ -4,12 +4,10 @@
 import _ from "lodash";
 
 import { MessageId } from "@shared/message";
+import { qtcliApi } from "@/logic/qtcliApi";
 import { vscodeApi } from "@/logic/vscodeApi";
-import { QtcliRestClient } from "@/logic/qtcliRestClient";
 import { type Preset } from './types.svelte';
 import { configs, inputValidationResult, presets, loading } from './states.svelte';
-
-const qtcli = new QtcliRestClient();
 
 vscodeApi.onNotification((id: MessageId, payload: unknown) => {
   if (id === MessageId.Initialize) {
@@ -49,7 +47,7 @@ export const setSelectedPreset = (preset: Preset, index: number) => {
   presets.selectedIndex = index;
 
   if (preset.id.length > 0) {
-    qtcli.get(`/presets/${preset.id}/prompt`)
+    qtcliApi.get(`/presets/${preset.id}/prompt`)
       .then((res) => { presets.selectedPrompt = res.data })
       .catch((e) => { loading.setError(e) })
       .finally(() => { loading.clear() });
@@ -61,7 +59,7 @@ export const loadPresets = () => {
   const endPoint = "/presets";
   const params = { type: configs.type };
 
-  qtcli
+  qtcliApi
     .get(endPoint, params)
     .catch((e) => { loading.setError(e) })
     .finally(() => { loading.clear() })
@@ -89,7 +87,7 @@ export const createItemFromSelectedPreset = async () => {
     presetId: presets.selected?.id
   }
 
-  qtcli.post("/items", data)
+  qtcliApi.post("/items", data)
     .then((res) => { vscodeApi.notify(MessageId.ItemCreated, res.data) })
     .catch((e) => { console.log(e); });
 };

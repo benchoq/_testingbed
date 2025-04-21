@@ -111,3 +111,5 @@ async function fakeResponse(req: QtcliRestRequest): Promise<QtcliRestResponse> {
     }, 500);
   });
 }
+
+export const qtcliApi = new QtcliRestClient();

@@ -4,49 +4,29 @@ SPDX-License-Identifier: LicenseRef-Qt-Commercial OR LGPL-3.0-only
 -->
 
 <script lang="ts">
-  import { onMount } from "svelte";
   import { Input, Button, Alert } from "flowbite-svelte";
   import { InfoCircleSolid } from "flowbite-svelte-icons";
-  import { Validator } from "@/logic/inputValidator";
 
-  let { 
+  let {
     value = $bindable(""),
-    rules,
-    errorMessageBuilder = undefined,
-    class: className = "",
-    classInput = "",
-    hasError = $bindable(false),
-    hasFocus = $bindable(false),
+    onInput,
+    errors = undefined,
     ...restProps
   } = $props();
 
+  const hasError = $derived(errors && (errors.length > 0));
   let hovered = $state(false);
-  let hideAlert = $state(true);
-  let error: string[] | undefined = $state(undefined);
-  const validator = new Validator(rules);
-
-  if (errorMessageBuilder) {
-    validator.setErrorMessageBuilder(errorMessageBuilder);
-  }
-
-  async function runValidator() {
-    // console.log("---->", value);
-    const result = await validator.run(value);
-    hasError = !result.passed;
-    // console.log("---", value, ":", result.failedResults);
-    error = result.failedResults?.map((r) => { return r.error });
-  }
-
-  onMount(runValidator);
+  let focused = $state(false);
 </script>
 
-<div class={`relative ${className}`}>
-  {#if error && (!hideAlert || hovered)}
-    <Alert border
+<div class='relative'>
+  {#if hasError && (focused || hovered)}
+    <Alert
+      border
       color="none"
       class="absolute w-full bottom-full -mb-0.5 qt-alert"
     >
-      {error}
+      {errors}
     </Alert>
   {/if}
 
@@ -54,23 +34,24 @@ SPDX-License-Identifier: LicenseRef-Qt-Commercial OR LGPL-3.0-only
     id="input_name"
     type="text"
     required
-    class={`qt-input ${error ? 'error' : ''} ${classInput}`}
-    bind:value={value}
-    onblur={() => { hasFocus = false; hideAlert = true; }}
-    oninput={() => { runValidator(); hideAlert = false; }}
+    class={`qt-input ${hasError ? "error" : ""}`}
+    bind:value
+    onblur={() => { focused = false }}
+    oninput={onInput}
     onfocus={e => { 
       (e.target as HTMLInputElement).select();
-      hasFocus = true;
-      hideAlert = false;
+      focused = true;
     }}
     {...restProps}
   >
-    <Button slot="right"
-      class={`qt-input-icon error ${!error ? "hidden" : ""}`}
+    <Button
+      slot="right"
+      class={`qt-input-icon error ${!hasError ? "hidden" : ""}`}
       title="Toggle alert"
-      on:mouseenter={() => { hovered = true }}
-      on:mouseleave={() => { hovered = false }}
-      ><InfoCircleSolid />
+      on:mouseenter={() => { hovered = true; }}
+      on:mouseleave={() => { hovered = false; }}
+    >
+      <InfoCircleSolid />
     </Button>
   </Input>
 </div>

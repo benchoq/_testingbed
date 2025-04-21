@@ -7,7 +7,7 @@ import { MessageId } from "@shared/message";
 import { vscodeApi } from "@/logic/vscodeApi";
 import { QtcliRestClient } from "@/logic/qtcliRestClient";
 import { type Preset } from './types.svelte';
-import { configs, presets, loading } from './states.svelte';
+import { configs, inputValidationResult, presets, loading } from './states.svelte';
 
 const qtcli = new QtcliRestClient();
 
@@ -93,3 +93,33 @@ export const createItemFromSelectedPreset = async () => {
     .then((res) => { vscodeApi.notify(MessageId.ItemCreated, res.data) })
     .catch((e) => { console.log(e); });
 };
+
+export const setName = (name: string) => {
+  configs.name = name;
+  void validateNameAndDir();
+}
+
+export const setWorkingDir = (dir: string) => {
+  configs.workingDir = dir;
+  void validateNameAndDir();
+}
+
+const validateNameAndDir = async () => {
+  if (configs.name.length === 0) {
+    inputValidationResult.nameError = "Name is empty"
+  } else {
+    inputValidationResult.nameError = ""
+  }
+
+  if (configs.workingDir.length === 0) {
+    inputValidationResult.workingDirError = "Working directory is empty"
+  } else {
+    const res = await vscodeApi.request(MessageId.RequestCheckDirectoryExists, configs.workingDir)
+    if (Boolean(res) !== true) {
+      console.log("dir check =", res)
+      inputValidationResult.workingDirError = "Dir doesn't exist";
+    } else {
+      inputValidationResult.workingDirError = ""
+    }
+  }
+}

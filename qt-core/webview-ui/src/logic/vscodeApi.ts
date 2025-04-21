@@ -42,15 +42,12 @@ class VSCodeApiWrapper {
     const requestId = this._generateRequestId();
     return new Promise<T>((resolve, reject) => {
       this._pendingRequests.set(requestId, resolve);
-      console.log("posting...1", messageId, payload, requestId);
       this._api!.postMessage({ messageId, payload, requestId });
-      console.log("posting...2", messageId, payload, requestId);
 
       if (timeout > 0) {
         setTimeout(() => {
           if (this._pendingRequests.has(requestId)) {
             this._pendingRequests.delete(requestId);
-            console.log("posting...3, timeout", messageId, payload, requestId);
             reject(new Error(`Request timeout for ${messageId}`));
           }
         }, timeout);

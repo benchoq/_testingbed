@@ -9,7 +9,6 @@ SPDX-License-Identifier: LicenseRef-Qt-Commercial OR LGPL-3.0-only
   import { presets } from "./states.svelte";
   import SectionLabel from "@/comps/SectionLabel.svelte";
   import PresetOptionsTable from "./PresetOptionsTable.svelte";
-
 </script>
 
 <div class="grid grid-rows-[min-content_1fr_min-content] pl-2">

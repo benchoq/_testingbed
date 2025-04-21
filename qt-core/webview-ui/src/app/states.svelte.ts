@@ -18,6 +18,11 @@ export const configs = $state({
   saveWorkingDir: false,
 })
 
+export const inputValidationResult = $state({
+  nameError: "",
+  workingDirError: ""
+})
+
 export const loading = $state({
   busy: false,
   error: undefined,

@@ -23,11 +23,12 @@ vscodeApi.onNotification((id: MessageId, payload: unknown) => {
 })
 
 export const uploadSaveWorkDir = (checked: any) => {
-  vscodeApi.notify(MessageId.SaveWorkingDirChanged, checked);
+  vscodeApi.request(MessageId.SaveWorkingDirChanged, checked);
 }
 
 export const notifyClosed = () => {
-  vscodeApi.notify(MessageId.WizardClosed);
+  qtcliApi.delete("/server");
+  vscodeApi.request(MessageId.WizardClosed);
 }
 
 export const changeWorkingDir = () => {
@@ -88,7 +89,7 @@ export const createItemFromSelectedPreset = async () => {
   }
 
   qtcliApi.post("/items", data)
-    .then((res) => { vscodeApi.notify(MessageId.ItemCreated, res.data) })
+    .then((res) => { vscodeApi.request(MessageId.ItemCreated, res.data) })
     .catch((e) => { console.log(e); });
 };
 

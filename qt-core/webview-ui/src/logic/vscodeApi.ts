@@ -24,18 +24,17 @@ class VSCodeApiWrapper {
     return (this._api !== undefined);
   }
 
-  public notify<T = unknown>(messageId: MessageId, payload?: T) {
-    if (this._api) {
-      this._api.postMessage({ messageId, payload });
-    }
-  }
+  // public notify<T = unknown>(messageId: MessageId, payload?: T) {
+  //   if (this._api) {
+  //     this._api.postMessage({ messageId, payload });
+  //   }
+  // }
 
   public async request<T = unknown>(
     messageId: MessageId, 
     payload?: T, 
     timeout = 10000): Promise<T> {
     if (!this._api) {
-      console.log("oh.... vscode api is not available");
       return Promise.reject("VSCode API not available");
     }
 
@@ -62,6 +61,7 @@ class VSCodeApiWrapper {
     }
 
     const { requestId, messageId, payload } = e.data;
+    
     if (requestId) {
       if (this._pendingRequests.has(requestId)) {
         const resolve = this._pendingRequests.get(requestId);

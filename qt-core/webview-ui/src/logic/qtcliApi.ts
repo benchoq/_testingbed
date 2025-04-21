@@ -42,6 +42,10 @@ export class QtcliRestClient {
     return await this._call(new QtcliRestRequest("post", endpoint, undefined, data))
   }
 
+  public delete = async (endpoint: string) => {
+    return await this._call(new QtcliRestRequest("delete", endpoint))
+  }
+
   private async _call(req: QtcliRestRequest, attempt = 0): Promise<QtcliRestResponse> {
     if (import.meta.env.DEV) {
       return await fakeResponse(req);

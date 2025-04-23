@@ -1,16 +1,15 @@
 // Copyright (C) 2025 The Qt Company Ltd.
 // SPDX-License-Identifier: LicenseRef-Qt-Commercial OR LGPL-3.0-only 
 
-import { PushId, type PushData, CallId, type CallData, 
-  type Reply,
-  isPushData, isCallData
+import { PushMessageId, type PushMessage, CallMessageId, type CallMessage, 
+  isPushMessage, isCallMessage
 } from '@shared/message';
 import type { WebviewApi } from "vscode-webview";
 
 class VSCodeApiWrapper {
   private readonly _api: WebviewApi<unknown> | undefined;
-  private _pendingRequests = new Map<string, (value: any) => void>();
-  private _onPushReceived = (p: PushData) => {};
+  private _pendingCalls = new Map<string, (value: any) => void>();
+  private _onDidReceivePushMessage = (p: PushMessage) => {};
 
   constructor() {
     if (typeof acquireVsCodeApi === "function") {
@@ -25,75 +24,75 @@ class VSCodeApiWrapper {
 
       const data = e.data;
 
-      if (isPushData(data)) {
-        this._onPushReceived(data as PushData);
-      } else if (isCallData(data)) {
-        this._onCallDataReceived(data as Reply);
+      if (isPushMessage(data)) {
+        this._onDidReceivePushMessage(data as PushMessage);
+      } else if (isCallMessage(data)) {
+        this._onDidReceiveCallMessage(data as CallMessage);
       } else {
         console.warn("Unknown transmission");
       }
     });
   }
 
-  public onPushReceived(handler: (p: PushData) => void) {
-    this._onPushReceived = handler
+  public onDidReceivePushMessage(handler: (p: PushMessage) => void) {
+    this._onDidReceivePushMessage = handler
   }
 
   public isValid(): boolean {
     return (this._api !== undefined);
   }
 
-  public push<T = unknown>(id: PushId, data?: T) {
+  public push<T = unknown>(id: PushMessageId, data?: T) {
     if (!this._api) {
       console.log("api is invalid");
       return;
     }
     
-    const p: PushData = { id, data };
+    const p: PushMessage = { id, data };
     this._api.postMessage(p);
   }
 
   public async request<T = unknown>(
-    id: CallId, data?: T, timeout = 10000): Promise<T> {
+    id: CallMessageId, data?: T, timeout = 10000): Promise<T> {
     if (!this._api) {
       return Promise.reject("VSCode API not available");
     }
 
-    const tag = this._generateRequestTag();
+    const tag = this._generateTag();
 
     return new Promise<T>((resolve, reject) => {
-      const r: CallData = { id, tag, data };
-      this._pendingRequests.set(tag, resolve);
+      const r: CallMessage = { id, tag, data };
+      this._pendingCalls.set(tag, resolve);
       this._api!.postMessage(r);
 
       if (timeout > 0) {
         setTimeout(() => {
-          if (this._pendingRequests.has(tag)) {
-            this._pendingRequests.delete(tag);
-            reject(new Error(`Request timeout for ${id}`));
+          if (this._pendingCalls.has(tag)) {
+            this._pendingCalls.delete(tag);
+            reject(new Error(`Call requeste timed out: ${id}`));
           }
         }, timeout);
       }
     });
   }
 
-  private _onCallDataReceived(r: Reply) {
-    if (!r.tag || !this._pendingRequests.has(r.tag)) {
+  private _onDidReceiveCallMessage(m: CallMessage) {
+    if (!m.tag || !this._pendingCalls.has(m.tag)) {
       return;
     }
 
-    const resolve = this._pendingRequests.get(r.tag);
-    this._pendingRequests.delete(r.tag);
+    const resolve = this._pendingCalls.get(m.tag);
+    this._pendingCalls.delete(m.tag);
 
     if (resolve) {
-      resolve(r.data);
+      resolve(m.data);
     }
 
-    console.log(r);
+    console.log(m);
   }
   
-  private _generateRequestTag(): string {
-    return `req_${Date.now()}_${Math.random().toString(36).substring(2, 9)}`;
+  private _generateTag(): string {
+    return `call_${Date.now()}_${Math.random().toString(36).substring(2, 9)}`;
   }
 }
 

@@ -3,14 +3,14 @@
 
 import _ from "lodash";
 
-import { PushId, CallId, type PushData } from "@shared/message";
+import { PushMessageId, CallMessageId, type PushMessage } from "@shared/message";
 import { qtcliApi } from "@/logic/qtcliApi";
 import { vscodeApi } from "@/logic/vscodeApi";
 import { type Preset } from './types.svelte';
 import { configs, inputValidationResult, presets, loading } from './states.svelte';
 
-vscodeApi.onPushReceived((p: PushData) => {
-  if (p.id === PushId.PanelInit) {
+vscodeApi.onDidReceivePushMessage((p: PushMessage) => {
+  if (p.id === PushMessageId.PanelInit) {
     if (p.data) {
 //       configs.type = "project";
 //       configs.name = _.get(payload, "name", configs.name) as string;
@@ -28,12 +28,12 @@ export const uploadSaveWorkDir = (checked: any) => {
 
 export const notifyClosed = () => {
   // qtcliApi.delete("/server");
-  vscodeApi.push(PushId.ViewClosed);
+  vscodeApi.push(PushMessageId.ViewClosed);
 }
 
 export const changeWorkingDir = () => {
   vscodeApi
-    .request(CallId.ViewSelectWorkingDir, configs.workingDir)
+    .request(CallMessageId.ViewSelectWorkingDir, configs.workingDir)
     .then((data) => { configs.workingDir = data as string; })
     .catch((e) => { console.log("catch,", e) })
 };

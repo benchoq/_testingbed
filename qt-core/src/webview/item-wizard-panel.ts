@@ -15,7 +15,11 @@ import {
   // setDefaultProjectDir
 } from '@/qtcli/commands';
 import { getUri, getNonce } from "./utils";
-import { PushId, PushData, isPushData, isCallData, CallData, CallId, Reply, Message, MessageCategory } from "./shared/message";
+import { 
+  PushMessageId, PushMessage, 
+  isPushMessage, isCallMessage, 
+  CallMessage, CallMessageId, 
+} from "./shared/message";
 
 let qtcliRunner: QtcliRunner | undefined = undefined;
 
@@ -39,10 +43,10 @@ export class ItemWizardPanel {
     panel.onDidDispose(() => { this.dispose() }, null, this._disposables);
     panel.webview.html = createWebviewContent(panel.webview, extensionUri);
     panel.webview.onDidReceiveMessage((m: any) => {
-      if (isPushData(m)) {
-        this._onPushDataReceived(m as PushData);
-      } else if (isCallData(m)) {
-        this._onCallDataReceived(m as CallData);
+      if (isPushMessage(m)) {
+        this._onDidReceivePushMessage(m as PushMessage);
+      } else if (isCallMessage(m)) {
+        this._onDidReceiveCallMessage(m as CallMessage);
       } else {
         console.warn("Unknown message");
       }
@@ -73,21 +77,21 @@ export class ItemWizardPanel {
     startQtcliServer(extensionUri); 
 
     ItemWizardPanel.instance._panel.reveal(PanelColumn);
-    ItemWizardPanel.instance._push(PushId.PanelInit, createInitData());
+    ItemWizardPanel.instance._push(PushMessageId.PanelInit, createInitData());
   }
 
-  private async _push(id: PushId, data: unknown) {
-    const p: PushData = { id, data };
+  private async _push(id: PushMessageId, data: unknown) {
+    const p: PushMessage = { id, data };
     return this._panel.webview.postMessage(p);
   }
 
-  private async _reply(id: CallId, tag: string, data: unknown) {
-    const r: Reply = { id, tag, data };
-    return this._panel.webview.postMessage(r);
+  private async _reply(id: CallMessageId, tag: string, data: unknown) {
+    const c: CallMessage = { id, tag, data };
+    return this._panel.webview.postMessage(c);
   }
 
-  private async _onPushDataReceived(p: PushData) {
-    if (p.id === PushId.ViewClosed) {
+  private async _onDidReceivePushMessage(p: PushMessage) {
+    if (p.id === PushMessageId.ViewClosed) {
       this.dispose();
       return;
     }
@@ -121,8 +125,8 @@ export class ItemWizardPanel {
     // }
   }
 
-  private async _onCallDataReceived(r: CallData) {
-    if (r.id === CallId.ViewSelectWorkingDir) {
+  private async _onDidReceiveCallMessage(r: CallMessage) {
+    if (r.id === CallMessageId.ViewSelectWorkingDir) {
       const dir = r.data?.toString() ?? getDefaultProjectDirSafe();
       const options: vscode.OpenDialogOptions = {
         canSelectMany: false,

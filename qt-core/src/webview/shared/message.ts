@@ -39,36 +39,33 @@
 //   data?: T,
 // }
 
-export enum PushId {
+export enum PushMessageId {
   PanelInit,
   ViewClosed,
 }
 
-export interface PushData<T = unknown> {
-  id: PushId;
+export interface PushMessage<T = unknown> {
+  id: PushMessageId;
   data?: T;
 }
 
-export enum CallId {
+export enum CallMessageId {
   ViewSelectWorkingDir,
   // CheckDirectoryExists,
 }
 
-export interface CallData<T = unknown> {
-  id: CallId;
+export interface CallMessage<T = unknown> {
+  id: CallMessageId;
   tag: string;
   data?: T;
 }
 
-export type Reply = CallData;
-export type Request = CallData;
-
-export function isPushData(x: unknown): x is PushData {
+export function isPushMessage(x: unknown): x is PushMessage {
   return typeof x === 'object' && x !== null &&
-         'id' in x && (x as PushData).id in PushId && !('tag' in x);
+         'id' in x && (x as PushMessage).id in PushMessageId && !('tag' in x);
 }
 
-export function isCallData(x: unknown): x is CallData {
+export function isCallMessage(x: unknown): x is CallMessage {
   return typeof x === 'object' && x !== null &&
-         'id' in x && (x as CallData).id in CallId && 'tag' in x;
+         'id' in x && (x as CallMessage).id in CallMessageId && 'tag' in x;
 }

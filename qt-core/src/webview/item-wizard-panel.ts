@@ -2,20 +2,20 @@
 // SPDX-License-Identifier: LicenseRef-Qt-Commercial OR LGPL-3.0-only
 
 import _ from "lodash";
-import * as fs from 'fs';
-import * as path from 'path';
+// import * as fs from 'fs';
+// import * as path from 'path';
 import * as vscode from "vscode";
 
 import { QtcliRunner } from '@/qtcli/runner';
-import { openUri, openFilesUnder, QtcliAction } from "@/qtcli/common";
+import { QtcliAction } from "@/qtcli/common";
 import {
   findQtcliExePath,
   findWorkingDir,
   getDefaultProjectDirSafe,
-  setDefaultProjectDir
+  // setDefaultProjectDir
 } from '@/qtcli/commands';
 import { getUri, getNonce } from "./utils";
-import { Message, MessageId } from "./shared/message";
+import { PushId, Transmission, Push, isPush, isRequest, Request, RequestId, Reply } from "./shared/message";
 
 let qtcliRunner: QtcliRunner | undefined = undefined;
 
@@ -33,14 +33,20 @@ export class ItemWizardPanel {
   public static instance: ItemWizardPanel | undefined;
   private readonly _panel: vscode.WebviewPanel;
   private readonly _disposables: vscode.Disposable[] = [];
-  private _saveWorkDir = true;
+  // private _saveWorkDir = true;
 
   private constructor(panel: vscode.WebviewPanel, extensionUri: vscode.Uri) {
     panel.onDidDispose(() => { this.dispose() }, null, this._disposables);
     panel.webview.html = createWebviewContent(panel.webview, extensionUri);
-    panel.webview.onDidReceiveMessage(
-      this._onMessageFromWebview.bind(this), null, this._disposables
-    );
+    panel.webview.onDidReceiveMessage((tr: Transmission) => {
+      if (isPush(tr)) {
+        this._onPushReceived(tr as Push);
+      } else if (isRequest(tr)) {
+        this._onRequestReceived(tr as Request);
+      } else {
+        console.warn("Unknown transmission");
+      }
+    });
 
     this._panel = panel;
   }
@@ -67,63 +73,63 @@ export class ItemWizardPanel {
     startQtcliServer(extensionUri); 
 
     ItemWizardPanel.instance._panel.reveal(PanelColumn);
-    ItemWizardPanel.instance._notify(MessageId.Initialize, createInitData());
+    ItemWizardPanel.instance._push(PushId.PanelInit, createInitData());
   }
 
-  private async _notify(messageId: MessageId, payload: unknown) {
-    return this._panel.webview.postMessage({ messageId, payload });
+  private async _push(id: PushId, data: unknown) {
+    return this._panel.webview.postMessage({ id, data } as Push);
   }
 
-  private async _reply(requestId: string, messageId: MessageId, payload: unknown) {
-    return this._panel.webview.postMessage({ requestId, messageId, payload });
+  private async _reply(id: RequestId, uniqueId: string, data: unknown) {
+    return this._panel.webview.postMessage({ id, uniqueId, data } as Reply);
   }
 
-  private async _onMessageFromWebview(msg: Message) {
-    if (msg.requestId) {
-      this._onRequest(msg.requestId, msg.messageId, msg.payload)
-    } else {
-      this._onNotification(msg.messageId, msg.payload)
-    }
-  }
+  // private async _onMessageReceived(msg: Message) {
+  //   if (msg.requestId) {
+  //     this._onRequest(msg.requestId, msg.messageId, msg.payload)
+  //   } else {
+  //     this._onNotification(msg.messageId, msg.payload)
+  //   }
+  // }
 
-  private async _onNotification(messageId: MessageId, payload: unknown) {
-    if (messageId === MessageId.WizardClosed) {
+  private async _onPushReceived(p: Push) {
+    if (p.id === PushId.ViewClosed) {
       this.dispose();
       return;
     }
 
-    if (messageId === MessageId.ItemCreated) {
-      const type = _.get(payload, "type", "") as string;
-      const files = _.get(payload, "files", []) as string[];
-      const filesDir = _.get(payload, "filesDir", "") as string;
+    // if (messageId === MessageId.ItemCreated) {
+    //   const type = _.get(payload, "type", "") as string;
+    //   const files = _.get(payload, "files", []) as string[];
+    //   const filesDir = _.get(payload, "filesDir", "") as string;
 
-      if (type.length !== 0 && filesDir.length !== 0) {
-        if (type === "project") {
-          if (this._saveWorkDir) {
-            let dir = _.get(payload, "workingDir", "") as string;
-            if (dir.length !== 0) {
-              void setDefaultProjectDir(path.normalize(dir));
-            }
-          }
-          void openUri(vscode.Uri.file(path.normalize(filesDir)));
-        } else {
-          void openFilesUnder(path.normalize(filesDir), files);
-        }
-      }
+    //   if (type.length !== 0 && filesDir.length !== 0) {
+    //     if (type === "project") {
+    //       if (this._saveWorkDir) {
+    //         let dir = _.get(payload, "workingDir", "") as string;
+    //         if (dir.length !== 0) {
+    //           void setDefaultProjectDir(path.normalize(dir));
+    //         }
+    //       }
+    //       void openUri(vscode.Uri.file(path.normalize(filesDir)));
+    //     } else {
+    //       void openFilesUnder(path.normalize(filesDir), files);
+    //     }
+    //   }
 
-      this.dispose();
-      return;
-    }
+    //   this.dispose();
+    //   return;
+    // }
 
-    if (messageId === MessageId.SaveWorkingDirChanged) {
-      this._saveWorkDir = _.isEqual(payload, true);
-      return;
-    }
+    // if (messageId === MessageId.SaveWorkingDirChanged) {
+    //   this._saveWorkDir = _.isEqual(payload, true);
+    //   return;
+    // }
   }
 
-  private async _onRequest(requestId: string, messageId: MessageId, payload: unknown) {
-    if (messageId === MessageId.RequestSelectFolder) {
-      const dir = payload?.toString() ?? getDefaultProjectDirSafe();
+  private async _onRequestReceived(r: Request) {
+    if (r.id === RequestId.ViewSelectWorkingDir) {
+      const dir = r.data?.toString() ?? getDefaultProjectDirSafe();
       const options: vscode.OpenDialogOptions = {
         canSelectMany: false,
         canSelectFolders: true,
@@ -135,16 +141,36 @@ export class ItemWizardPanel {
       const folderUri = await vscode.window.showOpenDialog(options);
       if (folderUri && folderUri.length > 0) {
         const folder = folderUri[0]?.fsPath ?? '';
-        void this._reply(requestId, messageId, folder);
+        void this._reply(r.id, r.uniqueId, folder);
       }
       return;
     }
-
-    if (messageId === MessageId.RequestCheckDirectoryExists) {
-      const exists = fs.existsSync(_.toString(payload))
-      void this._reply(requestId, messageId, exists);
-    }
   }
+
+  // private async _onRequest(requestId: string, messageId: MessageId, payload: unknown) {
+  //   if (messageId === MessageId.RequestSelectFolder) {
+  //     const dir = payload?.toString() ?? getDefaultProjectDirSafe();
+  //     const options: vscode.OpenDialogOptions = {
+  //       canSelectMany: false,
+  //       canSelectFolders: true,
+  //       canSelectFiles: false,
+  //       openLabel: 'Select directory',
+  //       defaultUri: vscode.Uri.file(dir)
+  //     };
+
+  //     const folderUri = await vscode.window.showOpenDialog(options);
+  //     if (folderUri && folderUri.length > 0) {
+  //       const folder = folderUri[0]?.fsPath ?? '';
+  //       void this._reply(RequestId.RequestSelectFolder, requestId, folder);
+  //     }
+  //     return;
+  //   }
+
+  //   if (messageId === MessageId.RequestCheckDirectoryExists) {
+  //     const exists = fs.existsSync(_.toString(payload))
+  //     void this._reply(RequestId.RequestCheckDirectoryExists, requestId, exists);
+  //   }
+  // }
 }
 
 // helpers

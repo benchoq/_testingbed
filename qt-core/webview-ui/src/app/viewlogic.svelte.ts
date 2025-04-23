@@ -3,19 +3,19 @@
 
 import _ from "lodash";
 
-import { MessageId } from "@shared/message";
+import { PushId, RequestId, type Push } from "@shared/message";
 import { qtcliApi } from "@/logic/qtcliApi";
 import { vscodeApi } from "@/logic/vscodeApi";
 import { type Preset } from './types.svelte';
 import { configs, inputValidationResult, presets, loading } from './states.svelte';
 
-vscodeApi.onNotification((id: MessageId, payload: unknown) => {
-  if (id === MessageId.Initialize) {
-    if (payload) {
-      configs.type = "project";
-      configs.name = _.get(payload, "name", configs.name) as string;
-      configs.workingDir = _.get(payload, "workingDir", configs.workingDir) as string;
-      configs.saveWorkingDir = _.get(payload, "saveWorkingDir", configs.saveWorkingDir) as boolean;
+vscodeApi.onPushReceived((p: Push) => {
+  if (p.id === PushId.PanelInit) {
+    if (p.data) {
+//       configs.type = "project";
+//       configs.name = _.get(payload, "name", configs.name) as string;
+//       configs.workingDir = _.get(payload, "workingDir", configs.workingDir) as string;
+//       configs.saveWorkingDir = _.get(payload, "saveWorkingDir", configs.saveWorkingDir) as boolean;
     }
 
     loadPresets();
@@ -23,18 +23,18 @@ vscodeApi.onNotification((id: MessageId, payload: unknown) => {
 })
 
 export const uploadSaveWorkDir = (checked: any) => {
-  vscodeApi.request(MessageId.SaveWorkingDirChanged, checked);
+  // vscodeApi.request(MessageId.SaveWorkingDirChanged, checked);
 }
 
 export const notifyClosed = () => {
-  qtcliApi.delete("/server");
-  vscodeApi.request(MessageId.WizardClosed);
+  // qtcliApi.delete("/server");
+  vscodeApi.push(PushId.ViewClosed);
 }
 
 export const changeWorkingDir = () => {
   vscodeApi
-    .request(MessageId.RequestSelectFolder, configs.workingDir)
-    .then((payload) => { configs.workingDir = payload as string; })
+    .request(RequestId.ViewSelectWorkingDir, configs.workingDir)
+    .then((data) => { configs.workingDir = data as string; })
     .catch((e) => { console.log("catch,", e) })
 };
 
@@ -78,19 +78,19 @@ export const loadPresets = () => {
 };
 
 export const createItemFromSelectedPreset = async () => {
-  if (!presets.selected) {
-    return;
-  }
+  // if (!presets.selected) {
+  //   return;
+  // }
 
-  const data = { 
-    name: configs.name, 
-    workingDir: configs.workingDir, 
-    presetId: presets.selected?.id
-  }
+  // const data = { 
+  //   name: configs.name, 
+  //   workingDir: configs.workingDir, 
+  //   presetId: presets.selected?.id
+  // }
 
-  qtcliApi.post("/items", data)
-    .then((res) => { vscodeApi.request(MessageId.ItemCreated, res.data) })
-    .catch((e) => { console.log(e); });
+  // qtcliApi.post("/items", data)
+  //   .then((res) => { vscodeApi.request(MessageId.ItemCreated, res.data) })
+  //   .catch((e) => { console.log(e); });
 };
 
 export const setName = (name: string) => {
@@ -104,21 +104,21 @@ export const setWorkingDir = (dir: string) => {
 }
 
 const validateNameAndDir = async () => {
-  if (configs.name.length === 0) {
-    inputValidationResult.nameError = "Name is empty"
-  } else {
-    inputValidationResult.nameError = ""
-  }
+  // if (configs.name.length === 0) {
+  //   inputValidationResult.nameError = "Name is empty"
+  // } else {
+  //   inputValidationResult.nameError = ""
+  // }
 
-  if (configs.workingDir.length === 0) {
-    inputValidationResult.workingDirError = "Working directory is empty"
-  } else {
-    const res = await vscodeApi.request(MessageId.RequestCheckDirectoryExists, configs.workingDir)
-    if (Boolean(res) !== true) {
-      console.log("dir check =", res)
-      inputValidationResult.workingDirError = "Dir doesn't exist";
-    } else {
-      inputValidationResult.workingDirError = ""
-    }
-  }
+  // if (configs.workingDir.length === 0) {
+  //   inputValidationResult.workingDirError = "Working directory is empty"
+  // } else {
+  //   const res = await vscodeApi.request(MessageId.RequestCheckDirectoryExists, configs.workingDir)
+  //   if (Boolean(res) !== true) {
+  //     console.log("dir check =", res)
+  //     inputValidationResult.workingDirError = "Dir doesn't exist";
+  //   } else {
+  //     inputValidationResult.workingDirError = ""
+  //   }
+  // }
 }

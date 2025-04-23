@@ -56,7 +56,7 @@ export class QtcliRestClient {
         throw new Error("API request is invalid");
       }
 
-      const res = await this._api({ 
+      const res = await this._api({
         method: req.method,
         url: req.endpoint,
         params: req.params,

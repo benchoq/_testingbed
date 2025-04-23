@@ -15,7 +15,7 @@ import {
   // setDefaultProjectDir
 } from '@/qtcli/commands';
 import { getUri, getNonce } from "./utils";
-import { PushId, Transmission, Push, isPush, isRequest, Request, RequestId, Reply } from "./shared/message";
+import { PushId, PushData, isPushData, isCallData, CallData, CallId, Reply, Message, MessageCategory } from "./shared/message";
 
 let qtcliRunner: QtcliRunner | undefined = undefined;
 
@@ -38,13 +38,13 @@ export class ItemWizardPanel {
   private constructor(panel: vscode.WebviewPanel, extensionUri: vscode.Uri) {
     panel.onDidDispose(() => { this.dispose() }, null, this._disposables);
     panel.webview.html = createWebviewContent(panel.webview, extensionUri);
-    panel.webview.onDidReceiveMessage((tr: Transmission) => {
-      if (isPush(tr)) {
-        this._onPushReceived(tr as Push);
-      } else if (isRequest(tr)) {
-        this._onRequestReceived(tr as Request);
+    panel.webview.onDidReceiveMessage((m: any) => {
+      if (isPushData(m)) {
+        this._onPushDataReceived(m as PushData);
+      } else if (isCallData(m)) {
+        this._onCallDataReceived(m as CallData);
       } else {
-        console.warn("Unknown transmission");
+        console.warn("Unknown message");
       }
     });
 
@@ -77,16 +77,16 @@ export class ItemWizardPanel {
   }
 
   private async _push(id: PushId, data: unknown) {
-    const p: Push = { id, data };
+    const p: PushData = { id, data };
     return this._panel.webview.postMessage(p);
   }
 
-  private async _reply(id: RequestId, tag: string, data: unknown) {
+  private async _reply(id: CallId, tag: string, data: unknown) {
     const r: Reply = { id, tag, data };
     return this._panel.webview.postMessage(r);
   }
 
-  private async _onPushReceived(p: Push) {
+  private async _onPushDataReceived(p: PushData) {
     if (p.id === PushId.ViewClosed) {
       this.dispose();
       return;
@@ -121,8 +121,8 @@ export class ItemWizardPanel {
     // }
   }
 
-  private async _onRequestReceived(r: Request) {
-    if (r.id === RequestId.ViewSelectWorkingDir) {
+  private async _onCallDataReceived(r: CallData) {
+    if (r.id === CallId.ViewSelectWorkingDir) {
       const dir = r.data?.toString() ?? getDefaultProjectDirSafe();
       const options: vscode.OpenDialogOptions = {
         canSelectMany: false,

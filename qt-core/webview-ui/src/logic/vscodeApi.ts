@@ -1,16 +1,16 @@
 // Copyright (C) 2025 The Qt Company Ltd.
 // SPDX-License-Identifier: LicenseRef-Qt-Commercial OR LGPL-3.0-only 
 
-import { PushId, type Push, RequestId, type Request, 
-  type Transmission, type Reply,
-  isPush, isRequest
+import { PushId, type PushData, CallId, type CallData, 
+  type Reply,
+  isPushData, isCallData
 } from '@shared/message';
 import type { WebviewApi } from "vscode-webview";
 
 class VSCodeApiWrapper {
   private readonly _api: WebviewApi<unknown> | undefined;
   private _pendingRequests = new Map<string, (value: any) => void>();
-  private _onPushReceived = (p: Push) => {};
+  private _onPushReceived = (p: PushData) => {};
 
   constructor() {
     if (typeof acquireVsCodeApi === "function") {
@@ -23,19 +23,19 @@ class VSCodeApiWrapper {
         return;
       }
 
-      const transmission = e.data;
+      const data = e.data;
 
-      if (isPush(transmission)) {
-        this._onPushReceived(transmission as Push);
-      } else if (isRequest(transmission)) {
-        this._onReplyReceived(transmission as Reply);
+      if (isPushData(data)) {
+        this._onPushReceived(data as PushData);
+      } else if (isCallData(data)) {
+        this._onCallDataReceived(data as Reply);
       } else {
         console.warn("Unknown transmission");
       }
     });
   }
 
-  public onPushReceived(handler: (p: Push) => void) {
+  public onPushReceived(handler: (p: PushData) => void) {
     this._onPushReceived = handler
   }
 
@@ -49,12 +49,12 @@ class VSCodeApiWrapper {
       return;
     }
     
-    const p: Push = { id, data };
+    const p: PushData = { id, data };
     this._api.postMessage(p);
   }
 
   public async request<T = unknown>(
-    id: RequestId, data?: T, timeout = 10000): Promise<T> {
+    id: CallId, data?: T, timeout = 10000): Promise<T> {
     if (!this._api) {
       return Promise.reject("VSCode API not available");
     }
@@ -62,7 +62,7 @@ class VSCodeApiWrapper {
     const tag = this._generateRequestTag();
 
     return new Promise<T>((resolve, reject) => {
-      const r: Request = { id, tag, data };
+      const r: CallData = { id, tag, data };
       this._pendingRequests.set(tag, resolve);
       this._api!.postMessage(r);
 
@@ -77,7 +77,7 @@ class VSCodeApiWrapper {
     });
   }
 
-  private _onReplyReceived(r: Reply) {
+  private _onCallDataReceived(r: Reply) {
     if (!r.tag || !this._pendingRequests.has(r.tag)) {
       return;
     }

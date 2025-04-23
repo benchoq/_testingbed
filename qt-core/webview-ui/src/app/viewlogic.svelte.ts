@@ -3,13 +3,13 @@
 
 import _ from "lodash";
 
-import { PushId, RequestId, type Push } from "@shared/message";
+import { PushId, CallId, type PushData } from "@shared/message";
 import { qtcliApi } from "@/logic/qtcliApi";
 import { vscodeApi } from "@/logic/vscodeApi";
 import { type Preset } from './types.svelte';
 import { configs, inputValidationResult, presets, loading } from './states.svelte';
 
-vscodeApi.onPushReceived((p: Push) => {
+vscodeApi.onPushReceived((p: PushData) => {
   if (p.id === PushId.PanelInit) {
     if (p.data) {
 //       configs.type = "project";
@@ -33,7 +33,7 @@ export const notifyClosed = () => {
 
 export const changeWorkingDir = () => {
   vscodeApi
-    .request(RequestId.ViewSelectWorkingDir, configs.workingDir)
+    .request(CallId.ViewSelectWorkingDir, configs.workingDir)
     .then((data) => { configs.workingDir = data as string; })
     .catch((e) => { console.log("catch,", e) })
 };

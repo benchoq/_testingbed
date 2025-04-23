@@ -49,7 +49,8 @@ class VSCodeApiWrapper {
       return;
     }
     
-    this._api.postMessage({ id, data } as Push);
+    const p: Push = { id, data };
+    this._api.postMessage(p);
   }
 
   public async request<T = unknown>(
@@ -58,16 +59,17 @@ class VSCodeApiWrapper {
       return Promise.reject("VSCode API not available");
     }
 
-    const uniqueId = this._generateRequestId();
+    const tag = this._generateRequestTag();
 
     return new Promise<T>((resolve, reject) => {
-      this._pendingRequests.set(uniqueId, resolve);
-      this._api!.postMessage({ id, uniqueId, data } as Request);
+      const r: Request = { id, tag, data };
+      this._pendingRequests.set(tag, resolve);
+      this._api!.postMessage(r);
 
       if (timeout > 0) {
         setTimeout(() => {
-          if (this._pendingRequests.has(uniqueId)) {
-            this._pendingRequests.delete(uniqueId);
+          if (this._pendingRequests.has(tag)) {
+            this._pendingRequests.delete(tag);
             reject(new Error(`Request timeout for ${id}`));
           }
         }, timeout);
@@ -76,12 +78,12 @@ class VSCodeApiWrapper {
   }
 
   private _onReplyReceived(r: Reply) {
-    if (!r.uniqueId || !this._pendingRequests.has(r.uniqueId)) {
+    if (!r.tag || !this._pendingRequests.has(r.tag)) {
       return;
     }
 
-    const resolve = this._pendingRequests.get(r.uniqueId);
-    this._pendingRequests.delete(r.uniqueId);
+    const resolve = this._pendingRequests.get(r.tag);
+    this._pendingRequests.delete(r.tag);
 
     if (resolve) {
       resolve(r.data);
@@ -90,7 +92,7 @@ class VSCodeApiWrapper {
     console.log(r);
   }
   
-  private _generateRequestId(): string {
+  private _generateRequestTag(): string {
     return `req_${Date.now()}_${Math.random().toString(36).substring(2, 9)}`;
   }
 }

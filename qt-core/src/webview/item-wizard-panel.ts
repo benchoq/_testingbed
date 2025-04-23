@@ -77,20 +77,14 @@ export class ItemWizardPanel {
   }
 
   private async _push(id: PushId, data: unknown) {
-    return this._panel.webview.postMessage({ id, data } as Push);
+    const p: Push = { id, data };
+    return this._panel.webview.postMessage(p);
   }
 
-  private async _reply(id: RequestId, uniqueId: string, data: unknown) {
-    return this._panel.webview.postMessage({ id, uniqueId, data } as Reply);
+  private async _reply(id: RequestId, tag: string, data: unknown) {
+    const r: Reply = { id, tag, data };
+    return this._panel.webview.postMessage(r);
   }
-
-  // private async _onMessageReceived(msg: Message) {
-  //   if (msg.requestId) {
-  //     this._onRequest(msg.requestId, msg.messageId, msg.payload)
-  //   } else {
-  //     this._onNotification(msg.messageId, msg.payload)
-  //   }
-  // }
 
   private async _onPushReceived(p: Push) {
     if (p.id === PushId.ViewClosed) {
@@ -141,7 +135,7 @@ export class ItemWizardPanel {
       const folderUri = await vscode.window.showOpenDialog(options);
       if (folderUri && folderUri.length > 0) {
         const folder = folderUri[0]?.fsPath ?? '';
-        void this._reply(r.id, r.uniqueId, folder);
+        void this._reply(r.id, r.tag, folder);
       }
       return;
     }

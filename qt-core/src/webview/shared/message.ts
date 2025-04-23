@@ -37,7 +37,7 @@ export enum RequestId {
 
 export interface Request<T = unknown> {
   id: RequestId;
-  uniqueId: string;
+  tag: string;
   data?: T;
 }
 

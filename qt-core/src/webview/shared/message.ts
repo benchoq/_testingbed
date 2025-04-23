@@ -51,6 +51,7 @@ export interface PushMessage<T = unknown> {
 
 export enum CallMessageId {
   ViewSelectWorkingDir,
+  ViewCallQtcli,
   // CheckDirectoryExists,
 }
 

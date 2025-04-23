@@ -8,6 +8,7 @@ import * as vscode from "vscode";
 
 import { QtcliRunner } from '@/qtcli/runner';
 import { QtcliAction } from "@/qtcli/common";
+import { QtcliRestClient, QtcliRestRequest } from "@/qtcli/rest";
 import {
   findQtcliExePath,
   findWorkingDir,
@@ -21,6 +22,7 @@ import {
   CallMessage, CallMessageId, 
 } from "./shared/message";
 
+const qtcliApi = new QtcliRestClient();
 let qtcliRunner: QtcliRunner | undefined = undefined;
 
 // definitions for webview-panel
@@ -92,6 +94,7 @@ export class ItemWizardPanel {
 
   private async _onDidReceivePushMessage(p: PushMessage) {
     if (p.id === PushMessageId.ViewClosed) {
+      qtcliApi.delete('/server');
       this.dispose();
       return;
     }
@@ -141,7 +144,22 @@ export class ItemWizardPanel {
         const folder = folderUri[0]?.fsPath ?? '';
         void this._reply(r.id, r.tag, folder);
       }
+
+      // TODO: send a proper reply when cancelled.
       return;
+    }
+
+    if (r.id === CallMessageId.ViewCallQtcli) {
+      const method = _.get(r.data, "method", '') as string;
+      const endPoint = _.get(r.data, "endPoint", '') as string;
+      const params = _.get(r.data, "params");
+      const data = _.get(r.data, "data");
+
+      qtcliApi
+        .call(new QtcliRestRequest(method, endPoint, params, data))
+        .then((res: any) => { this._reply(r.id, r.tag, res); });
+
+      // TODO: send error status thru reply.
     }
   }
 

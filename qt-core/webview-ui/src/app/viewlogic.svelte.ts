@@ -4,7 +4,6 @@
 import _ from "lodash";
 
 import { PushMessageId, CallMessageId, type PushMessage } from "@shared/message";
-import { qtcliApi } from "@/logic/qtcliApi";
 import { vscodeApi } from "@/logic/vscodeApi";
 import { type Preset } from './types.svelte';
 import { configs, inputValidationResult, presets, loading } from './states.svelte';
@@ -27,7 +26,6 @@ export const uploadSaveWorkDir = (checked: any) => {
 }
 
 export const notifyClosed = () => {
-  // qtcliApi.delete("/server");
   vscodeApi.push(PushMessageId.ViewClosed);
 }
 
@@ -48,8 +46,12 @@ export const setSelectedPreset = (preset: Preset, index: number) => {
   presets.selectedIndex = index;
 
   if (preset.id.length > 0) {
-    qtcliApi.get(`/presets/${preset.id}/prompt`)
-      .then((res) => { presets.selectedPrompt = res.data })
+    const method = "get"
+    const endPoint = `/presets/${preset.id}/prompt`;
+
+    vscodeApi
+      .request(CallMessageId.ViewCallQtcli, { method, endPoint })
+      .then((res: any) => { presets.selectedPrompt = res.data })
       .catch((e) => { loading.setError(e) })
       .finally(() => { loading.clear() });
   }
@@ -57,24 +59,36 @@ export const setSelectedPreset = (preset: Preset, index: number) => {
 
 export const loadPresets = () => {
   loading.start()
+
+  const method = "get"
   const endPoint = "/presets";
   const params = { type: configs.type };
 
-  qtcliApi
-    .get(endPoint, params)
-    .catch((e) => { loading.setError(e) })
-    .finally(() => { loading.clear() })
+  vscodeApi
+    .request(CallMessageId.ViewCallQtcli, { method, endPoint, params })
     .then((res: any) => {
-      if (res.request.endpoint.startsWith("/presets/prompt")) {
-        presets.selectedPrompt = res.data;
-      } else if (res.request.endpoint === "/presets") {
-        presets.all = res.data;
+      presets.all = res.data;
 
-        if (res.data.length !== 0) {
-          setSelectedPreset(res.data[0], 0)
-        }
+      if (res.data.length !== 0) {
+        setSelectedPreset(res.data[0], 0)
       }
-    });
+    })
+
+  // qtcliApi
+  //   .get(endPoint, params)
+  //   .catch((e) => { loading.setError(e) })
+  //   .finally(() => { loading.clear() })
+  //   .then((res: any) => {
+  //     if (res.request.endpoint.startsWith("/presets/prompt")) {
+  //       presets.selectedPrompt = res.data;
+  //     } else if (res.request.endpoint === "/presets") {
+  //       presets.all = res.data;
+
+  //       if (res.data.length !== 0) {
+  //         setSelectedPreset(res.data[0], 0)
+  //       }
+  //     }
+  //   });
 };
 
 export const createItemFromSelectedPreset = async () => {

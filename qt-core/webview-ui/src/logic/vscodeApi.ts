@@ -29,7 +29,7 @@ class VSCodeApiWrapper {
       } else if (isCallMessage(data)) {
         this._onDidReceiveCallMessage(data as CallMessage);
       } else {
-        console.warn("Unknown transmission");
+        console.warn("Unknown message");
       }
     });
   }
@@ -69,7 +69,7 @@ class VSCodeApiWrapper {
         setTimeout(() => {
           if (this._pendingCalls.has(tag)) {
             this._pendingCalls.delete(tag);
-            reject(new Error(`Call requeste timed out: ${id}`));
+            reject(new Error(`Call request timed out: ${id}`));
           }
         }, timeout);
       }

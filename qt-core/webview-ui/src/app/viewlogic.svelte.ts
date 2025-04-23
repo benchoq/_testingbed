@@ -6,24 +6,20 @@ import _ from "lodash";
 import { PushMessageId, CallMessageId, type PushMessage } from "@shared/message";
 import { vscodeApi } from "@/logic/vscodeApi";
 import { type Preset } from './types.svelte';
-import { configs, inputValidationResult, presets, loading } from './states.svelte';
+import { configs, presets, loading } from './states.svelte';
 
 vscodeApi.onDidReceivePushMessage((p: PushMessage) => {
   if (p.id === PushMessageId.PanelInit) {
     if (p.data) {
-//       configs.type = "project";
-//       configs.name = _.get(payload, "name", configs.name) as string;
-//       configs.workingDir = _.get(payload, "workingDir", configs.workingDir) as string;
-//       configs.saveWorkingDir = _.get(payload, "saveWorkingDir", configs.saveWorkingDir) as boolean;
+      configs.type = "project";
+      configs.name = _.get(p.data, "name", configs.name) as string;
+      configs.workingDir = _.get(p.data, "workingDir", configs.workingDir) as string;
+      configs.saveWorkingDir = _.get(p.data, "saveWorkingDir", configs.saveWorkingDir) as boolean;
     }
 
     loadPresets();
   }
 })
-
-export const uploadSaveWorkDir = (checked: any) => {
-  // vscodeApi.request(MessageId.SaveWorkingDirChanged, checked);
-}
 
 export const notifyClosed = () => {
   vscodeApi.push(PushMessageId.ViewClosed);
@@ -92,19 +88,23 @@ export const loadPresets = () => {
 };
 
 export const createItemFromSelectedPreset = async () => {
-  // if (!presets.selected) {
-  //   return;
-  // }
+  if (!presets.selected) {
+    return;
+  }
 
-  // const data = { 
-  //   name: configs.name, 
-  //   workingDir: configs.workingDir, 
-  //   presetId: presets.selected?.id
-  // }
+  const data = {
+    // must-have
+    name: configs.name, 
+    workingDir: configs.workingDir, 
+    presetId: presets.selected?.id,
+    
+    // options
+    saveWorkingDir: configs.saveWorkingDir,
+  }
 
-  // qtcliApi.post("/items", data)
-  //   .then((res) => { vscodeApi.request(MessageId.ItemCreated, res.data) })
-  //   .catch((e) => { console.log(e); });
+  vscodeApi
+    .request(CallMessageId.ViewCreateItem, data)
+    .then((res) => { console.log("item created") })
 };
 
 export const setName = (name: string) => {

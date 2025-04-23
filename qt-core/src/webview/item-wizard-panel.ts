@@ -2,18 +2,18 @@
 // SPDX-License-Identifier: LicenseRef-Qt-Commercial OR LGPL-3.0-only
 
 import _ from "lodash";
-// import * as fs from 'fs';
-// import * as path from 'path';
+import * as fs from 'fs';
+import * as path from 'path';
 import * as vscode from "vscode";
 
 import { QtcliRunner } from '@/qtcli/runner';
-import { QtcliAction } from "@/qtcli/common";
+import { QtcliAction, openFilesUnder, openUri } from "@/qtcli/common";
 import { QtcliRestClient, QtcliRestRequest } from "@/qtcli/rest";
 import {
   findQtcliExePath,
   findWorkingDir,
   getDefaultProjectDirSafe,
-  // setDefaultProjectDir
+  setDefaultProjectDir
 } from '@/qtcli/commands';
 import { getUri, getNonce } from "./utils";
 import { 
@@ -39,7 +39,6 @@ export class ItemWizardPanel {
   public static instance: ItemWizardPanel | undefined;
   private readonly _panel: vscode.WebviewPanel;
   private readonly _disposables: vscode.Disposable[] = [];
-  // private _saveWorkDir = true;
 
   private constructor(panel: vscode.WebviewPanel, extensionUri: vscode.Uri) {
     panel.onDidDispose(() => { this.dispose() }, null, this._disposables);
@@ -58,6 +57,7 @@ export class ItemWizardPanel {
   }
 
   public dispose() {
+    qtcliApi.delete("/server");
     ItemWizardPanel.instance = undefined;
     this._panel.dispose();
 
@@ -94,38 +94,9 @@ export class ItemWizardPanel {
 
   private async _onDidReceivePushMessage(p: PushMessage) {
     if (p.id === PushMessageId.ViewClosed) {
-      qtcliApi.delete('/server');
       this.dispose();
       return;
     }
-
-    // if (messageId === MessageId.ItemCreated) {
-    //   const type = _.get(payload, "type", "") as string;
-    //   const files = _.get(payload, "files", []) as string[];
-    //   const filesDir = _.get(payload, "filesDir", "") as string;
-
-    //   if (type.length !== 0 && filesDir.length !== 0) {
-    //     if (type === "project") {
-    //       if (this._saveWorkDir) {
-    //         let dir = _.get(payload, "workingDir", "") as string;
-    //         if (dir.length !== 0) {
-    //           void setDefaultProjectDir(path.normalize(dir));
-    //         }
-    //       }
-    //       void openUri(vscode.Uri.file(path.normalize(filesDir)));
-    //     } else {
-    //       void openFilesUnder(path.normalize(filesDir), files);
-    //     }
-    //   }
-
-    //   this.dispose();
-    //   return;
-    // }
-
-    // if (messageId === MessageId.SaveWorkingDirChanged) {
-    //   this._saveWorkDir = _.isEqual(payload, true);
-    //   return;
-    // }
   }
 
   private async _onDidReceiveCallMessage(r: CallMessage) {
@@ -160,33 +131,26 @@ export class ItemWizardPanel {
         .then((res: any) => { this._reply(r.id, r.tag, res); });
 
       // TODO: send error status thru reply.
+      return;
+    }
+
+    if (r.id === CallMessageId.ViewCreateItem) {
+      qtcliApi
+        .call(new QtcliRestRequest('post', '/items', undefined, r.data))
+        .then((res: any) => {
+          openItemsFromQtcliResponseData(res.data);
+          this._reply(r.id, r.tag, res);
+          this.dispose();
+        });
+
+      return;
+    }
+
+    if (r.id === CallMessageId.ViewCheckDirectoryExists) {
+      const exists = fs.existsSync(_.toString(r.data))
+      void this._reply(r.id, r.tag, exists)
     }
   }
-
-  // private async _onRequest(requestId: string, messageId: MessageId, payload: unknown) {
-  //   if (messageId === MessageId.RequestSelectFolder) {
-  //     const dir = payload?.toString() ?? getDefaultProjectDirSafe();
-  //     const options: vscode.OpenDialogOptions = {
-  //       canSelectMany: false,
-  //       canSelectFolders: true,
-  //       canSelectFiles: false,
-  //       openLabel: 'Select directory',
-  //       defaultUri: vscode.Uri.file(dir)
-  //     };
-
-  //     const folderUri = await vscode.window.showOpenDialog(options);
-  //     if (folderUri && folderUri.length > 0) {
-  //       const folder = folderUri[0]?.fsPath ?? '';
-  //       void this._reply(RequestId.RequestSelectFolder, requestId, folder);
-  //     }
-  //     return;
-  //   }
-
-  //   if (messageId === MessageId.RequestCheckDirectoryExists) {
-  //     const exists = fs.existsSync(_.toString(payload))
-  //     void this._reply(RequestId.RequestCheckDirectoryExists, requestId, exists);
-  //   }
-  // }
 }
 
 // helpers
@@ -253,4 +217,27 @@ async function startQtcliServer(extensionUri: vscode.Uri) {
   } 
 
   console.log("cannot run qtcli")
+}
+
+function openItemsFromQtcliResponseData(data: any) {
+  const type = _.get(data, "type", "") as string;
+  const files = _.get(data, "files", []) as string[];
+  const filesDir = _.get(data, "filesDir", "") as string;
+
+  if (type.length === 0 || filesDir.length === 0) {
+    return;
+  }
+
+  if (type === "project") {
+    if (_.get(data, "saveWorkingDir", false) as boolean) {
+      let dir = _.get(data, "workingDir", "") as string;
+      if (dir.length !== 0) {
+        void setDefaultProjectDir(path.normalize(dir));
+      }
+    }
+    
+    void openUri(vscode.Uri.file(path.normalize(filesDir)));
+  } else {
+    void openFilesUnder(path.normalize(filesDir), files);
+  }
 }

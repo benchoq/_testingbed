@@ -20,9 +20,6 @@ SPDX-License-Identifier: LicenseRef-Qt-Commercial OR LGPL-3.0-only
     <Checkbox
       class="self-start qt-checkbox"
       bind:checked={configs.saveWorkingDir}
-      on:change={(e) => {
-        viewlogic.uploadSaveWorkDir((e.target as HTMLInputElement).checked);
-      }}
     >
       Use as a default project directory
     </Checkbox>

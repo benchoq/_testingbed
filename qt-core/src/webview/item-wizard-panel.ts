@@ -120,7 +120,7 @@ export class ItemWizardPanel {
       return;
     }
 
-    if (r.id === CallMessageId.ViewCallQtcli) {
+    if (r.id === CallMessageId.ViewCallQtcliApi) {
       const method = _.get(r.data, "method", '') as string;
       const endPoint = _.get(r.data, "endPoint", '') as string;
       const params = _.get(r.data, "params");

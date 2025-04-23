@@ -13,7 +13,7 @@ export interface PushMessage<T = unknown> {
 
 export enum CallMessageId {
   ViewSelectWorkingDir,
-  ViewCallQtcli,
+  ViewCallQtcliApi,
   ViewCreateItem,
   ViewCheckDirectoryExists,
 }

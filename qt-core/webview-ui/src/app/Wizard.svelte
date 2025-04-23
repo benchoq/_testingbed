@@ -28,14 +28,11 @@ SPDX-License-Identifier: LicenseRef-Qt-Commercial OR LGPL-3.0-only
 </script>
 
 <Modal
-  title="Create a new item"
-  open
-  size="md"
-  backdropClass="hidden"
-  color="none"
+  title="Create a new item" size="md" color="none" open
   class="qt-modal"
   classBody="md:p-4"
   classHeader="md:p-4"
+  backdropClass="hidden"
   style="height: 80vh;"
   on:close={viewlogic.notifyClosed}
 >

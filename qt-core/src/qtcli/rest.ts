@@ -47,10 +47,6 @@ export class QtcliRestClient {
   }
 
   public async call(req: QtcliRestRequest, attempt = 0): Promise<QtcliRestResponse> {
-    // if (import.meta.env.DEV) {
-    //   return await fakeResponse(req);
-    // }
-
     try {
       if (!req.method || !req.endpoint) {
         throw new Error("API request is invalid");

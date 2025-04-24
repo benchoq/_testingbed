@@ -4,27 +4,31 @@ SPDX-License-Identifier: LicenseRef-Qt-Commercial OR LGPL-3.0-only
 -->
 
 <script lang="ts">
-  import { Checkbox } from "flowbite-svelte";
+  import { Checkbox, Button } from "flowbite-svelte";
+  import { ArrowRightOutline } from 'flowbite-svelte-icons';
 
   import SectionLabel from "@/comps/SectionLabel.svelte";
   import NameInput from "./NameInput.svelte";
   import WorkingDirInput from "./WorkingDirInput.svelte";
   import PresetOptionsTable from "./PresetOptionsTable.svelte";
+
   import { presets, configs } from "./states.svelte";
   import { createPresetDisplayText } from "./viewlogic.svelte";
 </script>
 
 <div class={`w-full h-full grid
   grid-cols-[max-content_1fr]
-  grid-rows-[min-content_1fr_repeat(3,min-content)]
+  grid-rows-[repeat(2,min-content)_1fr_repeat(3,min-content)]
   gap-2`}
 >
+
+  <SectionLabel text="You're creating a new project" class="col-span-2" />
   <SectionLabel text="Preset" />
-  <div>{createPresetDisplayText(presets.selected)}</div>
+  <div>&quot;{createPresetDisplayText(presets.selected)}&quot;</div>
 
   <div></div>
-  <div class="w-1/2">
-    <PresetOptionsTable />
+  <div class="w-1/2 flex flex-col gap-2">
+    <PresetOptionsTable /> 
   </div>
 
   <SectionLabel text="Name" /><NameInput />

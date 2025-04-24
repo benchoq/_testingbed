@@ -2,7 +2,7 @@
 // SPDX-License-Identifier: LicenseRef-Qt-Commercial OR LGPL-3.0-only 
 
 import _ from "lodash";
-import { type PresetInfo, type PromptData } from "./types.svelte";
+import { type PresetInfo } from "./types.svelte";
 
 export const presets = $state<PresetInfo>({
   all: [],

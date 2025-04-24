@@ -6,8 +6,6 @@ SPDX-License-Identifier: LicenseRef-Qt-Commercial OR LGPL-3.0-only
 <script lang="ts">
   import { Button } from "flowbite-svelte";
   import { ArrowRightOutline } from "flowbite-svelte-icons";
-  import { configs } from "./states.svelte";
-  import * as viewlogic from "./viewlogic.svelte";
 
   let nameHasError = $state(false);
   let workingDirHasError = $state(false);
@@ -19,16 +17,6 @@ SPDX-License-Identifier: LicenseRef-Qt-Commercial OR LGPL-3.0-only
 </script>
 
 <div class="col-start-2 grid grid-cols-[1fr_min-content]">
-  <!-- {#if configs.type === "project"}
-     <Checkbox
-       class="self-start qt-checkbox"
-       bind:checked={configs.saveWorkingDir}
-     >
-       Use as a default project directory
-     </Checkbox>
-   {:else}
-     <div></div>
-   {/if} -->
   <div></div>
   <Button
     class="qt-button"

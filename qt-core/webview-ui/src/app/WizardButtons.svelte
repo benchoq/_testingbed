@@ -16,20 +16,15 @@ SPDX-License-Identifier: LicenseRef-Qt-Commercial OR LGPL-3.0-only
     onClicked,
   } = $props();
 
-  const findIcon = (role: string) => {
-    if (role === "back") return AngleLeftOutline;
-    if (role === "next") return AngleRightOutline;
-    if (role === "finish") return ArrowRightOutline;
-    return undefined;
-  }
+  const findIcon = (role: string) => ({
+    back: AngleLeftOutline,
+    next: AngleRightOutline,
+    finish: ArrowRightOutline
+  }[role] || undefined);
 
   const findText = (role: string) => {
-    if (role === "back") return "Back";
-    if (role === "next") return "Next";
-    if (role === "finish") return "Finish";
-    return "";
+    return role.charAt(0).toUpperCase() + role.slice(1);
   }
-
 </script>
 
 <div class="col-start-2 flex flex-row gap-2">

@@ -19,7 +19,7 @@ SPDX-License-Identifier: LicenseRef-Qt-Commercial OR LGPL-3.0-only
   ];
 
   let currentIndex = $state(0);
-  let currentPage = $derived(pages[currentIndex]) // TODO: validate index
+  let currentPage = $derived(pages[currentIndex]); // TODO: validate index
   let buttonRoles = $state([ "back", "next", "finish" ])
 
   const onButtonClicked = (role: string) => {

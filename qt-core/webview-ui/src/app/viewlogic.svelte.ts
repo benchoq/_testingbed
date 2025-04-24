@@ -6,7 +6,7 @@ import _ from "lodash";
 import { PushMessageId, CallMessageId, type PushMessage } from "@shared/message";
 import { vscodeApi } from "@/logic/vscodeApi";
 import { type Preset } from './types.svelte';
-import { configs, presets, loading } from './states.svelte';
+import { configs, presets, loading, inputValidationResult } from './states.svelte';
 
 vscodeApi.onDidReceivePushMessage((p: PushMessage) => {
   if (p.id === PushMessageId.PanelInit) {
@@ -100,21 +100,22 @@ export const createItemFromSelectedPreset = async () => {
 
 export const validateInputs = async () => {
   console.log(configs.name, configs.workingDir);
-  // if (configs.name.length === 0) {
-  //   inputValidationResult.nameError = "Name is empty"
-  // } else {
-  //   inputValidationResult.nameError = ""
-  // }
+  if (configs.name.length === 0) {
+    inputValidationResult.nameError = "Name is empty"
+  } else {
+    inputValidationResult.nameError = ""
+  }
 
-  // if (configs.workingDir.length === 0) {
-  //   inputValidationResult.workingDirError = "Working directory is empty"
-  // } else {
-  //   const res = await vscodeApi.request(MessageId.RequestCheckDirectoryExists, configs.workingDir)
-  //   if (Boolean(res) !== true) {
-  //     console.log("dir check =", res)
-  //     inputValidationResult.workingDirError = "Dir doesn't exist";
-  //   } else {
-  //     inputValidationResult.workingDirError = ""
-  //   }
-  // }
+  if (configs.workingDir.length === 0) {
+    inputValidationResult.workingDirError = "Working directory is empty"
+  } else {
+    vscodeApi.request(CallMessageId.ViewCheckDirectoryExists, configs.workingDir)
+      .then((res) => { 
+        if (Boolean(res)) {
+          inputValidationResult.workingDirError = ""
+        } else {
+          inputValidationResult.workingDirError = "Directory doesn't exist";
+        }
+      });
+  }
 }

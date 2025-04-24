@@ -11,6 +11,7 @@ SPDX-License-Identifier: LicenseRef-Qt-Commercial OR LGPL-3.0-only
   import WorkingDirInput from "./WorkingDirInput.svelte";
   import PresetOptionsTable from "./PresetOptionsTable.svelte";
   import { presets, configs } from "./states.svelte";
+  import { createPresetDisplayText } from "./viewlogic.svelte";
 </script>
 
 <div class={`w-full h-full grid
@@ -19,7 +20,7 @@ SPDX-License-Identifier: LicenseRef-Qt-Commercial OR LGPL-3.0-only
   gap-2`}
 >
   <SectionLabel text="Preset" />
-  <div>{presets.selected?.name}</div>
+  <div>{createPresetDisplayText(presets.selected)}</div>
 
   <div></div>
   <div class="w-1/2">

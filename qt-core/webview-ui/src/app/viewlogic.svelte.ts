@@ -70,6 +70,14 @@ export const loadPresets = () => {
     })
 };
 
+export function createPresetDisplayText(preset: any) {
+  if (preset.name.startsWith("@")) {
+    return preset.meta.title;
+  } else {
+    return preset.name;
+  }
+}
+
 export const createItemFromSelectedPreset = async () => {
   if (!presets.selected) {
     return;

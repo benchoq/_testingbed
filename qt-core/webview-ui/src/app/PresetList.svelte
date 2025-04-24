@@ -7,15 +7,7 @@ SPDX-License-Identifier: LicenseRef-Qt-Commercial OR LGPL-3.0-only
   import { Listgroup, ListgroupItem, P } from "flowbite-svelte";
 
   import { presets } from "./states.svelte";
-  import { setSelectedPreset } from "./viewlogic.svelte";
-
-  const createListItemText = (preset: any) => {
-    if (preset.name.startsWith("@")) {
-      return preset.meta.title;
-    } else {
-      return preset.name;
-    }
-  };
+  import { createPresetDisplayText, setSelectedPreset } from "./viewlogic.svelte";
 
   const adjustSelectedIndex = (offset: number) => {
     if (!presets.selected || presets.selectedIndex < 0) {
@@ -67,7 +59,7 @@ SPDX-License-Identifier: LicenseRef-Qt-Commercial OR LGPL-3.0-only
           setSelectedPreset(preset, index);
         }}
       >
-        <div class="flex-1">{createListItemText(preset)}</div>
+        <div class="flex-1">{createPresetDisplayText(preset)}</div>
         {#if !preset.name.startsWith("@")}
           <P size="xs" class="qt-label">{preset.meta.title}</P>
         {:else}

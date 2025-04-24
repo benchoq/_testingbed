@@ -9,8 +9,8 @@ SPDX-License-Identifier: LicenseRef-Qt-Commercial OR LGPL-3.0-only
 
   import * as utils from "@/logic/utils";
   import * as viewlogic from "./viewlogic.svelte";
-  import ParamInputPage from "./ParamInputPage.svelte";
-  import PresetSelectionPage from "./PresetSelectionPage.svelte";
+  import PageParamInput from "./PageParamInput.svelte";
+  import PagePresetSelector from "./PagePresetSelector.svelte";
   import WizardButtons from "./WizardButtons.svelte";
 
   onMount(() => {
@@ -20,8 +20,8 @@ SPDX-License-Identifier: LicenseRef-Qt-Commercial OR LGPL-3.0-only
   });
 
   const pages = [
-    { component: PresetSelectionPage },
-    { component: ParamInputPage }
+    { component: PagePresetSelector },
+    { component: PageParamInput }
   ];
   let currentIndex = $state(0);
   let currentPage = $derived(pages[currentIndex]) // TODO: validate index

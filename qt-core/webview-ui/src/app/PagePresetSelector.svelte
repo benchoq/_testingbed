@@ -11,7 +11,7 @@ SPDX-License-Identifier: LicenseRef-Qt-Commercial OR LGPL-3.0-only
   import PresetList from "./PresetList.svelte";
   import PresetTypeSelector from "./PresetTypeSelector.svelte";
   import PresetOptionsTable from "./PresetOptionsTable.svelte";
-  import * as states from "./states.svelte";
+  import { presets, loading } from "./states.svelte";
 </script>
 
 <div class={`
@@ -26,13 +26,16 @@ SPDX-License-Identifier: LicenseRef-Qt-Commercial OR LGPL-3.0-only
     <SectionLabel text="Description" icon={false} />
     <div>
       <Label class="qt-label whitespace-pre-wrap leading-relaxed"
-        >{(states.presets.selected?.meta?.description ?? "").replaceAll("\n", "\n\n")}
+        >{(presets.selected?.meta?.description ?? "").replaceAll("\n", "\n\n")}
       </Label>
     </div>
     <div class="flex-grow"></div>
-    <SectionLabel text="Options" icon={false} />
-    <PresetOptionsTable />
-    <Checkbox class="qt-checkbox mt-2 justify-end">Customize</Checkbox>
-  </div>    
+
+    {#if presets.selectedPrompt?.prompt.steps }
+      <SectionLabel text="Options" icon={false} />
+      <PresetOptionsTable />
+      <Checkbox class="qt-checkbox mt-2 justify-end">Customize</Checkbox>
+    {/if}
+  </div>
 </div>
-<LoadingMask {...states.loading} />
+<LoadingMask {...loading} />

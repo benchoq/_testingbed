@@ -33,7 +33,7 @@ SPDX-License-Identifier: LicenseRef-Qt-Commercial OR LGPL-3.0-only
   classBody="md:p-4"
   classHeader="md:p-4"
   backdropClass="hidden"
-  style="height: 80vh;"
+  style="height: 70vh;"
   on:close={viewlogic.notifyClosed}
 >
   <div class="w-full h-full">
@@ -43,8 +43,7 @@ SPDX-License-Identifier: LicenseRef-Qt-Commercial OR LGPL-3.0-only
       grid-rows-[min-content_1fr_min-content_min-content_min-content]
       gap-2`}
     >
-      <SectionLabel text="Available presets" class="col-span-2"/>
-
+      <SectionLabel text="Select preset" class="col-span-2"/>
       <PresetTypeSelector />
       <div class={`grid grid-cols-[minmax(320px,1fr)_1fr] h-full`}>
         <PresetList />

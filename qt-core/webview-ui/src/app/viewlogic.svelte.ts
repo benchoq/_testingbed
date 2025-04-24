@@ -43,10 +43,10 @@ export const setSelectedPreset = (preset: Preset, index: number) => {
 
   if (preset.id.length > 0) {
     const method = "get"
-    const endPoint = `/presets/${preset.id}/prompt`;
+    const endpoint = `/presets/${preset.id}/prompt`;
 
     vscodeApi
-      .request(CallMessageId.ViewCallQtcliApi, { method, endPoint })
+      .request(CallMessageId.ViewCallQtcliApi, { method, endpoint })
       .then((res: any) => { presets.selectedPrompt = res.data })
       .catch((e) => { loading.setError(e) })
       .finally(() => { loading.clear() });
@@ -57,34 +57,17 @@ export const loadPresets = () => {
   loading.start()
 
   const method = "get"
-  const endPoint = "/presets";
+  const endpoint = "/presets";
   const params = { type: configs.type };
 
   vscodeApi
-    .request(CallMessageId.ViewCallQtcliApi, { method, endPoint, params })
+    .request(CallMessageId.ViewCallQtcliApi, { method, endpoint, params })
     .then((res: any) => {
       presets.all = res.data;
-
       if (res.data.length !== 0) {
         setSelectedPreset(res.data[0], 0)
       }
     })
-
-  // qtcliApi
-  //   .get(endPoint, params)
-  //   .catch((e) => { loading.setError(e) })
-  //   .finally(() => { loading.clear() })
-  //   .then((res: any) => {
-  //     if (res.request.endpoint.startsWith("/presets/prompt")) {
-  //       presets.selectedPrompt = res.data;
-  //     } else if (res.request.endpoint === "/presets") {
-  //       presets.all = res.data;
-
-  //       if (res.data.length !== 0) {
-  //         setSelectedPreset(res.data[0], 0)
-  //       }
-  //     }
-  //   });
 };
 
 export const createItemFromSelectedPreset = async () => {

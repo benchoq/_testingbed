@@ -1,10 +1,14 @@
 // Copyright (C) 2025 The Qt Company Ltd.
 // SPDX-License-Identifier: LicenseRef-Qt-Commercial OR LGPL-3.0-only 
 
-import { PushMessageId, type PushMessage, CallMessageId, type CallMessage, 
-  isPushMessage, isCallMessage
-} from '@shared/message';
 import type { WebviewApi } from "vscode-webview";
+
+import { 
+  type PushMessage, PushMessageId, 
+  type CallMessage, CallMessageId, isPushMessage, isCallMessage
+} from '@shared/message';
+import { mock } from "./mock";
+import * as utils from "./utils";
 
 class VSCodeApiWrapper {
   private readonly _api: WebviewApi<unknown> | undefined;
@@ -18,7 +22,7 @@ class VSCodeApiWrapper {
   
     window.addEventListener("message", (e: MessageEvent) => {
       if (!e.origin.startsWith("vscode-webview://")) {
-        console.log("received message, but the origin is not expected")
+        console.log(`received message, but the origin is not expected: ${e.origin}`)
         return;
       }
 
@@ -42,7 +46,7 @@ class VSCodeApiWrapper {
     return (this._api !== undefined);
   }
 
-  public push<T = unknown>(id: PushMessageId, data?: T) {
+  public push(id: PushMessageId, data?: unknown) {
     if (!this._api) {
       console.log("api is invalid");
       return;
@@ -52,15 +56,19 @@ class VSCodeApiWrapper {
     this._api.postMessage(p);
   }
 
-  public async request<T = unknown>(
-    id: CallMessageId, data?: T, timeout = 10000): Promise<T> {
+  public async request(
+    id: CallMessageId, data?: unknown, timeout = 10000): Promise<unknown> {
+    if (utils.isDev()) {
+      return mock.mockRequest(id, data, timeout);
+    }
+
     if (!this._api) {
       return Promise.reject("VSCode API not available");
     }
 
     const tag = this._generateTag();
 
-    return new Promise<T>((resolve, reject) => {
+    return new Promise((resolve, reject) => {
       const r: CallMessage = { id, tag, data };
       this._pendingCalls.set(tag, resolve);
       this._api!.postMessage(r);

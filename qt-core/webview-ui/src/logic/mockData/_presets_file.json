@@ -1,14 +1,5 @@
 [
 	{
-		"id": "2239089261",
-		"name": "@cpp/class",
-		"meta": {
-			"type": "file",
-			"title": "C++ Class",
-			"description": "Creates a C++ header and a source file  for a new class that you can add to a C++ project."
-		}
-	},
-	{
 		"id": "1349920511",
 		"name": "@types/qml",
 		"meta": {
@@ -24,15 +15,6 @@
 			"type": "file",
 			"title": "Qt Resource File",
 			"description": "Creates a Qt Resource file (.qrc)."
-		}
-	},
-	{
-		"id": "4215634460",
-		"name": "@types/ts",
-		"meta": {
-			"type": "file",
-			"title": "Qt Translation File",
-			"description": "Creates a translation file that you can add to a Qt project."
 		}
 	},
 	{

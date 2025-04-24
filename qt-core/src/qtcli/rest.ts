@@ -8,21 +8,17 @@ import axios from "axios";
 // import _presetsFile from "./dev-data/_presets_file.json";
 // import _presetsProject from "./dev-data/_presets_project.json";
 
-export class QtcliRestRequest {
-  constructor(
-    public method: string,
-    public endpoint: string,
-    public params?: any,
-    public data?: any
-  ) {}
+export interface QtcliRestRequest {
+  method: string;
+  endpoint: string;
+  params?: any;
+  data?: any;
 }
 
-export class QtcliRestResponse {
-  constructor(
-    public request: QtcliRestRequest,
-    public data: any,
-    public error?: string
-  ) {}
+export interface QtcliRestResponse {
+  data?: any;
+  error?: string;
+  request: QtcliRestRequest;
 }
 
 export class QtcliRestClient {
@@ -33,18 +29,6 @@ export class QtcliRestClient {
 
   private readonly maxRetries = 10;
   private readonly retryDelay = 200;
-
-  public get = async (endpoint: string, params?: any) => {
-    return await this.call(new QtcliRestRequest("get", endpoint, params))
-  }
-
-  public post = async (endpoint: string, data?: any) => {
-    return await this.call(new QtcliRestRequest("post", endpoint, undefined, data))
-  }
-
-  public delete = async (endpoint: string) => {
-    return await this.call(new QtcliRestRequest("delete", endpoint))
-  }
 
   public async call(req: QtcliRestRequest, attempt = 0): Promise<QtcliRestResponse> {
     try {
@@ -60,7 +44,7 @@ export class QtcliRestClient {
       });
 
       if (res.status >= 200 && res.status < 300) {
-        return new QtcliRestResponse(req, res.data);
+        return { data: res.data, request: req };
       } else {
         throw new Error(res.statusText)
       }
@@ -71,8 +55,21 @@ export class QtcliRestClient {
         return this.call(req, attempt + 1);
       }
 
-      return new QtcliRestResponse(req, undefined, err.message);
+      return { error: err.message, request: req }
     }
+  }
+  
+  // convenients
+  public async get(endpoint: string, params?: any) {
+    return this.call({ method: "get", endpoint, params })
+  }
+
+  public async post(endpoint: string, data?: any) {
+    return this.call({ method: "post", endpoint, data })
+  }
+
+  public async delete(endpoint: string) {
+    return this.call({ method: "delete", endpoint })
   }
 }
 

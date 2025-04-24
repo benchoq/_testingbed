@@ -121,13 +121,8 @@ export class ItemWizardPanel {
     }
 
     if (r.id === CallMessageId.ViewCallQtcliApi) {
-      const method = _.get(r.data, "method", '') as string;
-      const endPoint = _.get(r.data, "endPoint", '') as string;
-      const params = _.get(r.data, "params");
-      const data = _.get(r.data, "data");
-
       qtcliApi
-        .call(new QtcliRestRequest(method, endPoint, params, data))
+        .call(r.data as QtcliRestRequest) // TODO: check casting
         .then((res: any) => { this._reply(r.id, r.tag, res); });
 
       // TODO: send error status thru reply.
@@ -136,7 +131,7 @@ export class ItemWizardPanel {
 
     if (r.id === CallMessageId.ViewCreateItem) {
       qtcliApi
-        .call(new QtcliRestRequest('post', '/items', undefined, r.data))
+        .call({ method: 'post', endpoint: '/items', data: r.data })
         .then((res: any) => {
           openItemsFromQtcliResponseData(res.data);
           this._reply(r.id, r.tag, res);

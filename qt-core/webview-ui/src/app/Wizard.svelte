@@ -13,22 +13,51 @@ SPDX-License-Identifier: LicenseRef-Qt-Commercial OR LGPL-3.0-only
   import PagePresetSelector from "./PagePresetSelector.svelte";
   import WizardButtons from "./WizardButtons.svelte";
 
+  const pages = [
+    { component: PagePresetSelector },
+    { component: PageParamInput }
+  ];
+
+  let currentIndex = $state(0);
+  let currentPage = $derived(pages[currentIndex]) // TODO: validate index
+  let buttonRoles = $state([ "back", "next", "finish" ])
+
+  const onButtonClicked = (role: string) => {
+    if (role === "back") {
+      setCurrentIndex(currentIndex - 1);
+    } else if (role === "next") {
+      setCurrentIndex(currentIndex + 1);
+    }
+  }
+
+  const setCurrentIndex = (i: number) => {
+    const candidate = Math.max(0, Math.min(i, pages.length - 1));
+    if (currentIndex != candidate) {
+      currentIndex = candidate;
+      updateButtons();
+    }
+  }
+
+  const updateButtons = () => {
+    if (currentIndex === 0) {
+      buttonRoles = ["next"];
+    } else if (currentIndex === (pages.length - 1)) {
+      buttonRoles = ["back", "finish"]
+    } else {
+      buttonRoles = ["back", "next"]
+    }
+  }
+  
+  $effect(() => {
+    updateButtons()
+  })
+
   onMount(() => {
     if (utils.isDev()) {
       viewlogic.loadPresets();
     }
   });
 
-  const pages = [
-    { component: PagePresetSelector },
-    { component: PageParamInput }
-  ];
-  let currentIndex = $state(0);
-  let currentPage = $derived(pages[currentIndex]) // TODO: validate index
-
-  const onNextClicked = () => {
-    currentIndex = 1 - currentIndex;
-  }
 </script>
 
 <Modal
@@ -47,6 +76,6 @@ SPDX-License-Identifier: LicenseRef-Qt-Commercial OR LGPL-3.0-only
   </div>
 
   <svelte:fragment slot="footer">
-    <WizardButtons {onNextClicked} />
+    <WizardButtons roles={buttonRoles} onClicked={onButtonClicked} />
   </svelte:fragment>
 </Modal>

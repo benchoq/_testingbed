@@ -5,24 +5,42 @@ SPDX-License-Identifier: LicenseRef-Qt-Commercial OR LGPL-3.0-only
 
 <script lang="ts">
   import { Button } from "flowbite-svelte";
-  import { ArrowRightOutline } from "flowbite-svelte-icons";
-
-  let nameHasError = $state(false);
-  let workingDirHasError = $state(false);
-  let isDisabled = $derived(nameHasError || workingDirHasError);
+  import { 
+    AngleLeftOutline, 
+    AngleRightOutline, 
+    ArrowRightOutline 
+  } from "flowbite-svelte-icons";
 
   let {
-    onNextClicked
+    roles = [],
+    onClicked,
   } = $props();
+
+  const findIcon = (role: string) => {
+    if (role === "back") return AngleLeftOutline;
+    if (role === "next") return AngleRightOutline;
+    if (role === "finish") return ArrowRightOutline;
+    return undefined;
+  }
+
+  const findText = (role: string) => {
+    if (role === "back") return "Back";
+    if (role === "next") return "Next";
+    if (role === "finish") return "Finish";
+    return "";
+  }
+
 </script>
 
-<div class="col-start-2 grid grid-cols-[1fr_min-content]">
-  <div></div>
-  <Button
-    class="qt-button"
-    disabled={isDisabled}
-    on:click={onNextClicked}
-  >
-    <ArrowRightOutline class="mr-3" />Next
-  </Button>
+<div class="col-start-2 flex flex-row gap-2">
+  <div class="flex-grow"></div>
+  {#each roles as role}
+    <Button class="qt-button" on:click={() => { onClicked(role)}}>
+      {@const IconComp = findIcon(role)}
+      {#if IconComp}
+        <IconComp class="mr-1" />
+      {/if}
+      {findText(role)}
+    </Button>
+  {/each}
 </div>

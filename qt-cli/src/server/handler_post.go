@@ -5,9 +5,13 @@ package server
 
 import (
 	"net/http"
+	"path"
 	"path/filepath"
+	"qtcli/common"
 	"qtcli/generator"
 	"qtcli/runner"
+	"qtcli/util"
+	"strings"
 
 	"github.com/gin-gonic/gin"
 )
@@ -26,6 +30,90 @@ type ResponseCreateNewItem struct {
 	WorkingDir string         `json:"workingDir" binding:"required"`
 	Message    string         `json:"message" binding:"required"`
 	Debug      map[string]any `json:"_debug"`
+}
+
+type ValidationResult struct {
+	Error   string `json:"error"`
+	Warning string `json:"warning"`
+}
+
+type ResponseValidateNewItem struct {
+	Valid      bool             `json:"valid" binding:"required"`
+	Name       ValidationResult `json:"name" binding:"required"`
+	WorkingDir ValidationResult `json:"workingDir" binding:"required"`
+}
+
+func postNewItemValidation(c *gin.Context) {
+	var req RequestCreateNewItem
+
+	if err := c.ShouldBindJSON(&req); err != nil {
+		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+		return
+	}
+
+	preset, err := runner.Presets.Any.FindByUniqueId(req.PresetId)
+	if err != nil {
+		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+		return
+	}
+
+	nameErrors := []string{}
+	workingDirErrors := []string{}
+	workingDirWarnings := []string{}
+
+	nameNorm := strings.TrimSpace(req.Name)
+	workingDirNorm := strings.TrimSpace(filepath.Clean(req.WorkingDir))
+	workingDirNorm = filepath.ToSlash(workingDirNorm)
+
+	// dir error check
+	if len(workingDirNorm) == 0 {
+		workingDirErrors = append(workingDirErrors, util.Msg("Working directory cannot be empty"))
+	}
+
+	if !util.IsAbsPath(workingDirNorm) {
+		workingDirErrors = append(workingDirErrors, util.Msg("Working directory must be an absolute path"))
+	}
+
+	if !util.IsValidFullPath(workingDirNorm) {
+		workingDirErrors = append(workingDirErrors, util.Msg("Invalid working directory name"))
+	}
+
+	// dir warning check
+	if !util.EntryExists(workingDirNorm) {
+		workingDirWarnings = append(workingDirWarnings, util.Msg("Working directory doesn't exist"))
+	}
+
+	// name error check
+	if len(nameNorm) == 0 {
+		nameErrors = append(nameErrors, util.Msg("Name cannot be empty"))
+	}
+
+	if preset.GetTypeId() == common.TargetTypeProject {
+		if !util.IsValidProjectName(nameNorm) {
+			nameErrors = append(nameErrors, util.Msg("Invalid project name"))
+		}
+
+		totalPath := path.Join(workingDirNorm, nameNorm)
+		if util.EntryExists(totalPath) { // FIXME: bug on checking this
+			nameErrors = append(nameErrors, util.Msg("Output folder already exists"))
+		}
+	} else {
+		// TODO: dry-run generator and check if file exists
+		if !util.IsValidFileName(nameNorm) {
+			nameErrors = append(nameErrors, util.Msg("Invalid file name"))
+		}
+	}
+
+	c.JSON(http.StatusCreated, ResponseValidateNewItem{
+		Valid: (len(nameErrors) == 0 && len(workingDirErrors) == 0),
+		Name: ValidationResult{
+			Error: strings.Join(nameErrors, "\n"),
+		},
+		WorkingDir: ValidationResult{
+			Error:   strings.Join(workingDirErrors, "\n"),
+			Warning: strings.Join(workingDirWarnings, "\n"),
+		},
+	})
 }
 
 func postNewItem(c *gin.Context) {

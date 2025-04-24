@@ -80,6 +80,7 @@ export function createPresetDisplayText(preset: any) {
 
 export const createItemFromSelectedPreset = async () => {
   if (!presets.selected) {
+    // TODO: error display
     return;
   }
 
@@ -99,23 +100,24 @@ export const createItemFromSelectedPreset = async () => {
 };
 
 export const validateInputs = async () => {
-  console.log(configs.name, configs.workingDir);
-  if (configs.name.length === 0) {
-    inputValidationResult.nameError = "Name is empty"
-  } else {
-    inputValidationResult.nameError = ""
+  if (!presets.selected) {
+    // TODO: error display
+    return;
   }
 
-  if (configs.workingDir.length === 0) {
-    inputValidationResult.workingDirError = "Working directory is empty"
-  } else {
-    vscodeApi.request(CallMessageId.ViewCheckDirectoryExists, configs.workingDir)
-      .then((res) => { 
-        if (Boolean(res)) {
-          inputValidationResult.workingDirError = ""
-        } else {
-          inputValidationResult.workingDirError = "Directory doesn't exist";
-        }
-      });
+  const method = "post"
+  const endpoint = "/items/validate";
+  const data = {
+    name: configs.name, 
+    workingDir: configs.workingDir, 
+    presetId: presets.selected?.id,
   }
+
+  vscodeApi
+    .request(CallMessageId.ViewCallQtcliApi, { method, endpoint, data })
+    .then((res: any) => { 
+      console.log(res)
+      inputValidationResult.nameError = _.get(res, "data.name.error", '') as string;
+      inputValidationResult.workingDirError = _.get(res, "data.workingDir.error", '') as string;
+    })
 }

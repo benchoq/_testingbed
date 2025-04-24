@@ -9,6 +9,8 @@ import (
 	"io/fs"
 	"os"
 	"path"
+	"path/filepath"
+	"regexp"
 	"runtime"
 	"strconv"
 	"strings"
@@ -148,6 +150,95 @@ func IsValidFileName(name string) bool {
 
 	file.Close()
 	os.Remove(testPath)
+	return true
+}
+
+func IsWindowsReservedName(name string) bool {
+	name = strings.ToUpper(name)
+	if name == "CON" || name == "PRN" || name == "AUX" || name == "NUL" {
+		return true
+	}
+	match, _ := regexp.MatchString(`^(COM[1-9]|LPT[1-9])$`, name)
+	return match
+}
+
+func IsValidFolderName(name string) bool {
+	name = strings.TrimSpace(filepath.Base(name))
+	if name == "" {
+		return false
+	}
+
+	if runtime.GOOS == "windows" {
+		invalidChars := regexp.MustCompile(`[<>:"/\\|?*]`)
+		if invalidChars.MatchString(name) {
+			return false
+		}
+
+		if IsWindowsReservedName(name) {
+			return false
+		}
+	} else {
+		if strings.ContainsRune(name, '/') || strings.ContainsRune(name, 0) {
+			return false
+		}
+	}
+
+	return true
+}
+
+func IsDriveExists(path string) bool {
+	if runtime.GOOS != "windows" {
+		return true
+	}
+
+	if len(path) < 2 || path[1] != ':' {
+		return true
+	}
+
+	driveRoot := path[:2] + `\`
+	info, err := os.Stat(driveRoot)
+	return err == nil && info.IsDir()
+}
+
+func IsValidFullPath(path string) bool {
+	// 'C:\Users' => valid? true
+	// 'D:\NotExists' => valid? false
+	// 'COM1' => valid? false
+	// 'COM10' => valid? true
+	// 'valid_folder' => valid? true
+	// 'invalid:name' => valid? false
+	// '/tmp/test' => valid? true
+	// 'my/folder' => valid? false
+	// '.hidden' => valid? true
+	// ' ' => valid? false
+
+	return IsDriveExists(path) && IsValidFolderName(path)
+}
+
+func IsAbsPath(path string) bool {
+	return filepath.IsAbs(path)
+}
+
+func IsValidProjectName(name string) bool {
+	if len(name) == 0 {
+		return false
+	}
+
+	validNameRegex := regexp.MustCompile("^[a-zA-Z][a-zA-Z0-9_-]+$")
+	if !validNameRegex.MatchString(name) {
+		return false
+	}
+
+	if runtime.GOOS == "windows" {
+		if strings.ContainsAny(name, `\/:*?"<>|`) {
+			return false
+		}
+	} else {
+		if strings.ContainsAny(name, "/") {
+			return false
+		}
+	}
+
 	return true
 }
 

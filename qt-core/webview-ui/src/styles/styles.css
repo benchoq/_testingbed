@@ -15,7 +15,7 @@ body {
 }
 
 .qt-roundness {
-  border-radius: --var(--qt-border-radius);
+  border-radius: var(--qt-border-radius);
 }
 
 /* basic tags */

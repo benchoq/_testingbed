@@ -6,8 +6,6 @@ meta:
   description: >-
     Creates a project containing a single main.cpp file
     with a stub implementation and no graphical UI.
-    
-    Preselects a desktop Qt for building the application if available.
 
 files:
   - in: CMakeLists.txt

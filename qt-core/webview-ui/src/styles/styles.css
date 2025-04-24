@@ -200,7 +200,6 @@ body {
   font-weight: var(--qt-font-weight);
 	line-height: normal;
 	cursor: pointer;
-  padding: 10px 5px;
   @apply ring-offset-0;
   @apply qt-focusRing;
 }

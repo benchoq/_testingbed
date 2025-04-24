@@ -34,7 +34,7 @@ SPDX-License-Identifier: LicenseRef-Qt-Commercial OR LGPL-3.0-only
 
 {#if steps}
 
-<SectionLabel text="Options" icon={false} class="mb-1" />
+<SectionLabel text="Options" icon={false} />
 
 <Table color="custom" class="qt-simple-table">
   <TableBody tableBodyClass="divide-y">

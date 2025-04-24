@@ -10,6 +10,8 @@ SPDX-License-Identifier: LicenseRef-Qt-Commercial OR LGPL-3.0-only
     items,
     currentIndex = -1,
     onCurrentIndexChanged = null,
+    class: className = '',
+    buttonClass = '',
   } = $props();
 
   function setCurrentIndex(i: number) {
@@ -35,11 +37,12 @@ SPDX-License-Identifier: LicenseRef-Qt-Commercial OR LGPL-3.0-only
   });
 </script>
 
-<div class="flex flex-col h-full gap-0">
+<div class={`flex flex-col h-full gap-0 ${className}`}>
   {#each items as item, i}
     <Button
       on:click={() => { setCurrentIndex(i); } }
-      class={`flex flex-col gap-1 qt-vtab-item ${i === currentIndex ? 'selected' : ''}`}>
+      class={`flex flex-col gap-1 qt-vtab-item ${buttonClass}
+        ${i === currentIndex ? 'selected' : ''}`}>
       <item.icon />
       {item.label}
     </Button>

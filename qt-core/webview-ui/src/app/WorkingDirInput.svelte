@@ -15,10 +15,9 @@ SPDX-License-Identifier: LicenseRef-Qt-Commercial OR LGPL-3.0-only
   <Button
     class="qt-button px-2 py-0 rounded-r-none! z-1"
     title="Browse"
-    on:click={viewlogic.changeWorkingDir}
+    on:click={viewlogic.onWorkingDirBrowseClicked}
     ><FolderOpenOutline />
   </Button>
-  
   <InputWithValidation 
     bind:value={configs.workingDir}
     onInput={viewlogic.validateInputs}

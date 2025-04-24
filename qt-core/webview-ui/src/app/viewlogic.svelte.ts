@@ -21,11 +21,11 @@ vscodeApi.onDidReceivePushMessage((p: PushMessage) => {
   }
 })
 
-export const notifyClosed = () => {
+export const onModalClosed = () => {
   vscodeApi.push(PushMessageId.ViewClosed);
 }
 
-export const changeWorkingDir = () => {
+export const onWorkingDirBrowseClicked = () => {
   vscodeApi
     .request(CallMessageId.ViewSelectWorkingDir, configs.workingDir)
     .then((data) => { configs.workingDir = data as string; })

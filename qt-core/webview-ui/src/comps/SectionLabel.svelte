@@ -13,7 +13,7 @@ SPDX-License-Identifier: LicenseRef-Qt-Commercial OR LGPL-3.0-only
   } = $props();
 </script>
 
-<div class={`flex flex-row self-center ${className}`}>
+<div class={`flex flex-row self-center w-full mb-1 ${className}`}>
   {#if icon}
     <ChevronRightOutline class="qt-label-highlight" />
   {/if}

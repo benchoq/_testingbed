@@ -10,7 +10,6 @@ SPDX-License-Identifier: LicenseRef-Qt-Commercial OR LGPL-3.0-only
 
   import { presets } from "./states.svelte";
   import { type PromptData } from "./types.svelte";
-  import SectionLabel from "@/comps/SectionLabel.svelte";
 
   let steps = $derived.by(() => {
     if (presets.selectedPrompt) {
@@ -33,8 +32,6 @@ SPDX-License-Identifier: LicenseRef-Qt-Commercial OR LGPL-3.0-only
 </script>
 
 {#if steps}
-
-<SectionLabel text="Options" icon={false} />
 
 <Table color="custom" class="qt-simple-table">
   <TableBody tableBodyClass="divide-y">

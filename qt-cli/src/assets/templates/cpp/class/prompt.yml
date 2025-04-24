@@ -15,7 +15,7 @@ steps:
 
   - id: customBaseClass
     type: input
-    question: "Enter a class name:"
+    question: "Custom base class:"
     default: ""
     when: '{{ eq .qtBaseClass "" }}'
     rules:

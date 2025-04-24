@@ -39,7 +39,7 @@ SPDX-License-Identifier: LicenseRef-Qt-Commercial OR LGPL-3.0-only
   class="qt-modal"
   backdropClass="hidden"
   footerClass="p-3"
-  style="height: 75vh;"
+  style="height: 80vh;"
   on:close={viewlogic.onModalClosed}
 >
   <div class="w-full h-full">

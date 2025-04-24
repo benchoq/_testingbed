@@ -12,5 +12,5 @@ steps:
 
   - id: title
     type: input
-    question: "Enter a window title:"
+    question: "Window title:"
     default: "Form"

@@ -27,6 +27,8 @@ SPDX-License-Identifier: LicenseRef-Qt-Commercial OR LGPL-3.0-only
       setCurrentIndex(currentIndex - 1);
     } else if (role === "next") {
       setCurrentIndex(currentIndex + 1);
+    } else if (role === "finish") {
+      viewlogic.createItemFromSelectedPreset();
     }
   }
 

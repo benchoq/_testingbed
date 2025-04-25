@@ -5,12 +5,9 @@ package server
 
 import (
 	"net/http"
-	"path"
 	"path/filepath"
-	"qtcli/common"
 	"qtcli/generator"
 	"qtcli/runner"
-	"qtcli/util"
 	"strings"
 
 	"github.com/gin-gonic/gin"
@@ -52,68 +49,38 @@ func postNewItemValidation(c *gin.Context) {
 		return
 	}
 
-	nameErrors := []string{}
-	workingDirErrors := []string{}
-	workingDirWarnings := []string{}
+	// nameErrors := []string{}
+	// workingDirErrors := []string{}
+	// workingDirWarnings := []string{}
 
-	nameNorm := strings.TrimSpace(req.Name)
-	workingDirNorm := strings.TrimSpace(filepath.Clean(req.WorkingDir))
-	workingDirNorm = filepath.ToSlash(workingDirNorm)
+	// nameNorm := strings.TrimSpace(req.Name)
+	// workingDirNorm := strings.TrimSpace(filepath.Clean(req.WorkingDir))
+	// workingDirNorm = filepath.ToSlash(workingDirNorm)
 
-	// dir error check
-	if len(workingDirNorm) == 0 {
-		workingDirErrors = append(workingDirErrors, util.Msg("Working directory cannot be empty"))
+	in := ValidatorInput{
+		Name:       req.Name,
+		WorkingDir: req.WorkingDir,
+		Preset:     preset,
 	}
 
-	if !util.IsAbsPath(workingDirNorm) {
-		workingDirErrors = append(workingDirErrors, util.Msg("Working directory must be an absolute path"))
-	}
-
-	if !util.IsValidFullPath(workingDirNorm) {
-		workingDirErrors = append(workingDirErrors, util.Msg("Invalid working directory name"))
-	}
-
-	// dir warning check
-	if !util.EntryExists(workingDirNorm) {
-		workingDirWarnings = append(workingDirWarnings, util.Msg("Working directory doesn't exist"))
-	}
-
-	// name error check
-	if len(nameNorm) == 0 {
-		nameErrors = append(nameErrors, util.Msg("Name cannot be empty"))
-	}
-
-	if preset.GetTypeId() == common.TargetTypeProject {
-		if !util.IsValidProjectName(nameNorm) {
-			nameErrors = append(nameErrors, util.Msg("Invalid project name"))
-		}
-
-		totalPath := path.Join(workingDirNorm, nameNorm)
-		if util.EntryExists(totalPath) { // FIXME: bug on checking this
-			nameErrors = append(nameErrors, util.Msg("Output folder already exists"))
-		}
-	} else {
-		// TODO: dry-run generator and check if file exists
-		if !util.IsValidFileName(nameNorm) {
-			nameErrors = append(nameErrors, util.Msg("Invalid file name"))
-		}
-	}
-
-	if (len(nameErrors) == 0) && (len(workingDirErrors) == 0) {
+	out := Validate(in)
+	if out.Success {
 		c.JSON(http.StatusOK, SuccessResponse[any]{Success: true})
 		return
-	} else {
-		// TODO: check status code
-		c.JSON(http.StatusOK, ErrorResponse{
-			Error: ErrorContent{
-				Message: "Input validation failed",
-				Details: []ErrorDetail{
-					{Field: "name", Message: strings.Join(nameErrors, "\n")},
-					{Field: "workingDir", Message: strings.Join(workingDirErrors, "\n")},
-				},
-			},
+	}
+
+	errorDetails := []ErrorDetail{}
+	for _, detail := range out.Details {
+		errorDetails = append(errorDetails, ErrorDetail{
+			Field:   detail.Field,
+			Message: strings.Join(detail.Messages, "\n"),
 		})
 	}
+
+	c.JSON(
+		http.StatusOK, // TODO: check status code
+		NewErrorResponse("Input validation failed", errorDetails),
+	)
 }
 
 func postNewItem(c *gin.Context) {

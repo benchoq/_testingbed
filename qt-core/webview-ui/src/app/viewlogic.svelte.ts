@@ -117,27 +117,26 @@ export const validateInputs = async () => {
     .request(CallMessageId.ViewCallQtcliApi, { method, endpoint, data })
     .then((res: any) => { 
       // TODO: make this type safe, robust ...
-      console.log(res)
+      inputValidationResult.nameError = ""
+      inputValidationResult.workingDirError = ""
+
       const success = _.get(res, "data.success", false) as boolean;
-      if (success) {
-        inputValidationResult.nameError = ""
-        inputValidationResult.workingDirError = ""
-        return;
+
+      if (!success) {
+        const details = _.get(res, "data.error.details", []);
+
+        details.forEach((item: any) => {
+          const field = _.get(item, "field", "") as string;
+          const message = _.get(item, "message", "") as string;
+
+          if (field === "name" && message.length !== 0) {
+            inputValidationResult.nameError = message;
+          }
+
+          if (field === "workingDir" && message.length !== 0) {
+            inputValidationResult.workingDirError = message;
+          }
+        });
       }
-
-      const details = _.get(res, "data.error.details", []);
-
-      details.forEach((item: any) => {
-        const field = _.get(item, "field", "") as string;
-        const message = _.get(item, "message", "") as string;
-
-        if (field === "name" && message.length !== 0) {
-          inputValidationResult.nameError = message;
-        }
-
-        if (field === "workingDir" && message.length !== 0) {
-          inputValidationResult.workingDirError = message;
-        }
-      });
     })
 }

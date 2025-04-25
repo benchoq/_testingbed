@@ -40,13 +40,13 @@ func postNewItemValidation(c *gin.Context) {
 	var req RequestValidateNewItem
 
 	if err := c.ShouldBindJSON(&req); err != nil {
-		ReplyError(c, http.StatusBadRequest, err)
+		ReplyError(c, http.StatusBadRequest, err.Error())
 		return
 	}
 
 	preset, err := runner.Presets.Any.FindByUniqueId(req.PresetId)
 	if err != nil {
-		ReplyError(c, http.StatusBadRequest, err)
+		ReplyError(c, http.StatusBadRequest, err.Error())
 		return
 	}
 
@@ -68,38 +68,37 @@ func postNewItemValidation(c *gin.Context) {
 func postNewItem(c *gin.Context) {
 	var req RequestCreateNewItem
 	if err := c.ShouldBindJSON(&req); err != nil {
-		ReplyError(c, http.StatusBadRequest, err)
+		ReplyError(c, http.StatusBadRequest, err.Error())
 		return
 	}
 
 	preset, err := runner.Presets.Any.FindByUniqueId(req.PresetId)
 	if err != nil {
-		ReplyError(c, http.StatusBadRequest, err)
+		ReplyError(c, http.StatusBadRequest, err.Error())
 		return
 	}
-
-	dryRun := strings.ToLower(c.Query("dry_run")) == "true"
 
 	preset.MergeOptions(req.Options)
 	normalizedWorkingDir := filepath.Clean(req.WorkingDir)
 	normalizedWorkingDir = filepath.ToSlash(normalizedWorkingDir)
+	dryRun := strings.ToLower(c.Query("dry_run")) == "true"
 
-	output, err := generator.NewGenerator(req.Name).
+	result := generator.NewGenerator(req.Name).
 		Env(runner.GeneratorEnv).
 		WorkingDir(normalizedWorkingDir).
 		Preset(preset).
 		DryRun(dryRun).
 		Render()
 
-	if err != nil {
-		ReplyError(c, http.StatusBadRequest, err)
+	if !result.Success {
+		c.JSON(http.StatusBadRequest, NewErrorResponse(result.Error))
 		return
 	}
 
 	c.JSON(http.StatusCreated, ResponseCreateNewItem{
 		Type:       preset.GetTypeName(),
-		Files:      output.GetOutputFilesRel(),
-		FilesDir:   output.GetOutputDirAbs(),
+		Files:      result.Data.GetOutputFilesRel(),
+		FilesDir:   result.Data.GetOutputDirAbs(),
 		WorkingDir: normalizedWorkingDir,
 		Message:    "Item created successfully",
 		DryRun:     dryRun,

@@ -65,7 +65,7 @@ func (g *Generator) DryRun(on bool) *Generator {
 	return g
 }
 
-func (g *Generator) Render() (Result, error) {
+func (g *Generator) Render() *Result {
 	// input validation
 	in := common.ValidatorInput{
 		Name:       g.name,
@@ -75,41 +75,44 @@ func (g *Generator) Render() (Result, error) {
 
 	out := common.Validate(in)
 	if !out.Success {
-		return Result{}, errors.New(util.Msg("Input validation failed"))
+		return NewErrorResult(out.Error)
 	}
 
 	// prep.
 	if err := g.prepContext(); err != nil {
-		return Result{}, err
+		return NewErrorResultFrom(err)
 	}
 
 	// expand in, out
 	result, err := g.runNames()
 	if err != nil {
-		return Result{}, err
+		return NewErrorResultFrom(err)
 	}
 
 	// check if exists
 	for _, item := range result.items {
 		if !util.EntryExistsFS(g.env.FS, item.inputFileRel) {
-			return Result{},
-				fmt.Errorf("file not found, %s", item.inputFileRel)
+			return NewErrorResultFrom(
+				fmt.Errorf("file not found, %s", item.inputFileRel))
 		}
 
 		if util.EntryExists(item.outputFileAbs) {
-			return Result{},
-				fmt.Errorf("output already exists, %s", item.outputFileAbs)
+			return NewErrorResultFrom(
+				fmt.Errorf("output already exists, %s", item.outputFileAbs))
 		}
 	}
 
 	// run contents and save
 	for _, item := range result.items {
 		if err := g.runContents(item); err != nil {
-			return Result{}, err
+			return NewErrorResultFrom(err)
 		}
 	}
 
-	return result, nil
+	return &Result{
+		Success: true,
+		Data:    result,
+	}
 }
 
 func (g *Generator) prepContext() error {
@@ -160,8 +163,8 @@ func (g *Generator) evalFields(fields []util.StringAnyMap) error {
 	return nil
 }
 
-func (g *Generator) runNames() (Result, error) {
-	result := Result{
+func (g *Generator) runNames() (ResultData, error) {
+	result := ResultData{
 		workingDir:   g.workingDir,
 		outputDirAbs: path.Join(g.workingDir, g.context.outputDirOffset),
 	}
@@ -169,7 +172,7 @@ func (g *Generator) runNames() (Result, error) {
 	for _, file := range g.context.items {
 		okay, err := g.evalWhenCondition(file)
 		if err != nil {
-			return Result{}, err
+			return ResultData{}, err
 		}
 
 		if !okay {
@@ -182,7 +185,7 @@ func (g *Generator) runNames() (Result, error) {
 		inputRel := g.createInputFileRel(file)
 		outputRel, err := g.createOutputFileRel(file)
 		if err != nil {
-			return Result{}, err
+			return ResultData{}, err
 		}
 
 		result.items = append(result.items, ResultItem{

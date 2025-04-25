@@ -22,9 +22,9 @@ func NewErrorResponse(e common.ErrorWithDetails) ErrorResponse {
 	return ErrorResponse{Error: e}
 }
 
-func ReplyError(c *gin.Context, code int, err error) {
-	if err != nil {
-		e := common.ErrorWithDetails{Message: err.Error()}
+func ReplyError(c *gin.Context, code int, message string) {
+	if len(message) != 0 {
+		e := common.ErrorWithDetails{Message: message}
 		c.JSON(code, NewErrorResponse(e))
 	}
 }

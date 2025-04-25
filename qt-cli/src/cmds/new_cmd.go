@@ -38,18 +38,19 @@ var newCmd = &cobra.Command{
 				util.Msg("failed to select a preset: '%w'"), err)
 		}
 
-		output, err := generator.NewGenerator(name).
+		result := generator.NewGenerator(name).
 			Env(runner.GeneratorEnv).
 			Preset(preset).
 			Render()
 
-		if err != nil {
+		if !result.Success {
 			return fmt.Errorf(
-				util.Msg("failed to generate a project: '%w'"), err)
+				util.Msg("failed to generate a project: '%w'"),
+				result.Error.Message)
 		}
 
 		if verbose {
-			output.Print(logrus.New().Writer())
+			result.Data.Print(logrus.New().Writer())
 		}
 
 		return nil

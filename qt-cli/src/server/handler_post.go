@@ -32,6 +32,12 @@ type ResponseCreateNewItem struct {
 	Debug      map[string]any `json:"_debug"`
 }
 
+type RequestValidateNewItem struct {
+	Name       string `json:"name"`
+	WorkingDir string `json:"workingDir"`
+	PresetId   string `json:"presetId" binding:"required"`
+}
+
 type ValidationResult struct {
 	Error   string `json:"error"`
 	Warning string `json:"warning"`
@@ -44,7 +50,7 @@ type ResponseValidateNewItem struct {
 }
 
 func postNewItemValidation(c *gin.Context) {
-	var req RequestCreateNewItem
+	var req RequestValidateNewItem
 
 	if err := c.ShouldBindJSON(&req); err != nil {
 		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})

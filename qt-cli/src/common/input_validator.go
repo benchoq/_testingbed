@@ -1,12 +1,11 @@
 // Copyright (C) 2025 The Qt Company Ltd.
 // SPDX-License-Identifier: LicenseRef-Qt-Commercial OR LGPL-3.0-only
 
-package server
+package common
 
 import (
 	"path"
 	"path/filepath"
-	"qtcli/common"
 	"qtcli/util"
 	"strings"
 )
@@ -15,7 +14,7 @@ import (
 type ValidatorInput struct {
 	Name       string
 	WorkingDir string
-	Preset     common.PresetData
+	Preset     PresetData
 }
 
 // out
@@ -73,7 +72,7 @@ func Validate(in ValidatorInput) ValidatorOutput {
 		nameDetail.AddMessage(util.Msg("Name cannot be empty"))
 	}
 
-	if in.Preset.GetTypeId() == common.TargetTypeProject {
+	if in.Preset.GetTypeId() == TargetTypeProject {
 		if !util.IsValidProjectName(name) {
 			nameDetail.AddMessage(util.Msg("Invalid project name"))
 		}

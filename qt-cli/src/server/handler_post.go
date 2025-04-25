@@ -6,6 +6,7 @@ package server
 import (
 	"net/http"
 	"path/filepath"
+	"qtcli/common"
 	"qtcli/generator"
 	"qtcli/runner"
 	"strings"
@@ -49,21 +50,13 @@ func postNewItemValidation(c *gin.Context) {
 		return
 	}
 
-	// nameErrors := []string{}
-	// workingDirErrors := []string{}
-	// workingDirWarnings := []string{}
-
-	// nameNorm := strings.TrimSpace(req.Name)
-	// workingDirNorm := strings.TrimSpace(filepath.Clean(req.WorkingDir))
-	// workingDirNorm = filepath.ToSlash(workingDirNorm)
-
-	in := ValidatorInput{
+	in := common.ValidatorInput{
 		Name:       req.Name,
 		WorkingDir: req.WorkingDir,
 		Preset:     preset,
 	}
 
-	out := Validate(in)
+	out := common.Validate(in)
 	if out.Success {
 		c.JSON(http.StatusOK, SuccessResponse[any]{Success: true})
 		return

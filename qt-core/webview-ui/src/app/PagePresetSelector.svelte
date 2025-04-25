@@ -19,11 +19,11 @@ SPDX-License-Identifier: LicenseRef-Qt-Commercial OR LGPL-3.0-only
   grid-rows-[min-content_1fr] 
   grid-cols-[min-content_minmax(300px,1fr)_1fr]
   `}>
-  <SectionLabel text="Select preset" class="w-full col-span-3" />
+  <SectionLabel text="Available presets" class="w-full col-span-3" />
   <PresetTypeSelector />
   <PresetList />
   <div class="flex flex-col">
-    <SectionLabel text="Description" icon={false} />
+    <SectionLabel text="Description" />
     <div>
       <Label class="qt-label whitespace-pre-wrap leading-relaxed"
         >{(presets.selected?.meta?.description ?? "").replaceAll("\n", "\n\n")}
@@ -32,7 +32,7 @@ SPDX-License-Identifier: LicenseRef-Qt-Commercial OR LGPL-3.0-only
     <div class="flex-grow"></div>
 
     {#if presets.selectedPrompt?.prompt.steps }
-      <SectionLabel text="Options" icon={false} />
+      <SectionLabel text="Options" />
       <PresetOptionsTable />
     {/if}
   </div>

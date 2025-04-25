@@ -5,7 +5,7 @@ SPDX-License-Identifier: LicenseRef-Qt-Commercial OR LGPL-3.0-only
 
 <script lang="ts">
   import { Label } from "flowbite-svelte";
-  import { ChevronRightOutline } from "flowbite-svelte-icons";
+  import { AngleRightOutline } from "flowbite-svelte-icons";
   let { 
     text,
     icon = true,
@@ -13,9 +13,9 @@ SPDX-License-Identifier: LicenseRef-Qt-Commercial OR LGPL-3.0-only
   } = $props();
 </script>
 
-<div class={`flex flex-row self-center w-full mb-1 ${className}`}>
+<div class={`flex flex-row w-full mb-1 ${className} *:self-center gap-0.5`}>
   {#if icon}
-    <ChevronRightOutline class="qt-label-highlight" />
+    <AngleRightOutline class="qt-label-highlight" size="sm" />
   {/if}
-  <Label class="qt-label-highlight">{text}</Label>
+  <Label class="qt-label-highlight text-md">{text}</Label>
 </div>

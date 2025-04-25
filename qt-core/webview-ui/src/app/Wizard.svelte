@@ -14,8 +14,8 @@ SPDX-License-Identifier: LicenseRef-Qt-Commercial OR LGPL-3.0-only
   import WizardButtons from "./WizardButtons.svelte";
 
   const pages = [
-    { component: PagePresetSelector },
-    { component: PageParamInput }
+    { component: PagePresetSelector, title: "Select what to create" },
+    { component: PageParamInput, title: "Configure details" }
   ];
 
   let currentIndex = $state(0);
@@ -61,7 +61,6 @@ SPDX-License-Identifier: LicenseRef-Qt-Commercial OR LGPL-3.0-only
 </script>
 
 <Modal
-  title="Create a new item"
   size="md"
   color="none"
   open
@@ -71,6 +70,10 @@ SPDX-License-Identifier: LicenseRef-Qt-Commercial OR LGPL-3.0-only
   style="height: 80vh;"
   on:close={viewlogic.onModalClosed}
 >
+  <svelte:fragment slot="header">
+    <div class="qt-modal-title">{currentPage.title}</div>
+  </svelte:fragment>
+
   <div class="w-full h-full">
     <currentPage.component />
   </div>

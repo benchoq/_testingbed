@@ -45,8 +45,10 @@ body {
   border-radius: var(--qt-border-radius);
 }
 
-.qt-modal h3 {
+.qt-modal-title {
+  @apply text-2xl font-semibold;
   color: var(--qt-text-highlight);
+  
 }
 
 /* button */

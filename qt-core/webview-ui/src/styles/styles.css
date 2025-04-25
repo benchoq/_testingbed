@@ -34,6 +34,7 @@ body {
 .qt-label-highlight {
   color: var(--qt-text-highlight);
   font-weight: var(--qt-font-weight);
+  font-size: 1.02rem;
 }
 
 /* modal */
@@ -46,9 +47,9 @@ body {
 }
 
 .qt-modal-title {
-  @apply text-2xl font-semibold;
   color: var(--qt-text-highlight);
-  
+  font-size: 1.4rem;
+  @apply font-semibold;
 }
 
 /* button */

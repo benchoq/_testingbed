@@ -11,7 +11,7 @@ SPDX-License-Identifier: LicenseRef-Qt-Commercial OR LGPL-3.0-only
   import WorkingDirInput from "./WorkingDirInput.svelte";
   import PresetOptionsTable from "./PresetOptionsTable.svelte";
 
-  import { presets, configs, dryRunResult } from "./states.svelte";
+  import { presets, configs } from "./states.svelte";
   import { createPresetDisplayText } from "./viewlogic.svelte";
 </script>
 
@@ -30,7 +30,7 @@ SPDX-License-Identifier: LicenseRef-Qt-Commercial OR LGPL-3.0-only
   </div>
 
   <div class="h-full col-span-2 text-md text-white mb-1">
-    <SectionLabel text="Name and locations" />
+    <SectionLabel text="Name and location" />
   </div>
 
   <div class="text-sm ml-4 text-white">Name</div><NameInput />

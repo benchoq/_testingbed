@@ -15,26 +15,26 @@ SPDX-License-Identifier: LicenseRef-Qt-Commercial OR LGPL-3.0-only
   import { createPresetDisplayText } from "./viewlogic.svelte";
 </script>
 
-<div class={`w-full h-full grid
-  grid-cols-[max-content_1fr]
-  grid-rows-[min-content_1fr_repeat(4,min-content)]
-  gap-2`}
+<div class={`w-full h-full grid gap-2
+  grid-cols-[max-content_1fr] grid-rows-[1fr_repeat(3,min-content)]`}
 >
-  <SectionLabel text="Preset" />
-  <div>&quot;{createPresetDisplayText(presets.selected)}&quot;</div>
-
-  <div></div>
-  <div>
-    <Label class="qt-label whitespace-pre-wrap leading-relaxed"
-      >{(presets.selected?.meta?.description ?? "").replaceAll("\n", "\n\n")}
-    </Label>
+  <div class="h-full col-span-2 text-md text-white">
+    <SectionLabel text={`
+      Selected preset - "${createPresetDisplayText(presets.selected)}"`} />
+    <div class="m-4 grid grid-cols-2 gap-4">
+      <Label class="qt-label whitespace-pre-wrap leading-relaxed">
+        {(presets.selected?.meta?.description ?? "")}
+      </Label>
+      <PresetOptionsTable />
+    </div>
   </div>
 
-  <div class="h-full mt-1"><SectionLabel text="Options" /></div>
-  <div class="w-1/2 flex flex-col gap-2"><PresetOptionsTable /></div>
+  <div class="h-full col-span-2 text-md text-white mb-1">
+    <SectionLabel text="Name and locations" />
+  </div>
 
-  <SectionLabel text="Name" /><NameInput />
-  <SectionLabel text="Create In" /><WorkingDirInput />
+  <div class="text-sm ml-4 text-white">Name</div><NameInput />
+  <div class="text-sm ml-4 text-white">Create in</div><WorkingDirInput />
 
   <div></div>
   {#if configs.type === "project"}

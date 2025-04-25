@@ -116,8 +116,28 @@ export const validateInputs = async () => {
   vscodeApi
     .request(CallMessageId.ViewCallQtcliApi, { method, endpoint, data })
     .then((res: any) => { 
+      // TODO: make this type safe, robust ...
       console.log(res)
-      inputValidationResult.nameError = _.get(res, "data.name.error", '') as string;
-      inputValidationResult.workingDirError = _.get(res, "data.workingDir.error", '') as string;
+      const success = _.get(res, "data.success", false) as boolean;
+      if (success) {
+        inputValidationResult.nameError = ""
+        inputValidationResult.workingDirError = ""
+        return;
+      }
+
+      const details = _.get(res, "data.error.details", []);
+
+      details.forEach((item: any) => {
+        const field = _.get(item, "field", "") as string;
+        const message = _.get(item, "message", "") as string;
+
+        if (field === "name" && message.length !== 0) {
+          inputValidationResult.nameError = message;
+        }
+
+        if (field === "workingDir" && message.length !== 0) {
+          inputValidationResult.workingDirError = message;
+        }
+      });
     })
 }

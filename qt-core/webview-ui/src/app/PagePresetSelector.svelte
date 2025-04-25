@@ -4,7 +4,7 @@ SPDX-License-Identifier: LicenseRef-Qt-Commercial OR LGPL-3.0-only
 -->
 
 <script lang="ts">
-  import { Checkbox, Label } from "flowbite-svelte";
+  import { Label } from "flowbite-svelte";
 
   import LoadingMask from "@/comps/LoadingMask.svelte";
   import SectionLabel from "@/comps/SectionLabel.svelte";
@@ -34,7 +34,6 @@ SPDX-License-Identifier: LicenseRef-Qt-Commercial OR LGPL-3.0-only
     {#if presets.selectedPrompt?.prompt.steps }
       <SectionLabel text="Options" icon={false} />
       <PresetOptionsTable />
-      <Checkbox class="qt-checkbox mt-2 justify-end">Customize</Checkbox>
     {/if}
   </div>
 </div>

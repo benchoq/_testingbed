@@ -66,6 +66,19 @@ func (g *Generator) DryRun(on bool) *Generator {
 }
 
 func (g *Generator) Render() (Result, error) {
+	// input validation
+	in := common.ValidatorInput{
+		Name:       g.name,
+		WorkingDir: g.workingDir,
+		Preset:     g.preset,
+	}
+
+	out := common.Validate(in)
+	if !out.Success {
+		return Result{}, errors.New(util.Msg("Input validation failed"))
+	}
+
+	// prep.
 	if err := g.prepContext(); err != nil {
 		return Result{}, err
 	}

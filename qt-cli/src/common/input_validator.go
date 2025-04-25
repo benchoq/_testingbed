@@ -10,35 +10,15 @@ import (
 	"strings"
 )
 
-// in
 type ValidatorInput struct {
 	Name       string
 	WorkingDir string
-	Preset     PresetData
+	Preset     Preset
 }
 
-// out
 type ValidatorOutput struct {
-	Success bool
-	Details []ValidatorOutputDetail
-}
-
-// output entry
-type ValidatorOutputDetail struct {
-	Field    string
-	Messages []string
-}
-
-func NewValidatorDetail(field string) *ValidatorOutputDetail {
-	return &ValidatorOutputDetail{
-		Field:    field,
-		Messages: []string{},
-	}
-}
-
-func (v *ValidatorOutputDetail) AddMessage(m string) *ValidatorOutputDetail {
-	v.Messages = append(v.Messages, m)
-	return v
+	Success      bool
+	ErrorDetails []ErrorDetailEntry
 }
 
 func Validate(in ValidatorInput) ValidatorOutput {
@@ -46,20 +26,20 @@ func Validate(in ValidatorInput) ValidatorOutput {
 	workingDir := strings.TrimSpace(filepath.Clean(in.WorkingDir))
 	workingDir = filepath.ToSlash(workingDir)
 
-	nameDetail := NewValidatorDetail("name")
-	workingDirDetail := NewValidatorDetail("workingDir")
+	nameErrors := []string{}
+	workingDirErrors := []string{}
 
 	// dir error check
 	if len(workingDir) == 0 {
-		workingDirDetail.AddMessage(util.Msg("Working directory cannot be empty"))
+		workingDirErrors = append(workingDirErrors, util.Msg("Working directory cannot be empty"))
 	}
 
 	if !util.IsAbsPath(workingDir) {
-		workingDirDetail.AddMessage(util.Msg("Working directory must be an absolute path"))
+		workingDirErrors = append(workingDirErrors, util.Msg("Working directory must be an absolute path"))
 	}
 
 	if !util.IsValidFullPath(workingDir) {
-		workingDirDetail.AddMessage(util.Msg("Invalid working directory name"))
+		workingDirErrors = append(workingDirErrors, util.Msg("Invalid working directory name"))
 	}
 
 	// dir warning check
@@ -69,36 +49,42 @@ func Validate(in ValidatorInput) ValidatorOutput {
 
 	// name error check
 	if len(name) == 0 {
-		nameDetail.AddMessage(util.Msg("Name cannot be empty"))
+		nameErrors = append(nameErrors, util.Msg("Name cannot be empty"))
 	}
 
 	if in.Preset.GetTypeId() == TargetTypeProject {
 		if !util.IsValidProjectName(name) {
-			nameDetail.AddMessage(util.Msg("Invalid project name"))
+			nameErrors = append(nameErrors, util.Msg("Invalid project name"))
 		}
 
 		totalPath := path.Join(workingDir, name)
 		if util.EntryExists(totalPath) { // FIXME: bug on checking this
-			nameDetail.AddMessage(util.Msg("Output folder already exists"))
+			nameErrors = append(nameErrors, util.Msg("Output folder already exists"))
 		}
 	} else {
 		// TODO: dry-run generator and check if file exists
 		if !util.IsValidFileName(name) {
-			nameDetail.AddMessage(util.Msg("Invalid file name"))
+			nameErrors = append(nameErrors, util.Msg("Invalid file name"))
 		}
 	}
 
-	allDetails := []ValidatorOutputDetail{}
-	if len(nameDetail.Messages) != 0 {
-		allDetails = append(allDetails, *nameDetail)
+	allErrors := []ErrorDetailEntry{}
+	if len(nameErrors) != 0 {
+		allErrors = append(allErrors, ErrorDetailEntry{
+			Field:   "name",
+			Message: strings.Join(nameErrors, "\n"),
+		})
 	}
 
-	if len(workingDirDetail.Messages) != 0 {
-		allDetails = append(allDetails, *workingDirDetail)
+	if len(workingDirErrors) != 0 {
+		allErrors = append(allErrors, ErrorDetailEntry{
+			Field:   "workingDir",
+			Message: strings.Join(workingDirErrors, "\n"),
+		})
 	}
 
 	return ValidatorOutput{
-		Success: len(allDetails) == 0,
-		Details: allDetails,
+		Success:      len(allErrors) == 0,
+		ErrorDetails: allErrors,
 	}
 }

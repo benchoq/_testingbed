@@ -59,21 +59,12 @@ func postNewItemValidation(c *gin.Context) {
 	out := common.Validate(in)
 	if out.Success {
 		c.JSON(http.StatusOK, SuccessResponse[any]{Success: true})
-		return
+	} else {
+		c.JSON(
+			http.StatusOK, // TODO: check status code
+			NewErrorResponse("Input validation failed", out.ErrorDetails),
+		)
 	}
-
-	errorDetails := []ErrorDetail{}
-	for _, detail := range out.Details {
-		errorDetails = append(errorDetails, ErrorDetail{
-			Field:   detail.Field,
-			Message: strings.Join(detail.Messages, "\n"),
-		})
-	}
-
-	c.JSON(
-		http.StatusOK, // TODO: check status code
-		NewErrorResponse("Input validation failed", errorDetails),
-	)
 }
 
 func postNewItem(c *gin.Context) {

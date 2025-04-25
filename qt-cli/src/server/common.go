@@ -4,6 +4,8 @@
 package server
 
 import (
+	"qtcli/common"
+
 	"github.com/gin-gonic/gin"
 )
 
@@ -13,22 +15,12 @@ type SuccessResponse[T any] struct {
 }
 
 type ErrorResponse struct {
-	Error ErrorContent `json:"error"`
+	Error common.ErrorWithDetails `json:"error"`
 }
 
-type ErrorContent struct {
-	Message string        `json:"message"`
-	Details []ErrorDetail `json:"details,omitempty"`
-}
-
-type ErrorDetail struct {
-	Field   string `json:"field"`
-	Message string `json:"message"`
-}
-
-func NewErrorResponse(message string, details []ErrorDetail) ErrorResponse {
+func NewErrorResponse(message string, details []common.ErrorDetailEntry) ErrorResponse {
 	return ErrorResponse{
-		Error: ErrorContent{
+		Error: common.ErrorWithDetails{
 			Message: message,
 			Details: details,
 		},
@@ -38,7 +30,7 @@ func NewErrorResponse(message string, details []ErrorDetail) ErrorResponse {
 func ReplyError(c *gin.Context, code int, err error) {
 	if err != nil {
 		res := ErrorResponse{
-			Error: ErrorContent{Message: err.Error()},
+			Error: common.ErrorWithDetails{Message: err.Error()},
 		}
 
 		c.JSON(code, res)

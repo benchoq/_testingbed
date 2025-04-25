@@ -15,7 +15,6 @@ export enum CallMessageId {
   ViewSelectWorkingDir,
   ViewCallQtcliApi,
   ViewCreateItem,
-  ViewCheckDirectoryExists,
 }
 
 export interface CallMessage<T = unknown> {

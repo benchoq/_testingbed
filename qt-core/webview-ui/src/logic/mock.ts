@@ -16,10 +16,6 @@ class MockHandler {
       return mockViewCallQtcliApi(data);
     }
 
-    if (id === CallMessageId.ViewCheckDirectoryExists) {
-      return Promise.resolve(true);
-    }
-
     return Promise.reject("mock handler doesn't implement this");
   }
 }

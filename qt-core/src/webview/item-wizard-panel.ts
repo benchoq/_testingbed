@@ -2,7 +2,6 @@
 // SPDX-License-Identifier: LicenseRef-Qt-Commercial OR LGPL-3.0-only
 
 import _ from "lodash";
-import * as fs from 'fs';
 import * as path from 'path';
 import * as vscode from "vscode";
 
@@ -139,11 +138,6 @@ export class ItemWizardPanel {
         });
 
       return;
-    }
-
-    if (r.id === CallMessageId.ViewCheckDirectoryExists) {
-      const exists = fs.existsSync(_.toString(r.data))
-      void this._reply(r.id, r.tag, exists)
     }
   }
 }

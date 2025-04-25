@@ -11,7 +11,7 @@ SPDX-License-Identifier: LicenseRef-Qt-Commercial OR LGPL-3.0-only
   import WorkingDirInput from "./WorkingDirInput.svelte";
   import PresetOptionsTable from "./PresetOptionsTable.svelte";
 
-  import { presets, configs } from "./states.svelte";
+  import { presets, configs, dryRunResult } from "./states.svelte";
   import { createPresetDisplayText } from "./viewlogic.svelte";
 </script>
 
@@ -31,7 +31,7 @@ SPDX-License-Identifier: LicenseRef-Qt-Commercial OR LGPL-3.0-only
   </div>
 
   <SectionLabel text="Options" class="h-full mt-3" />
-  <div class="w-1/2 flex flex-col gap-2">
+<div class="w-1/2 flex flex-col gap-2">
     <PresetOptionsTable /> 
   </div>
 

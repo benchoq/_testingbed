@@ -6,7 +6,6 @@ package server
 import (
 	"net/http"
 	"path/filepath"
-	"qtcli/common"
 	"qtcli/generator"
 	"qtcli/runner"
 	"strings"
@@ -26,7 +25,6 @@ type ResponseCreateNewItem struct {
 	Files      []string `json:"files" binding:"required"`
 	FilesDir   string   `json:"filesDir" binding:"required"`
 	WorkingDir string   `json:"workingDir" binding:"required"`
-	Message    string   `json:"message" binding:"required"`
 	DryRun     bool     `json:"dryRun" binding:"required"`
 }
 
@@ -34,35 +32,6 @@ type RequestValidateNewItem struct {
 	Name       string `json:"name"`
 	WorkingDir string `json:"workingDir"`
 	PresetId   string `json:"presetId" binding:"required"`
-}
-
-func postNewItemValidation(c *gin.Context) {
-	var req RequestValidateNewItem
-
-	if err := c.ShouldBindJSON(&req); err != nil {
-		ReplyError(c, http.StatusBadRequest, err.Error())
-		return
-	}
-
-	preset, err := runner.Presets.Any.FindByUniqueId(req.PresetId)
-	if err != nil {
-		ReplyError(c, http.StatusBadRequest, err.Error())
-		return
-	}
-
-	in := common.ValidatorInput{
-		Name:       req.Name,
-		WorkingDir: req.WorkingDir,
-		Preset:     preset,
-	}
-
-	out := common.Validate(in)
-	if out.Success {
-		c.JSON(http.StatusOK, SuccessResponse[any]{Success: true})
-	} else {
-		// TODO: check status code
-		c.JSON(http.StatusOK, NewErrorResponse(out.Error))
-	}
 }
 
 func postNewItem(c *gin.Context) {
@@ -100,7 +69,6 @@ func postNewItem(c *gin.Context) {
 		Files:      result.Data.GetOutputFilesRel(),
 		FilesDir:   result.Data.GetOutputDirAbs(),
 		WorkingDir: normalizedWorkingDir,
-		Message:    "Item created successfully",
 		DryRun:     dryRun,
 	})
 }

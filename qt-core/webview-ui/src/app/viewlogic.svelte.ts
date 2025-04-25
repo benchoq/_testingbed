@@ -6,7 +6,7 @@ import _ from "lodash";
 import { PushMessageId, CallMessageId, type PushMessage } from "@shared/message";
 import { vscodeApi } from "@/logic/vscodeApi";
 import { type Preset } from './types.svelte';
-import { configs, presets, loading, inputValidationResult } from './states.svelte';
+import { configs, presets, loading, dryRunResult } from './states.svelte';
 
 vscodeApi.onDidReceivePushMessage((p: PushMessage) => {
   if (p.id === PushMessageId.PanelInit) {
@@ -99,47 +99,41 @@ export const createItemFromSelectedPreset = async () => {
     .then((res) => { console.log("item created") })
 };
 
-export const validateInputs = async () => {
+export const dryRunGenerator = async () => {
   if (!presets.selected) {
     // TODO: error display
     return;
   }
 
-  const method = "post"
-  const endpoint = "/items/validate";
-  const data = {
-    name: configs.name, 
-    workingDir: configs.workingDir, 
-    presetId: presets.selected?.id,
+  const body = {
+    method: "post",
+    endpoint: "/items",
+    params: { dry_run: true },
+    data: {
+      name: configs.name, 
+      workingDir: configs.workingDir, 
+      presetId: presets.selected?.id,
+    }
   }
 
   vscodeApi
-    .request(CallMessageId.ViewCallQtcliApi, { method, endpoint, data })
+    .request(CallMessageId.ViewCallQtcliApi, body)
     .then((res: any) => { 
+      // res ==> { data: {}, status: number }
       // TODO: make this type safe, robust ...
-      inputValidationResult.nameError = ""
-      inputValidationResult.workingDirError = ""
+      dryRunResult.nameError = ""
+      dryRunResult.workingDirError = ""
 
-      const success = _.get(res, "data.success", false) as boolean;
-      if (success) {
-        return;
+      if (_.has(res, "data.error")) {
+        const details = _.get(res, "data.error.details", []);
+        details.forEach((item: any) => {
+          const field = _.get(item, "field", "") as string;
+          const message = _.get(item, "message", "") as string;
+          if (message.length !== 0) {
+            if (field === "name") dryRunResult.nameError = message;
+            if (field === "workingDir") dryRunResult.workingDirError = message;
+          }
+        });
       }
-
-      const details = _.get(res, "data.error.details", []);
-
-      details.forEach((item: any) => {
-        const field = _.get(item, "field", "") as string;
-        const message = _.get(item, "message", "") as string;
-
-        if (message.length !== 0) {
-          if (field === "name") {
-            inputValidationResult.nameError = message;
-          }
-
-          if (field === "workingDir") {
-            inputValidationResult.workingDirError = message;
-          }
-        }
-      });
     })
 }

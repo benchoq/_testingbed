@@ -82,7 +82,6 @@ func createApiHandler() *gin.Engine {
 	v1.GET("/presets/:id", getPresetById)
 	v1.GET("/presets/:id/prompt", getPresetPromptById)
 	v1.POST("/items", postNewItem)
-	v1.POST("/items/validate", postNewItemValidation)
 	v1.DELETE("/server", shutdownServer)
 
 	return r

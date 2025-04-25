@@ -18,9 +18,9 @@ export const configs = $state({
   saveWorkingDir: false,
 })
 
-export const inputValidationResult = $state({
+export const dryRunResult = $state({
   nameError: "",
-  workingDirError: ""
+  workingDirError: "",
 })
 
 export const loading = $state({

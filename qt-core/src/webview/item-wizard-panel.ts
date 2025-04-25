@@ -122,9 +122,11 @@ export class ItemWizardPanel {
     if (r.id === CallMessageId.ViewCallQtcliApi) {
       qtcliApi
         .call(r.data as QtcliRestRequest) // TODO: check casting
-        .then((res: any) => { this._reply(r.id, r.tag, res); });
+        .then((res: any) => { this._reply(r.id, r.tag, res); })
+        .catch((err: any) => {
+          console.log("unhandled rest call error", err);
+        })
 
-      // TODO: send error status thru reply.
       return;
     }
 

@@ -6,7 +6,7 @@ SPDX-License-Identifier: LicenseRef-Qt-Commercial OR LGPL-3.0-only
 <script lang="ts">
   import { Button } from "flowbite-svelte";
   import { FolderOpenOutline } from "flowbite-svelte-icons";
-  import { configs, inputValidationResult } from "./states.svelte";
+  import { configs, dryRunResult } from "./states.svelte";
   import * as viewlogic from "./viewlogic.svelte";
   import InputWithValidation from "@/comps/InputWithValidation.svelte";
 </script>
@@ -20,7 +20,7 @@ SPDX-License-Identifier: LicenseRef-Qt-Commercial OR LGPL-3.0-only
   </Button>
   <InputWithValidation 
     bind:value={configs.workingDir}
-    onInput={viewlogic.validateInputs}
-    errors={inputValidationResult.workingDirError} />
+    onInput={viewlogic.dryRunGenerator}
+    errors={dryRunResult.workingDirError} />
   <!-- class={`qt-input -ml-px rounded-l-none! ${workingDirInputHasFocus || workingDirHasError ? "z-10" : "z-0"}`} -->
 </div>

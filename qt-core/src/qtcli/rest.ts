@@ -16,9 +16,8 @@ export interface QtcliRestRequest {
 }
 
 export interface QtcliRestResponse {
-  data?: any;
-  error?: string;
-  request: QtcliRestRequest;
+  data: any;
+  status: number;
 }
 
 export class QtcliRestClient {
@@ -32,10 +31,6 @@ export class QtcliRestClient {
 
   public async call(req: QtcliRestRequest, attempt = 0): Promise<QtcliRestResponse> {
     try {
-      if (!req.method || !req.endpoint) {
-        throw new Error("API request is invalid");
-      }
-
       const res = await this._api({
         method: req.method,
         url: req.endpoint,
@@ -43,10 +38,9 @@ export class QtcliRestClient {
         data: req.data 
       });
 
-      if (res.status >= 200 && res.status < 300) {
-        return { data: res.data, request: req };
-      } else {
-        throw new Error(res.statusText)
+      return { 
+        data: res.data, 
+        status: res.status,
       }
     } catch (err: any) {
       if ((req.method === 'get') && (attempt < this.maxRetries)) {
@@ -55,7 +49,14 @@ export class QtcliRestClient {
         return this.call(req, attempt + 1);
       }
 
-      return { error: err.message, request: req }
+      if (err.response) {
+        return {
+          data: err.response.data,
+          status: err.response.status
+        }
+      }
+
+      throw err;
     }
   }
   

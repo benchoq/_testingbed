@@ -95,8 +95,6 @@ class VSCodeApiWrapper {
     if (resolve) {
       resolve(m.data);
     }
-
-    console.log(m);
   }
   
   private _generateTag(): string {

@@ -23,6 +23,7 @@ type Generator struct {
 	name       string
 	preset     common.Preset
 	workingDir string
+	dryRun     bool
 	context    Context
 }
 
@@ -40,6 +41,7 @@ func NewGenerator(name string) *Generator {
 	return &Generator{
 		name:       name,
 		workingDir: cwd,
+		dryRun:     false,
 	}
 }
 
@@ -55,6 +57,11 @@ func (g *Generator) Preset(preset common.Preset) *Generator {
 
 func (g *Generator) WorkingDir(dir string) *Generator {
 	g.workingDir = dir
+	return g
+}
+
+func (g *Generator) DryRun(on bool) *Generator {
+	g.dryRun = on
 	return g
 }
 
@@ -230,10 +237,12 @@ func (g *Generator) runContents(result ResultItem) error {
 	}
 
 	// save to file
-	output = polishOutput(output)
-	_, err = util.WriteAll([]byte(output), result.outputFileAbs)
-	if err != nil {
-		return err
+	if !g.dryRun {
+		output = polishOutput(output)
+		_, err = util.WriteAll([]byte(output), result.outputFileAbs)
+		if err != nil {
+			return err
+		}
 	}
 
 	return nil

@@ -118,7 +118,6 @@ func postNewItemValidation(c *gin.Context) {
 
 func postNewItem(c *gin.Context) {
 	var req RequestCreateNewItem
-
 	if err := c.ShouldBindJSON(&req); err != nil {
 		ReplyFromError(c, http.StatusBadRequest, err)
 		return
@@ -130,6 +129,9 @@ func postNewItem(c *gin.Context) {
 		return
 	}
 
+	dryRun_s := strings.TrimSpace(c.DefaultQuery("dry_run", "false"))
+	dryRun := (dryRun_s == "") || strings.ToLower(dryRun_s) == "true"
+
 	preset.MergeOptions(req.Options)
 	normalizedWorkingDir := filepath.Clean(req.WorkingDir)
 	normalizedWorkingDir = filepath.ToSlash(normalizedWorkingDir)
@@ -138,6 +140,7 @@ func postNewItem(c *gin.Context) {
 		Env(runner.GeneratorEnv).
 		WorkingDir(normalizedWorkingDir).
 		Preset(preset).
+		DryRun(dryRun).
 		Render()
 
 	if err != nil {

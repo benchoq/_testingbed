@@ -8,7 +8,7 @@ SPDX-License-Identifier: LicenseRef-Qt-Commercial OR LGPL-3.0-only
   import { 
     AngleLeftOutline, 
     AngleRightOutline, 
-    ArrowRightOutline 
+    CheckOutline 
   } from "flowbite-svelte-icons";
 
   let {
@@ -19,7 +19,7 @@ SPDX-License-Identifier: LicenseRef-Qt-Commercial OR LGPL-3.0-only
   const findIcon = (role: string) => ({
     back: AngleLeftOutline,
     next: AngleRightOutline,
-    finish: ArrowRightOutline
+    finish: CheckOutline
   }[role] || undefined);
 
   const findText = (role: string) => {
@@ -30,7 +30,9 @@ SPDX-License-Identifier: LicenseRef-Qt-Commercial OR LGPL-3.0-only
 <div class="col-start-2 flex flex-row gap-2">
   <div class="flex-grow"></div>
   {#each roles as role}
-    <Button class="qt-button" on:click={() => { onClicked(role)}}>
+    <Button class={`qt-button ${role === "back" ? "flat" : ""}`}
+      on:click={() => { onClicked(role)}}
+    >
       {@const IconComp = findIcon(role)}
       {#if IconComp}
         <IconComp class="mr-1" />

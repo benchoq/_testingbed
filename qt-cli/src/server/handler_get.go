@@ -37,7 +37,7 @@ func getPresets(c *gin.Context) {
 		presets = runner.Presets.Any.FindByType(type_enum)
 	}
 
-	sendPresets(c, presets)
+	replyPresets(c, presets)
 }
 
 func getPresetById(c *gin.Context) {
@@ -49,7 +49,7 @@ func getPresetById(c *gin.Context) {
 		list = append(list, p)
 	}
 
-	sendPresets(c, list)
+	replyPresets(c, list)
 }
 
 func getPresetPromptById(c *gin.Context) {
@@ -100,7 +100,7 @@ func getPromptDefinesFrom(dir string) (map[string]interface{}, error) {
 }
 
 // helpers
-func sendPresets(c *gin.Context, presets []common.PresetData) {
+func replyPresets(c *gin.Context, presets []common.PresetData) {
 	if len(presets) == 0 {
 		ReplyFromError(c, http.StatusBadRequest,
 			errors.New("could not find any preset"))

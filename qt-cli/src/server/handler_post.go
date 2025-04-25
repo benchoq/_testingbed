@@ -38,28 +38,17 @@ type RequestValidateNewItem struct {
 	PresetId   string `json:"presetId" binding:"required"`
 }
 
-type ValidationResult struct {
-	Error   string `json:"error"`
-	Warning string `json:"warning"`
-}
-
-type ResponseValidateNewItem struct {
-	Valid      bool             `json:"valid" binding:"required"`
-	Name       ValidationResult `json:"name" binding:"required"`
-	WorkingDir ValidationResult `json:"workingDir" binding:"required"`
-}
-
 func postNewItemValidation(c *gin.Context) {
 	var req RequestValidateNewItem
 
 	if err := c.ShouldBindJSON(&req); err != nil {
-		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+		ReplyFromError(c, http.StatusBadRequest, err)
 		return
 	}
 
 	preset, err := runner.Presets.Any.FindByUniqueId(req.PresetId)
 	if err != nil {
-		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+		ReplyFromError(c, http.StatusBadRequest, err)
 		return
 	}
 
@@ -110,29 +99,34 @@ func postNewItemValidation(c *gin.Context) {
 		}
 	}
 
-	c.JSON(http.StatusCreated, ResponseValidateNewItem{
-		Valid: (len(nameErrors) == 0 && len(workingDirErrors) == 0),
-		Name: ValidationResult{
-			Error: strings.Join(nameErrors, "\n"),
-		},
-		WorkingDir: ValidationResult{
-			Error:   strings.Join(workingDirErrors, "\n"),
-			Warning: strings.Join(workingDirWarnings, "\n"),
-		},
-	})
+	if (len(nameErrors) == 0) && (len(workingDirErrors) == 0) {
+		c.JSON(http.StatusOK, SuccessResponse[any]{Success: true})
+		return
+	} else {
+		// TODO: check status code
+		c.JSON(http.StatusOK, ErrorResponse{
+			Error: ErrorContent{
+				Message: "Input validation failed",
+				Details: []ErrorDetail{
+					{Field: "name", Message: strings.Join(nameErrors, "\n")},
+					{Field: "workingDir", Message: strings.Join(workingDirErrors, "\n")},
+				},
+			},
+		})
+	}
 }
 
 func postNewItem(c *gin.Context) {
 	var req RequestCreateNewItem
 
 	if err := c.ShouldBindJSON(&req); err != nil {
-		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+		ReplyFromError(c, http.StatusBadRequest, err)
 		return
 	}
 
 	preset, err := runner.Presets.Any.FindByUniqueId(req.PresetId)
 	if err != nil {
-		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+		ReplyFromError(c, http.StatusBadRequest, err)
 		return
 	}
 
@@ -147,7 +141,7 @@ func postNewItem(c *gin.Context) {
 		Render()
 
 	if err != nil {
-		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+		ReplyFromError(c, http.StatusBadRequest, err)
 		return
 	}
 

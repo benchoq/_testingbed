@@ -5,6 +5,7 @@ package server
 
 import (
 	"encoding/json"
+	"errors"
 	"net/http"
 	"path"
 	"qtcli/common"
@@ -57,7 +58,7 @@ func getPresetPromptById(c *gin.Context) {
 
 	p, err := runner.Presets.Any.FindByUniqueId(id)
 	if err != nil {
-		c.JSON(http.StatusNotFound, gin.H{"message": "could not find any preset"})
+		ReplyFromError(c, http.StatusBadRequest, err)
 		return
 	}
 
@@ -101,7 +102,8 @@ func getPromptDefinesFrom(dir string) (map[string]interface{}, error) {
 // helpers
 func sendPresets(c *gin.Context, presets []common.PresetData) {
 	if len(presets) == 0 {
-		c.JSON(http.StatusNotFound, gin.H{"message": "could not find any preset"})
+		ReplyFromError(c, http.StatusBadRequest,
+			errors.New("could not find any preset"))
 		return
 	}
 

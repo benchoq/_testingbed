@@ -63,6 +63,7 @@ body {
 }
 
 .qt-button.flat {
+  color: var(--qt-text-normal);
   background: transparent;
 }
 

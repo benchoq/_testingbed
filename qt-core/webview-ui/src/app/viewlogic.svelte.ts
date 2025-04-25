@@ -129,12 +129,14 @@ export const validateInputs = async () => {
           const field = _.get(item, "field", "") as string;
           const message = _.get(item, "message", "") as string;
 
-          if (field === "name" && message.length !== 0) {
-            inputValidationResult.nameError = message;
-          }
+          if (message.length !== 0) {
+            if (field === "name") {
+              inputValidationResult.nameError = message;
+            }
 
-          if (field === "workingDir" && message.length !== 0) {
-            inputValidationResult.workingDirError = message;
+            if (field === "workingDir") {
+              inputValidationResult.workingDirError = message;
+            }
           }
         });
       }

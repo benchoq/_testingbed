@@ -4,7 +4,8 @@ show_help() {
   echo "Usage: ./run.sh <command>"
   echo "Commands:"
   echo "  build            build binaries, copy to qt-core/res/qtcli"
-  echo "  tests            run tests (e2e)"
+  echo "  tests            run end-to-end tests"
+  echo "  unittests        run unittests"
   echo "  print-version    print current version"
   echo "  install-tools    install tools for build, license update, etc."
   echo "  update-license   update license files"
@@ -35,6 +36,11 @@ tests() {
   go build -C ./src -o ../tests && \
   echo ">>> Running end-to-end tests ..." && \
   go test -C ./tests/e2e -v
+}
+
+unittests() {
+  echo ">>> Running unittests ..." && \
+  go test -C ./src ./... -v
 }
 
 print_version() {
@@ -69,6 +75,9 @@ case "$1" in
     ;;
   tests)
     tests
+    ;;
+  unittests)
+    unittests
     ;;
   print-version)
     print_version

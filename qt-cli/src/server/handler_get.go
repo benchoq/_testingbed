@@ -58,7 +58,7 @@ func getPresetPromptById(c *gin.Context) {
 
 	p, err := runner.Presets.Any.FindByUniqueId(id)
 	if err != nil {
-		ReplyFromError(c, http.StatusBadRequest, err)
+		ReplyError(c, http.StatusBadRequest, err)
 		return
 	}
 
@@ -102,7 +102,7 @@ func getPromptDefinesFrom(dir string) (map[string]interface{}, error) {
 // helpers
 func replyPresets(c *gin.Context, presets []common.PresetData) {
 	if len(presets) == 0 {
-		ReplyFromError(c, http.StatusBadRequest,
+		ReplyError(c, http.StatusBadRequest,
 			errors.New("could not find any preset"))
 		return
 	}

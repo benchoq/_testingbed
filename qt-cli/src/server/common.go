@@ -26,7 +26,7 @@ type ErrorDetail struct {
 	Message string `json:"message"`
 }
 
-func ReplyFromError(c *gin.Context, code int, err error) {
+func ReplyError(c *gin.Context, code int, err error) {
 	if err != nil {
 		res := ErrorResponse{
 			Error: ErrorContent{Message: err.Error()},

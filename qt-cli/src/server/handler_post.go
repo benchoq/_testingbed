@@ -42,13 +42,13 @@ func postNewItemValidation(c *gin.Context) {
 	var req RequestValidateNewItem
 
 	if err := c.ShouldBindJSON(&req); err != nil {
-		ReplyFromError(c, http.StatusBadRequest, err)
+		ReplyError(c, http.StatusBadRequest, err)
 		return
 	}
 
 	preset, err := runner.Presets.Any.FindByUniqueId(req.PresetId)
 	if err != nil {
-		ReplyFromError(c, http.StatusBadRequest, err)
+		ReplyError(c, http.StatusBadRequest, err)
 		return
 	}
 
@@ -119,13 +119,13 @@ func postNewItemValidation(c *gin.Context) {
 func postNewItem(c *gin.Context) {
 	var req RequestCreateNewItem
 	if err := c.ShouldBindJSON(&req); err != nil {
-		ReplyFromError(c, http.StatusBadRequest, err)
+		ReplyError(c, http.StatusBadRequest, err)
 		return
 	}
 
 	preset, err := runner.Presets.Any.FindByUniqueId(req.PresetId)
 	if err != nil {
-		ReplyFromError(c, http.StatusBadRequest, err)
+		ReplyError(c, http.StatusBadRequest, err)
 		return
 	}
 
@@ -143,7 +143,7 @@ func postNewItem(c *gin.Context) {
 		Render()
 
 	if err != nil {
-		ReplyFromError(c, http.StatusBadRequest, err)
+		ReplyError(c, http.StatusBadRequest, err)
 		return
 	}
 

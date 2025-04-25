@@ -24,12 +24,12 @@ type RequestCreateNewItem struct {
 }
 
 type ResponseCreateNewItem struct {
-	Type       string         `json:"type" binding:"required"`
-	Files      []string       `json:"files" binding:"required"`
-	FilesDir   string         `json:"filesDir" binding:"required"`
-	WorkingDir string         `json:"workingDir" binding:"required"`
-	Message    string         `json:"message" binding:"required"`
-	Debug      map[string]any `json:"_debug"`
+	Type       string   `json:"type" binding:"required"`
+	Files      []string `json:"files" binding:"required"`
+	FilesDir   string   `json:"filesDir" binding:"required"`
+	WorkingDir string   `json:"workingDir" binding:"required"`
+	Message    string   `json:"message" binding:"required"`
+	DryRun     bool     `json:"dryRun" binding:"required"`
 }
 
 type RequestValidateNewItem struct {
@@ -153,13 +153,6 @@ func postNewItem(c *gin.Context) {
 		FilesDir:   output.GetOutputDirAbs(),
 		WorkingDir: normalizedWorkingDir,
 		Message:    "Item created successfully",
-		Debug: map[string]any{
-			"preset": map[string]any{
-				"name":        preset.Name,
-				"templateDir": preset.TemplateDir,
-				"options":     preset.Options,
-			},
-			"request": req,
-		},
+		DryRun:     dryRun,
 	})
 }

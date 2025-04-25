@@ -19,7 +19,7 @@ SPDX-License-Identifier: LicenseRef-Qt-Commercial OR LGPL-3.0-only
   const findIcon = (role: string) => ({
     back: AngleLeftOutline,
     next: AngleRightOutline,
-    finish: CheckOutline
+    create: CheckOutline
   }[role] || undefined);
 
   const findText = (role: string) => {

@@ -15,7 +15,7 @@ SPDX-License-Identifier: LicenseRef-Qt-Commercial OR LGPL-3.0-only
 </script>
 
 <div class={`
-  w-full h-full grid gap-2
+  w-full h-full grid gap-x-3 gap-y-2
   grid-rows-[min-content_1fr] 
   grid-cols-[min-content_minmax(300px,1fr)_1fr]
   `}>

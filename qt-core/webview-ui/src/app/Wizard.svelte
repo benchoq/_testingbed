@@ -20,14 +20,14 @@ SPDX-License-Identifier: LicenseRef-Qt-Commercial OR LGPL-3.0-only
 
   let currentIndex = $state(0);
   let currentPage = $derived(pages[currentIndex]); // TODO: validate index
-  let buttonRoles = $state([ "back", "next", "finish" ])
+  let buttonRoles = $state([ "back", "next", "create" ])
 
   const onButtonClicked = (role: string) => {
     if (role === "back") {
       setCurrentIndex(currentIndex - 1);
     } else if (role === "next") {
       setCurrentIndex(currentIndex + 1);
-    } else if (role === "finish") {
+    } else if (role === "create") {
       viewlogic.createItemFromSelectedPreset();
     }
   }
@@ -44,7 +44,7 @@ SPDX-License-Identifier: LicenseRef-Qt-Commercial OR LGPL-3.0-only
     if (currentIndex === 0) {
       buttonRoles = ["next"];
     } else if (currentIndex === (pages.length - 1)) {
-      buttonRoles = ["back", "finish"]
+      buttonRoles = ["back", "create"]
     } else {
       buttonRoles = ["back", "next"]
     }

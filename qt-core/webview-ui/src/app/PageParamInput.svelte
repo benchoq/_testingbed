@@ -18,10 +18,10 @@ SPDX-License-Identifier: LicenseRef-Qt-Commercial OR LGPL-3.0-only
 <div class={`w-full h-full grid gap-2
   grid-cols-[max-content_1fr] grid-rows-[1fr_repeat(3,min-content)]`}
 >
-  <div class="h-full col-span-2 text-md text-white">
+  <div class="h-full col-span-2 text-md">
     <SectionLabel text={`
-      Selected preset - "${createPresetDisplayText(presets.selected)}"`} />
-    <div class="m-4 grid grid-cols-2 gap-4">
+      Create a ${configs.type} from "${createPresetDisplayText(presets.selected)}"`} />
+    <div class="p-4 grid grid-cols-2 gap-4">
       <Label class="qt-label whitespace-pre-wrap leading-relaxed">
         {(presets.selected?.meta?.description ?? "")}
       </Label>
@@ -29,12 +29,12 @@ SPDX-License-Identifier: LicenseRef-Qt-Commercial OR LGPL-3.0-only
     </div>
   </div>
 
-  <div class="h-full col-span-2 text-md text-white mb-1">
+  <div class="h-full col-span-2 text-md mb-1">
     <SectionLabel text="Name and location" />
   </div>
 
-  <div class="text-sm ml-4 text-white">Name</div><NameInput />
-  <div class="text-sm ml-4 text-white">Create in</div><WorkingDirInput />
+  <Label class="qt-label pl-4">Name</Label><NameInput />
+  <Label class="qt-label pl-4">Create in</Label><WorkingDirInput />
 
   <div></div>
   {#if configs.type === "project"}

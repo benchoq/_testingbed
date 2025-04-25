@@ -129,8 +129,7 @@ func postNewItem(c *gin.Context) {
 		return
 	}
 
-	dryRun_s := strings.TrimSpace(c.DefaultQuery("dry_run", "false"))
-	dryRun := (dryRun_s == "") || strings.ToLower(dryRun_s) == "true"
+	dryRun := strings.ToLower(c.Query("dry_run")) == "true"
 
 	preset.MergeOptions(req.Options)
 	normalizedWorkingDir := filepath.Clean(req.WorkingDir)

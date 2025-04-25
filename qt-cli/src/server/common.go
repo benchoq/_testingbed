@@ -18,21 +18,13 @@ type ErrorResponse struct {
 	Error common.ErrorWithDetails `json:"error"`
 }
 
-func NewErrorResponse(message string, details []common.ErrorDetailEntry) ErrorResponse {
-	return ErrorResponse{
-		Error: common.ErrorWithDetails{
-			Message: message,
-			Details: details,
-		},
-	}
+func NewErrorResponse(e common.ErrorWithDetails) ErrorResponse {
+	return ErrorResponse{Error: e}
 }
 
 func ReplyError(c *gin.Context, code int, err error) {
 	if err != nil {
-		res := ErrorResponse{
-			Error: common.ErrorWithDetails{Message: err.Error()},
-		}
-
-		c.JSON(code, res)
+		e := common.ErrorWithDetails{Message: err.Error()}
+		c.JSON(code, NewErrorResponse(e))
 	}
 }

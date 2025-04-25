@@ -60,10 +60,8 @@ func postNewItemValidation(c *gin.Context) {
 	if out.Success {
 		c.JSON(http.StatusOK, SuccessResponse[any]{Success: true})
 	} else {
-		c.JSON(
-			http.StatusOK, // TODO: check status code
-			NewErrorResponse("Input validation failed", out.ErrorDetails),
-		)
+		// TODO: check status code
+		c.JSON(http.StatusOK, NewErrorResponse(out.Error))
 	}
 }
 

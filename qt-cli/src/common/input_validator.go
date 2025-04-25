@@ -17,8 +17,8 @@ type ValidatorInput struct {
 }
 
 type ValidatorOutput struct {
-	Success      bool
-	ErrorDetails []ErrorDetailEntry
+	Success bool
+	Error   ErrorWithDetails
 }
 
 func Validate(in ValidatorInput) ValidatorOutput {
@@ -83,8 +83,15 @@ func Validate(in ValidatorInput) ValidatorOutput {
 		})
 	}
 
-	return ValidatorOutput{
-		Success:      len(allErrors) == 0,
-		ErrorDetails: allErrors,
+	if len(allErrors) == 0 {
+		return ValidatorOutput{Success: true}
+	} else {
+		return ValidatorOutput{
+			Success: false,
+			Error: ErrorWithDetails{
+				Message: util.Msg("Input validation failed"),
+				Details: allErrors,
+			},
+		}
 	}
 }

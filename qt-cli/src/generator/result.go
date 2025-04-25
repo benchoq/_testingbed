@@ -23,10 +23,6 @@ type ResultItem struct {
 	outputFileAbs string
 }
 
-type ResultError struct {
-	message string
-}
-
 func (r *Result) Print(output io.Writer) {
 	w := tabwriter.NewWriter(output, 0, 0, 2, ' ', 0)
 

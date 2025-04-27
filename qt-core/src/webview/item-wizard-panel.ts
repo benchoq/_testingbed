@@ -25,7 +25,7 @@ const qtcliApi = new QtcliRestClient();
 let qtcliRunner: QtcliRunner | undefined = undefined;
 
 // definitions for webview-panel
-const PanelTitle = "Wizard";
+const PanelTitle = "New Item";
 const PanelColumn = vscode.ViewColumn.One;
 const PanelViewType = "ViewTypeWizard";
 

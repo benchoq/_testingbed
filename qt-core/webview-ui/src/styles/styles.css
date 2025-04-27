@@ -228,7 +228,7 @@ body {
 
 /* alert - for bad inputs, etc. */
 .qt-alert {
-  opacity: 80%; 
+  opacity: 90%;
   color: var(--qt-alert-text);
   background-color: var(--qt-alert-fill);
   border: 1px solid var(--qt-alert-border);

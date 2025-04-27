@@ -14,9 +14,9 @@ import (
 )
 
 type RequestCreateNewItem struct {
-	Name       string         `json:"name" binding:"required"`
-	WorkingDir string         `json:"workingDir" binding:"required"`
-	PresetId   string         `json:"presetId" binding:"required"`
+	Name       string         `json:"name"`
+	WorkingDir string         `json:"workingDir"`
+	PresetId   string         `json:"presetId"`
 	Options    map[string]any `json:"options"`
 }
 
@@ -26,12 +26,6 @@ type ResponseCreateNewItem struct {
 	FilesDir   string   `json:"filesDir" binding:"required"`
 	WorkingDir string   `json:"workingDir" binding:"required"`
 	DryRun     bool     `json:"dryRun" binding:"required"`
-}
-
-type RequestValidateNewItem struct {
-	Name       string `json:"name"`
-	WorkingDir string `json:"workingDir"`
-	PresetId   string `json:"presetId" binding:"required"`
 }
 
 func postNewItem(c *gin.Context) {

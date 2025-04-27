@@ -119,6 +119,7 @@ export const dryRunGenerator = async () => {
   vscodeApi
     .request(CallMessageId.ViewCallQtcliApi, body)
     .then((res: any) => { 
+      // console.log(res)
       // res ==> { data: {}, status: number }
       // TODO: make this type safe, robust ...
       dryRunResult.nameError = ""
@@ -126,12 +127,13 @@ export const dryRunGenerator = async () => {
 
       if (_.has(res, "data.error")) {
         const details = _.get(res, "data.error.details", []);
+
         details.forEach((item: any) => {
-          const field = _.get(item, "field", "") as string;
+          const field = (_.get(item, "field", "") as string).toLowerCase();
           const message = _.get(item, "message", "") as string;
           if (message.length !== 0) {
             if (field === "name") dryRunResult.nameError = message;
-            if (field === "workingDir") dryRunResult.workingDirError = message;
+            if (field === "workingdir") dryRunResult.workingDirError = message;
           }
         });
       }

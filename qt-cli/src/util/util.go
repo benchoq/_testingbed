@@ -242,6 +242,15 @@ func IsValidProjectName(name string) bool {
 	return true
 }
 
+func DirExists(path string) bool {
+	info, err := os.Stat(path)
+	if err != nil || os.IsNotExist(err) {
+		return false
+	}
+
+	return info.IsDir()
+}
+
 func SendSigTermOrKill(pid int) error {
 	process, err := os.FindProcess(pid)
 	if err != nil {

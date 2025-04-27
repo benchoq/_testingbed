@@ -67,15 +67,27 @@ func (g *Generator) DryRun(on bool) *Generator {
 
 func (g *Generator) Render() *Result {
 	// input validation
+	v := common.NewValidator()
 	in := common.ValidatorInput{
 		Name:       g.name,
 		WorkingDir: g.workingDir,
 		Preset:     g.preset,
 	}
 
-	out := common.Validate(in)
-	if !out.Success {
-		return NewErrorResult(out.Error)
+	out := v.Run(in)
+	if len(out.Errors) > 0 {
+		details := []common.ErrorDetailEntry{}
+		for _, e := range out.Errors {
+			details = append(details, common.ErrorDetailEntry{
+				Field:   e.Field,
+				Message: e.Message,
+			})
+		}
+
+		return NewErrorResult(common.ErrorWithDetails{
+			Message: "Input validation failed",
+			Details: details,
+		})
 	}
 
 	// prep.

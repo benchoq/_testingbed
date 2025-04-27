@@ -4,12 +4,34 @@
 package common
 
 import (
-	"path"
+	"fmt"
+	"os"
 	"path/filepath"
 	"qtcli/util"
-	"strings"
+	"regexp"
+
+	"github.com/go-playground/validator/v10"
 )
 
+const (
+	TagRequired     = "required"
+	TagDirName      = "dirname"
+	TagFileName     = "filename"
+	TagAbsPath      = "abspath"
+	TagProjectName  = "projectname"
+	TagCppClassName = "cppclassname"
+
+	// internal tags
+	TagAlreadyExists = "alreadyExists"
+	TagGeneral       = "general"
+)
+
+const (
+	FieldName       = "Name"
+	FieldWorkingDir = "WorkingDir"
+)
+
+// separate handling for a project vs others
 type ValidatorInput struct {
 	Name       string
 	WorkingDir string
@@ -17,81 +39,147 @@ type ValidatorInput struct {
 }
 
 type ValidatorOutput struct {
-	Success bool
-	Error   ErrorWithDetails
+	Errors   []ValidationError
+	Warnings []string
 }
 
-func Validate(in ValidatorInput) ValidatorOutput {
-	name := strings.TrimSpace(in.Name)
-	workingDir := strings.TrimSpace(filepath.Clean(in.WorkingDir))
-	workingDir = filepath.ToSlash(workingDir)
+type ValidationError struct {
+	Field   string
+	Tag     string
+	Message string
+}
 
-	nameErrors := []string{}
-	workingDirErrors := []string{}
+type Validator struct {
+	worker *validator.Validate
+}
 
-	// dir error check
-	if len(workingDir) == 0 {
-		workingDirErrors = append(workingDirErrors, util.Msg("Working directory cannot be empty"))
+func NewValidator() *Validator {
+	v := validator.New()
+	v.RegisterValidation(TagDirName, ValidateDirName)
+	v.RegisterValidation(TagFileName, ValidateFileName)
+	v.RegisterValidation(TagAbsPath, ValidateAbsPath)
+	v.RegisterValidation(TagProjectName, ValidateProjectName)
+	v.RegisterValidation(TagCppClassName, ValidateCppClassName)
+
+	return &Validator{
+		worker: v,
+	}
+}
+
+func (v *Validator) Run(in ValidatorInput) ValidatorOutput {
+	// validate
+	errors := append(
+		v.RunField(FieldName, in.Name, "required,dirname,projectname"),
+		v.RunField(FieldWorkingDir, in.WorkingDir, "required,abspath")...,
+	)
+
+	if len(errors) > 0 {
+		return ValidatorOutput{Errors: errors}
 	}
 
-	if !util.IsAbsPath(workingDir) {
-		workingDirErrors = append(workingDirErrors, util.Msg("Working directory must be an absolute path"))
+	// check if the target path already exists
+	targetPath := filepath.Join(in.WorkingDir, in.Name)
+	if _, err := os.Stat(targetPath); err == nil {
+		errors = append(errors, ValidationError{
+			Field:   FieldName,
+			Tag:     TagAlreadyExists,
+			Message: "target folder already exists: " + targetPath,
+		})
+
+		return ValidatorOutput{Errors: errors}
 	}
 
-	if !util.IsValidFullPath(workingDir) {
-		workingDirErrors = append(workingDirErrors, util.Msg("Invalid working directory name"))
-	}
-
-	// dir warning check
-	// if !util.EntryExists(workingDirNorm) {
-	// 	workingDirWarnings = append(workingDirWarnings, util.Msg("Working directory doesn't exist"))
-	// }
-
-	// name error check
-	if len(name) == 0 {
-		nameErrors = append(nameErrors, util.Msg("Name cannot be empty"))
-	}
-
-	if in.Preset.GetTypeId() == TargetTypeProject {
-		if !util.IsValidProjectName(name) {
-			nameErrors = append(nameErrors, util.Msg("Invalid project name"))
+	// warning if working directory doesn't exist
+	if !util.DirExists(in.WorkingDir) {
+		warnings := []string{
+			"working directory doesn't exist: " + in.WorkingDir,
 		}
 
-		totalPath := path.Join(workingDir, name)
-		if util.EntryExists(totalPath) { // FIXME: bug on checking this
-			nameErrors = append(nameErrors, util.Msg("Output folder already exists"))
-		}
-	} else {
-		// TODO: dry-run generator and check if file exists
-		if !util.IsValidFileName(name) {
-			nameErrors = append(nameErrors, util.Msg("Invalid file name"))
-		}
+		return ValidatorOutput{Warnings: warnings}
 	}
 
-	allErrors := []ErrorDetailEntry{}
-	if len(nameErrors) != 0 {
-		allErrors = append(allErrors, ErrorDetailEntry{
-			Field:   "name",
-			Message: strings.Join(nameErrors, "\n"),
+	return ValidatorOutput{}
+}
+
+func (v *Validator) RunField(
+	fieldName, fieldValue, tag string) []ValidationError {
+	if e := v.worker.Var(fieldValue, tag); e != nil {
+		if ve, ok := e.(validator.ValidationErrors); ok {
+			return translateErrors(fieldName, ve)
+		}
+
+		return []ValidationError{{
+			Field:   fieldName,
+			Tag:     TagGeneral,
+			Message: e.Error(),
+		}}
+	}
+
+	return nil
+}
+
+// validation helpers
+func translateErrors(
+	fieldName string, ve validator.ValidationErrors) []ValidationError {
+	var all []ValidationError
+
+	for _, ve := range ve {
+		msg := ""
+
+		switch ve.Tag() {
+		case TagRequired:
+			msg = fmt.Sprintf("%s is required", fieldName)
+		case TagDirName:
+			msg = fmt.Sprintf("%s must be a valid directory name", fieldName)
+		case TagFileName:
+			msg = fmt.Sprintf("%s must be a valid file name", fieldName)
+		case TagAbsPath:
+			msg = fmt.Sprintf("%s must be an absolute path", fieldName)
+		case TagProjectName:
+			msg = fmt.Sprintf("%s must be a valid project name", fieldName)
+		case TagCppClassName:
+			msg = fmt.Sprintf("%s must be a valid C++ class name", fieldName)
+		default:
+			msg = fmt.Sprintf("%s is invalid (%s)", fieldName, ve.Tag())
+		}
+
+		all = append(all, ValidationError{
+			Field:   fieldName,
+			Tag:     ve.Tag(),
+			Message: msg,
 		})
 	}
 
-	if len(workingDirErrors) != 0 {
-		allErrors = append(allErrors, ErrorDetailEntry{
-			Field:   "workingDir",
-			Message: strings.Join(workingDirErrors, "\n"),
-		})
-	}
+	return all
+}
 
-	if len(allErrors) == 0 {
-		return ValidatorOutput{Success: true}
-	} else {
-		return ValidatorOutput{
-			Success: false,
-			Error: ErrorWithDetails{
-				Message: util.Msg("Input validation failed"),
-				Details: allErrors,
-			},
-		}
-	}
+// validation functions
+func ValidateFileName(fl validator.FieldLevel) bool {
+	s := fl.Field().String()
+	return util.IsValidFileName(s)
+}
+
+func ValidateDirName(fl validator.FieldLevel) bool {
+	s := fl.Field().String()
+	return util.IsValidDirName(s)
+}
+
+func ValidateAbsPath(fl validator.FieldLevel) bool {
+	s := fl.Field().String()
+	return filepath.IsAbs(s)
+}
+
+func ValidateProjectName(fl validator.FieldLevel) bool {
+	return ValidateRegex(fl, "^[a-zA-Z_][a-zA-Z0-9_-]*$")
+}
+
+func ValidateCppClassName(fl validator.FieldLevel) bool {
+	return ValidateRegex(
+		fl, "^(?:(?:[a-zA-Z_][a-zA-Z_0-9]*::)*[a-zA-Z_][a-zA-Z_0-9]*|)$")
+}
+
+func ValidateRegex(fl validator.FieldLevel, pattern string) bool {
+	name := fl.Field().String()
+	re := regexp.MustCompile(pattern)
+	return re.MatchString(name)
 }

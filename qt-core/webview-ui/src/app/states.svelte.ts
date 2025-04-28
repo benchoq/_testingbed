@@ -23,6 +23,22 @@ export const dryRunResult = $state({
   workingDirError: "",
 })
 
+export const wizard = $state({
+  currentIndex: 0,
+  buttons: {
+    back: { 
+      visible: true,
+    },
+    next: { 
+      visible: true,
+    },
+    finish: { 
+      visible: true,
+      disabled: false,
+    },
+  }
+})
+
 export const loading = $state({
   busy: false,
   error: undefined,

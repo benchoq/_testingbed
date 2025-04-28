@@ -6,7 +6,7 @@ import _ from "lodash";
 import { PushMessageId, CallMessageId, type PushMessage } from "@shared/message";
 import { vscodeApi } from "@/logic/vscodeApi";
 import { type Preset } from './types.svelte';
-import { configs, presets, loading, dryRunResult } from './states.svelte';
+import { configs, presets, loading, dryRunResult, wizard } from './states.svelte';
 
 vscodeApi.onDidReceivePushMessage((p: PushMessage) => {
   if (p.id === PushMessageId.PanelInit) {
@@ -121,6 +121,7 @@ export const dryRunGenerator = async () => {
       // TODO: make this type safe, robust ...
       dryRunResult.nameError = ""
       dryRunResult.workingDirError = ""
+      wizard.buttons.finish.disabled = false
 
       if (_.has(res, "data.error")) {
         const details = _.get(res, "data.error.details", []);
@@ -133,6 +134,8 @@ export const dryRunGenerator = async () => {
             if (field === "workingdir") dryRunResult.workingDirError = message;
           }
         });
+
+        wizard.buttons.finish.disabled = true
       }
     })
 }

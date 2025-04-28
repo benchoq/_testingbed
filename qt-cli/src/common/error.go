@@ -4,11 +4,15 @@
 package common
 
 type ErrorWithDetails struct {
-	Message string             `json:"message"`
-	Details []ErrorDetailEntry `json:"details,omitempty"`
+	Message string        `json:"message"`
+	Details []ErrorDetail `json:"details,omitempty"`
 }
 
-type ErrorDetailEntry struct {
+func (e ErrorWithDetails) Error() string {
+	return e.Message
+}
+
+type ErrorDetail struct {
 	Field   string `json:"field"`
 	Message string `json:"message"`
 }

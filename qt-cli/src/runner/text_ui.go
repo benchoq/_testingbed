@@ -322,7 +322,7 @@ func createInputValidator(
 	tag := strings.Join(tags, ",")
 
 	return func(data string) error {
-		ves := v.RunField("Name", data, tag)
+		ves := v.Run("Name", data, tag)
 		if len(ves) != 0 {
 			return ves[0]
 		}

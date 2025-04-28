@@ -1,7 +1,7 @@
 version: "1"
 
 meta:
-  type: class
+  type: file
   title: C++ Class
   description: >-
     Creates a C++ header and a source file 

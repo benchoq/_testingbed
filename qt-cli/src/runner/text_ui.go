@@ -11,6 +11,7 @@ import (
 	"qtcli/prompt"
 	"qtcli/prompt/comps"
 	"qtcli/util"
+	"regexp"
 	"strings"
 )
 
@@ -294,19 +295,75 @@ func createPrompt(
 }
 
 func createInputValidator(
-	inputs []common.PromptInputRules) (comps.ValidatorFunc, error) {
-	rules := comps.ValidatorRules{}
+	rules []common.PromptInputRules) (comps.ValidatorFunc, error) {
+	// compose validation tags
+	tags := []string{}
 
-	for _, input := range inputs {
+	for _, input := range rules {
 		for name, value := range input {
-			atype := comps.FindValidatorType(name)
-			if len(atype) != 0 {
-				rules[atype] = value
+			tag, err := createInputValidatorTag(name, value)
+			if err != nil {
+				return nil, err
+			}
+
+			if len(tag) != 0 {
+				tags = append(tags, tag)
 			}
 		}
 	}
 
-	return comps.CreateValidator(rules)
+	// nothing to validate
+	if len(tags) == 0 {
+		return nil, nil
+	}
+
+	// create validation function
+	v := common.NewValidator()
+	tag := strings.Join(tags, ",")
+
+	return func(data string) error {
+		ves := v.RunField("Name", data, tag)
+		if len(ves) != 0 {
+			return ves[0]
+		}
+
+		return nil
+	}, nil
+}
+
+func createInputValidatorTag(name string, value any) (string, error) {
+	aname := strings.ToLower(strings.TrimSpace(name))
+
+	if aname == common.TagRequired {
+		avalue, ok := value.(bool)
+		if !ok {
+			return "", errors.New(
+				util.Msg("invalid argument: boolean expected"))
+		}
+
+		if avalue {
+			return common.TagRequired, nil
+		}
+
+		return "", nil
+	}
+
+	if aname == common.TagMatch {
+		pattern, ok := value.(string)
+		if !ok {
+			return "", errors.New(
+				util.Msg("invalid argument: string expected"))
+		}
+
+		_, err := regexp.Compile(pattern)
+		if err != nil {
+			return "", fmt.Errorf(util.Msg("invalid pattern: '%w'"), pattern)
+		}
+
+		return common.TagMatch + "=" + pattern, nil
+	}
+
+	return "", nil
 }
 
 func createListItems(

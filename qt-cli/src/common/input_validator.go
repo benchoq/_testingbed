@@ -15,6 +15,7 @@ import (
 
 const (
 	TagRequired     = "required"
+	TagMatch        = "match"
 	TagDirName      = "dirname"
 	TagFileName     = "filename"
 	TagAbsPath      = "abspath"
@@ -49,12 +50,17 @@ type ValidationError struct {
 	Message string
 }
 
+func (ve ValidationError) Error() string {
+	return ve.Message
+}
+
 type Validator struct {
 	worker *validator.Validate
 }
 
 func NewValidator() *Validator {
 	v := validator.New()
+	v.RegisterValidation(TagMatch, ValidateRegex)
 	v.RegisterValidation(TagDirName, ValidateDirName)
 	v.RegisterValidation(TagFileName, ValidateFileName)
 	v.RegisterValidation(TagAbsPath, ValidateAbsPath)
@@ -129,6 +135,8 @@ func translateErrors(
 		switch ve.Tag() {
 		case TagRequired:
 			msg = fmt.Sprintf("%s is required", fieldName)
+		case TagMatch:
+			msg = fmt.Sprintf("%s doesn't match the required pattern", fieldName)
 		case TagDirName:
 			msg = fmt.Sprintf("%s must be a valid directory name", fieldName)
 		case TagFileName:
@@ -154,6 +162,10 @@ func translateErrors(
 }
 
 // validation functions
+func ValidateRegex(fl validator.FieldLevel) bool {
+	return runRegex(fl, fl.Param())
+}
+
 func ValidateFileName(fl validator.FieldLevel) bool {
 	s := fl.Field().String()
 	return util.IsValidFileName(s)
@@ -170,15 +182,15 @@ func ValidateAbsPath(fl validator.FieldLevel) bool {
 }
 
 func ValidateProjectName(fl validator.FieldLevel) bool {
-	return ValidateRegex(fl, "^[a-zA-Z_][a-zA-Z0-9_-]*$")
+	return runRegex(fl, "^[a-zA-Z_][a-zA-Z0-9_-]*$")
 }
 
 func ValidateCppClassName(fl validator.FieldLevel) bool {
-	return ValidateRegex(
+	return runRegex(
 		fl, "^(?:(?:[a-zA-Z_][a-zA-Z_0-9]*::)*[a-zA-Z_][a-zA-Z_0-9]*|)$")
 }
 
-func ValidateRegex(fl validator.FieldLevel, pattern string) bool {
+func runRegex(fl validator.FieldLevel, pattern string) bool {
 	name := fl.Field().String()
 	re := regexp.MustCompile(pattern)
 	return re.MatchString(name)

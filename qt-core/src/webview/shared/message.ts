@@ -3,7 +3,8 @@
 
 export enum PushMessageId {
   PanelInit,
-  ViewClosed,
+  ViewCreateItem,
+  ViewWizardClosed,
 }
 
 export interface PushMessage<T = unknown> {
@@ -14,7 +15,6 @@ export interface PushMessage<T = unknown> {
 export enum CallMessageId {
   ViewSelectWorkingDir,
   ViewCallQtcliApi,
-  ViewCreateItem,
 }
 
 export interface CallMessage<T = unknown> {

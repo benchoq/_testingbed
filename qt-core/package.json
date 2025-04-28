@@ -210,8 +210,8 @@
     "prettierBase": "prettier --config \"../common/.prettierrc\" --ignore-path \"../common/.prettierignore\" --cache --cache-strategy metadata",
     "package": "vsce package --out out",
     "ci:webview": "cd webview-ui && npm install --frozen-lockfile",
-    "install:webview": "cd webview-ui && npm install",
-    "compile:webview": "cd webview-ui && npm build"
+    "install:webview": "cd webview-ui && npm run install",
+    "compile:webview": "cd webview-ui && npm run build"
   },
   "devDependencies": {
     "@eslint/eslintrc": "^3.3.0",

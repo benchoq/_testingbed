@@ -92,8 +92,19 @@ export class ItemWizardPanel {
   }
 
   private async _onDidReceivePushMessage(p: PushMessage) {
-    if (p.id === PushMessageId.ViewClosed) {
+    if (p.id === PushMessageId.ViewWizardClosed) {
       this.dispose();
+      return;
+    }
+
+    if (p.id === PushMessageId.ViewCreateItem) {
+      qtcliApi
+        .call({ method: 'post', endpoint: '/items', data: p.data })
+        .then((res: any) => {
+          openItemsFromQtcliResponseData(res.data);
+          this.dispose();
+        });
+
       return;
     }
   }
@@ -126,18 +137,6 @@ export class ItemWizardPanel {
         .catch((err: any) => {
           console.log("unhandled rest call error", err);
         })
-
-      return;
-    }
-
-    if (r.id === CallMessageId.ViewCreateItem) {
-      qtcliApi
-        .call({ method: 'post', endpoint: '/items', data: r.data })
-        .then((res: any) => {
-          openItemsFromQtcliResponseData(res.data);
-          this._reply(r.id, r.tag, res);
-          this.dispose();
-        });
 
       return;
     }

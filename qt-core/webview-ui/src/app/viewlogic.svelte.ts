@@ -21,7 +21,7 @@ vscodeApi.onDidReceivePushMessage((p: PushMessage) => {
 })
 
 export const onModalClosed = () => {
-  vscodeApi.push(PushMessageId.ViewClosed);
+  vscodeApi.push(PushMessageId.ViewWizardClosed);
 }
 
 export const onWorkingDirBrowseClicked = () => {
@@ -93,9 +93,7 @@ export const createItemFromSelectedPreset = async () => {
     saveWorkingDir: configs.saveWorkingDir,
   }
 
-  vscodeApi
-    .request(CallMessageId.ViewCreateItem, data)
-    .then((res) => { console.log("item created") })
+  vscodeApi.push(PushMessageId.ViewCreateItem, data)
 };
 
 export const dryRunGenerator = async () => {

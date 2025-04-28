@@ -61,13 +61,12 @@ SPDX-License-Identifier: LicenseRef-Qt-Commercial OR LGPL-3.0-only
 </script>
 
 <Modal
-  size="md"
-  color="none"
   open
-  class="qt-modal"
+  size="lg"
+  color="none"
+  class="qt-modal w-[80vw] h-[80vh] min-w-[600px] min-h-[600px]"
   backdropClass="hidden"
   footerClass="p-3"
-  style="height: 80vh;"
   on:close={viewlogic.onModalClosed}
 >
   <svelte:fragment slot="header">

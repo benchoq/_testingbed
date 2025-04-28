@@ -209,9 +209,9 @@
     "prettierCheck": "npm run prettierBase -- --check \"**/*.{js,ts,json,mjs,cjs}\"",
     "prettierBase": "prettier --config \"../common/.prettierrc\" --ignore-path \"../common/.prettierignore\" --cache --cache-strategy metadata",
     "package": "vsce package --out out",
-    "ci:webview": "cd webview-ui && pnpm install --frozen-lockfile",
-    "install:webview": "cd webview-ui && pnpm install",
-    "compile:webview": "cd webview-ui && pnpm build"
+    "ci:webview": "cd webview-ui && npm install --frozen-lockfile",
+    "install:webview": "cd webview-ui && npm install",
+    "compile:webview": "cd webview-ui && npm build"
   },
   "devDependencies": {
     "@eslint/eslintrc": "^3.3.0",

@@ -4,19 +4,22 @@
 package generator
 
 import (
-	"fmt"
 	"os"
 	"path/filepath"
 	"qtcli/common"
 	"qtcli/util"
-
-	"github.com/go-playground/validator/v10"
+	"strings"
 )
 
 const (
 	FieldName       = "Name"
 	FieldWorkingDir = "WorkingDir"
 )
+
+var NameTags = strings.Join([]string{
+	common.TagRequired, common.TagDirName, common.TagProjectName}, ",")
+var WorkingDirTags = strings.Join([]string{
+	common.TagRequired, common.TagAbsPath}, ",")
 
 // in
 type CheckerIn struct {
@@ -56,11 +59,9 @@ func (vo *CheckerOut) ConvertToError(msg string) common.ErrorWithDetails {
 
 func Check(in CheckerIn) CheckerOut {
 	v := common.NewValidator()
-	v.ErrorBuilder = translateErrors
-
 	errors := append(
-		v.Run(FieldName, in.Name, "required,dirname,projectname"),
-		v.Run(FieldWorkingDir, in.WorkingDir, "required,abspath")...,
+		v.Run(FieldName, in.Name, NameTags),
+		v.Run(FieldWorkingDir, in.WorkingDir, WorkingDirTags)...,
 	)
 
 	if len(errors) > 0 {
@@ -89,40 +90,4 @@ func Check(in CheckerIn) CheckerOut {
 	}
 
 	return CheckerOut{}
-}
-
-func translateErrors(
-	fieldName string, ve validator.ValidationErrors) []common.ValidationError {
-	var all []common.ValidationError
-
-	for _, ve := range ve {
-		msg := ""
-
-		switch ve.Tag() {
-		case common.TagRequired:
-			msg = fmt.Sprintf("%s is required", fieldName)
-		case common.TagMatch:
-			msg = fmt.Sprintf("%s doesn't match the required pattern", fieldName)
-		case common.TagDirName:
-			msg = fmt.Sprintf("%s must be a valid directory name", fieldName)
-		case common.TagFileName:
-			msg = fmt.Sprintf("%s must be a valid file name", fieldName)
-		case common.TagAbsPath:
-			msg = fmt.Sprintf("%s must be an absolute path", fieldName)
-		case common.TagProjectName:
-			msg = fmt.Sprintf("%s must be a valid project name", fieldName)
-		case common.TagCppClassName:
-			msg = fmt.Sprintf("%s must be a valid C++ class name", fieldName)
-		default:
-			msg = fmt.Sprintf("%s is invalid (%s)", fieldName, ve.Tag())
-		}
-
-		all = append(all, common.ValidationError{
-			Field:   fieldName,
-			Tag:     ve.Tag(),
-			Message: msg,
-		})
-	}
-
-	return all
 }

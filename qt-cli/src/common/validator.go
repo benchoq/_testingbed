@@ -4,6 +4,7 @@
 package common
 
 import (
+	"fmt"
 	"path/filepath"
 	"qtcli/util"
 	"regexp"
@@ -117,10 +118,31 @@ func defaultErrorBuilder(
 	var all []ValidationError
 
 	for _, ve := range ve {
+		msg := ""
+
+		switch ve.Tag() {
+		case TagRequired:
+			msg = fmt.Sprintf("%s is required", fieldName)
+		case TagMatch:
+			msg = fmt.Sprintf("%s doesn't match the required pattern", fieldName)
+		case TagDirName:
+			msg = fmt.Sprintf("%s must be a valid directory name", fieldName)
+		case TagFileName:
+			msg = fmt.Sprintf("%s must be a valid file name", fieldName)
+		case TagAbsPath:
+			msg = fmt.Sprintf("%s must be an absolute path", fieldName)
+		case TagProjectName:
+			msg = fmt.Sprintf("%s must be a valid project name", fieldName)
+		case TagCppClassName:
+			msg = fmt.Sprintf("%s must be a valid C++ class name", fieldName)
+		default:
+			msg = fmt.Sprintf("%s is invalid (%s)", fieldName, ve.Tag())
+		}
+
 		all = append(all, ValidationError{
 			Field:   fieldName,
 			Tag:     ve.Tag(),
-			Message: ve.Error(),
+			Message: msg,
 		})
 	}
 

@@ -252,7 +252,7 @@ func createPrompt(
 
 	switch strings.ToLower(step.CompType) {
 	case "input":
-		validator, err := createInputValidator(step.Rules)
+		validator, err := createInputValidator(step.Id, step.Rules)
 		if err != nil {
 			return nil, err
 		}
@@ -295,7 +295,7 @@ func createPrompt(
 }
 
 func createInputValidator(
-	rules []common.PromptInputRules) (comps.ValidatorFunc, error) {
+	fieldName string, rules []common.PromptInputRules) (comps.ValidatorFunc, error) {
 	// compose validation tags
 	tags := []string{}
 
@@ -322,7 +322,7 @@ func createInputValidator(
 	tag := strings.Join(tags, ",")
 
 	return func(data string) error {
-		ves := v.Run("Name", data, tag)
+		ves := v.Run(fieldName, data, tag)
 		if len(ves) != 0 {
 			return ves[0]
 		}

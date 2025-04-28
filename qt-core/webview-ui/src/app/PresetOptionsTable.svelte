@@ -26,9 +26,9 @@ SPDX-License-Identifier: LicenseRef-Qt-Commercial OR LGPL-3.0-only
 {#if steps}
 
 <Table color="custom" class="qt-simple-table">
-  <TableBody tableBodyClass="divide-y">
+  <TableBody>
     {#each steps as step}
-    <TableBodyRow>
+    <TableBodyRow class="last:border-0">
       <TableBodyCell class="p-0.5">
         <Label class="qt-label">{step.question}</Label>
       </TableBodyCell>

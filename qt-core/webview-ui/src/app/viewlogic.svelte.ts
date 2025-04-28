@@ -10,12 +10,11 @@ import { configs, presets, loading, dryRunResult } from './states.svelte';
 
 vscodeApi.onDidReceivePushMessage((p: PushMessage) => {
   if (p.id === PushMessageId.PanelInit) {
-    if (p.data) {
-      configs.type = "project";
-      configs.name = _.get(p.data, "name", configs.name) as string;
-      configs.workingDir = _.get(p.data, "workingDir", configs.workingDir) as string;
-      configs.saveWorkingDir = _.get(p.data, "saveWorkingDir", configs.saveWorkingDir) as boolean;
-    }
+    // if (p.data) {
+    //   configs.name = _.get(p.data, "name", configs.name) as string;
+    //   configs.workingDir = _.get(p.data, "workingDir", configs.workingDir) as string;
+    //   configs.saveWorkingDir = _.get(p.data, "saveWorkingDir", configs.saveWorkingDir) as boolean;
+    // }
 
     loadPresets();
   }

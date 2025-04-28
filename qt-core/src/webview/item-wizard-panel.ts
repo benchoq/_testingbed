@@ -146,14 +146,15 @@ export class ItemWizardPanel {
 
 // helpers
 function createInitData() {
-  const project = true;
-  const workingDir = findWorkingDir(
-    project ? QtcliAction.NewProject : QtcliAction.NewFile);
-
   return {
-    name: (project ? "untitled" : ""),
-    workingDir,
-    saveWorkingDir: true,
+    project: {
+      workingDir: findWorkingDir(QtcliAction.NewProject),
+      saveWorkingDir: true,
+    },
+
+    file: {
+      workingDir: findWorkingDir(QtcliAction.NewFile),
+    },
   }
 }
 

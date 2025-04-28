@@ -12,7 +12,7 @@ export const presets = $state<PresetInfo>({
 });
 
 export const configs = $state({
-  type: "file",
+  type: "",
   name: "",
   workingDir: "",
   saveWorkingDir: false,

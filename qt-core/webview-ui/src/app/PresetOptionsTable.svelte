@@ -11,7 +11,7 @@ SPDX-License-Identifier: LicenseRef-Qt-Commercial OR LGPL-3.0-only
 
   import { presets } from "./states.svelte";
   
-  const steps = presets.selectedPrompt?.prompt.steps;
+  const steps = $derived(presets.selectedPrompt?.prompt.steps)
   const toDisplayValue = (value: any) => {
     if (typeof value === 'string' && value.length === 0) {
       return "-";

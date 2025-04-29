@@ -21,7 +21,7 @@ export interface PromptStepData {
 }
 
 export interface PromptData {
-  name: string;
+  id: string;
   prompt: {
     version: string;
     steps: PromptStepData[];

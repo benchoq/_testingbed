@@ -46,7 +46,10 @@ export const setSelectedPreset = (preset: Preset, index: number) => {
 
     vscodeApi
       .request(CallMessageId.ViewCallQtcliApi, { method, endpoint })
-      .then((res: any) => { presets.selectedPrompt = res.data })
+      .then((res: any) => { 
+        presets.selectedPrompt = res.data
+        console.log(res.data);
+      })
       .catch((e) => { loading.setError(e) })
       .finally(() => { loading.clear() });
   }

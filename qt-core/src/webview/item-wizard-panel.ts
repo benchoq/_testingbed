@@ -151,7 +151,7 @@ function createInitData() {
       saveWorkingDir: true,
     },
 
-    file: {
+    others: {
       workingDir: findWorkingDir(QtcliAction.NewFile),
     },
   }

@@ -6,15 +6,14 @@ import _ from "lodash";
 import { PushMessageId, CallMessageId, type PushMessage } from "@shared/message";
 import { vscodeApi } from "@/logic/vscodeApi";
 import { type Preset } from './types.svelte';
-import { configs, presets, loading, inputValidation, wizard } from './states.svelte';
+import { configs, presets, loading, inputValidation, wizard, initData } from './states.svelte';
 
 vscodeApi.onDidReceivePushMessage((p: PushMessage) => {
   if (p.id === PushMessageId.PanelInit) {
-    // if (p.data) {
-    //   configs.name = _.get(p.data, "name", configs.name) as string;
-    //   configs.workingDir = _.get(p.data, "workingDir", configs.workingDir) as string;
-    //   configs.saveWorkingDir = _.get(p.data, "saveWorkingDir", configs.saveWorkingDir) as boolean;
-    // }
+    if (p.data) {
+      initData.project.workingDir = _.get(p.data, "project.workingDir", initData.project.workingDir) as string;
+      initData.others.workingDir = _.get(p.data, "others.workingDir", initData.others.workingDir) as string;
+    }
 
     loadPresets();
   }

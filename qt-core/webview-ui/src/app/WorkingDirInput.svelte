@@ -4,11 +4,19 @@ SPDX-License-Identifier: LicenseRef-Qt-Commercial OR LGPL-3.0-only
 -->
 
 <script lang="ts">
+  import { onMount } from "svelte";
   import { Button } from "flowbite-svelte";
   import { FolderOpenOutline } from "flowbite-svelte-icons";
-  import { configs, inputValidation } from "./states.svelte";
+
+  import { configs, inputValidation, initData } from "./states.svelte";
   import * as viewlogic from "./viewlogic.svelte";
   import InputWithAlert from "@/comps/InputWithAlert.svelte";
+
+  onMount(() => {
+    configs.workingDir = (configs.type === "project") 
+      ? initData.project.workingDir 
+      : initData.others.workingDir;
+  })
 </script>
 
 <div class="w-full grid grid-cols-[min-content_1fr] gap-0">

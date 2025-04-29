@@ -14,10 +14,21 @@ export const presets = $state<PresetInfo>({
 });
 
 export const configs = $state({
-  type: "",
-  name: "",
+  type: "project",
+  name: "untitled",
   workingDir: "",
   saveWorkingDir: false,
+})
+
+export const initData = $state({
+  project: {
+    workingDir: "",
+    saveWorkingDir: true
+  },
+  
+  others: {
+    workingDir: ""
+  }
 })
 
 export const inputValidation = $state({

@@ -18,6 +18,7 @@ SPDX-License-Identifier: LicenseRef-Qt-Commercial OR LGPL-3.0-only
     on:click={viewlogic.onWorkingDirBrowseClicked}
     ><FolderOpenOutline />
   </Button>
+
   <InputWithAlert 
     bind:value={configs.workingDir}
     onInput={viewlogic.dryRunGenerator}

@@ -6,7 +6,7 @@ import _ from "lodash";
 import { PushMessageId, CallMessageId, type PushMessage } from "@shared/message";
 import { vscodeApi } from "@/logic/vscodeApi";
 import { type Preset } from './types.svelte';
-import { configs, presets, loading, dryRunResult, wizard } from './states.svelte';
+import { configs, presets, loading, inputValidation, wizard } from './states.svelte';
 
 vscodeApi.onDidReceivePushMessage((p: PushMessage) => {
   if (p.id === PushMessageId.PanelInit) {
@@ -119,8 +119,8 @@ export const dryRunGenerator = async () => {
       // console.log(res)
       // res ==> { data: {}, status: number }
       // TODO: make this type safe, robust ...
-      dryRunResult.nameError = ""
-      dryRunResult.workingDirError = ""
+      inputValidation.nameError = ""
+      inputValidation.workingDirError = ""
       wizard.buttons.finish.disabled = false
 
       if (_.has(res, "data.error")) {
@@ -130,8 +130,8 @@ export const dryRunGenerator = async () => {
           const field = (_.get(item, "field", "") as string).toLowerCase();
           const message = _.get(item, "message", "") as string;
           if (message.length !== 0) {
-            if (field === "name") dryRunResult.nameError = message;
-            if (field === "workingdir") dryRunResult.workingDirError = message;
+            if (field === "name") inputValidation.nameError = message;
+            if (field === "workingdir") inputValidation.workingDirError = message;
           }
         });
 

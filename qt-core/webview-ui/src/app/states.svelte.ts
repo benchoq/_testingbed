@@ -3,6 +3,8 @@
 
 import _ from "lodash";
 import { type PresetInfo } from "./types.svelte";
+import PageParamInput from "./PageParamInput.svelte";
+import PagePresetSelector from "./PagePresetSelector.svelte";
 
 export const presets = $state<PresetInfo>({
   all: [],
@@ -18,15 +20,19 @@ export const configs = $state({
   saveWorkingDir: false,
 })
 
-export const dryRunResult = $state({
+export const inputValidation = $state({
   nameError: "",
   workingDirError: "",
 })
 
 export const wizard = $state({
+  pages: [
+    { component: PagePresetSelector, title: "Select what to create" },
+    { component: PageParamInput, title: "Configure details" }
+  ],
   currentIndex: 0,
   buttons: {
-    back: { 
+    back: {
       visible: true,
     },
     next: { 

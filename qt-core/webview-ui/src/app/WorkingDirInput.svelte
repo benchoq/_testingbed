@@ -6,9 +6,9 @@ SPDX-License-Identifier: LicenseRef-Qt-Commercial OR LGPL-3.0-only
 <script lang="ts">
   import { Button } from "flowbite-svelte";
   import { FolderOpenOutline } from "flowbite-svelte-icons";
-  import { configs, dryRunResult } from "./states.svelte";
+  import { configs, inputValidation } from "./states.svelte";
   import * as viewlogic from "./viewlogic.svelte";
-  import InputWithValidation from "@/comps/InputWithValidation.svelte";
+  import InputWithAlert from "@/comps/InputWithAlert.svelte";
 </script>
 
 <div class="w-full grid grid-cols-[min-content_1fr] gap-0">
@@ -18,9 +18,9 @@ SPDX-License-Identifier: LicenseRef-Qt-Commercial OR LGPL-3.0-only
     on:click={viewlogic.onWorkingDirBrowseClicked}
     ><FolderOpenOutline />
   </Button>
-  <InputWithValidation 
+  <InputWithAlert 
     bind:value={configs.workingDir}
     onInput={viewlogic.dryRunGenerator}
-    errors={dryRunResult.workingDirError} />
+    errors={inputValidation.workingDirError} />
   <!-- class={`qt-input -ml-px rounded-l-none! ${workingDirInputHasFocus || workingDirHasError ? "z-10" : "z-0"}`} -->
 </div>

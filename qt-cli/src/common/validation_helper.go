@@ -8,25 +8,27 @@ import (
 	"path/filepath"
 	"qtcli/util"
 	"regexp"
+	"strings"
 
 	"github.com/go-playground/validator/v10"
 )
 
 const (
-	TagRequired     = "required"
-	TagMatch        = "match"
-	TagDirName      = "dirname"
-	TagFileName     = "filename"
-	TagAbsPath      = "abspath"
-	TagProjectName  = "projectname"
-	TagCppClassName = "cppclassname"
+	TagRequired    = "required"
+	TagMatch       = "match"
+	TagDirName     = "dirname"
+	TagFileName    = "filename"
+	TagAbsPath     = "abspath"
+	TagProjectName = "projectname"
 )
 
 type ValidationHelper struct {
 	delegate     *validator.Validate
-	errorBuilder func(
-		fieldName string, ve validator.ValidationErrors) []ErrorDetail
+	errorBuilder ErrorBuilder
 }
+
+type ErrorBuilder func(
+	ve validator.ValidationErrors, fieldName string) []ErrorDetail
 
 func NewValidationHelper() *ValidationHelper {
 	v := validator.New()
@@ -35,7 +37,6 @@ func NewValidationHelper() *ValidationHelper {
 	v.RegisterValidation(TagFileName, validateFileName)
 	v.RegisterValidation(TagAbsPath, validateAbsPath)
 	v.RegisterValidation(TagProjectName, validateProjectName)
-	v.RegisterValidation(TagCppClassName, validateCppClassName)
 
 	return &ValidationHelper{
 		delegate:     v,
@@ -43,19 +44,18 @@ func NewValidationHelper() *ValidationHelper {
 	}
 }
 
-func (h *ValidationHelper) RunVar(
-	fieldName, fieldValue, tag string) []ErrorDetail {
-	if e := h.delegate.Var(fieldValue, tag); e != nil {
+func (h *ValidationHelper) RunVar(name, value, tag string) []ErrorDetail {
+	if e := h.delegate.Var(value, tag); e != nil {
 		if ve, ok := e.(validator.ValidationErrors); ok {
 			if h.errorBuilder != nil {
-				return h.errorBuilder(fieldName, ve)
+				return h.errorBuilder(ve, name)
 			} else {
-				return defaultErrorBuilder(fieldName, ve)
+				return defaultErrorBuilder(ve, name)
 			}
 		}
 
 		return []ErrorDetail{{
-			Field:   "",
+			Field:   name,
 			Message: e.Error(),
 		}}
 	}
@@ -63,7 +63,20 @@ func (h *ValidationHelper) RunVar(
 	return nil
 }
 
-// validation helpers
+// convenients for tag creation
+func NewCombinedTags(tags []string) string {
+	return strings.Join(tags, ",")
+}
+
+func NewRegexTag(pattern string) string {
+	return NewTagWithParam(TagMatch, pattern)
+}
+
+func NewTagWithParam(tag, param string) string {
+	return tag + "=" + param
+}
+
+// for custom validation
 func validateRegex(fl validator.FieldLevel) bool {
 	return runRegex(fl, fl.Param())
 }
@@ -87,19 +100,18 @@ func validateProjectName(fl validator.FieldLevel) bool {
 	return runRegex(fl, "^[a-zA-Z_][a-zA-Z0-9_-]*$")
 }
 
-func validateCppClassName(fl validator.FieldLevel) bool {
-	return runRegex(
-		fl, "^(?:(?:[a-zA-Z_][a-zA-Z_0-9]*::)*[a-zA-Z_][a-zA-Z_0-9]*|)$")
-}
-
 func runRegex(fl validator.FieldLevel, pattern string) bool {
 	name := fl.Field().String()
-	re := regexp.MustCompile(pattern)
+	re, err := regexp.Compile(pattern)
+	if err != nil {
+		return false
+	}
+
 	return re.MatchString(name)
 }
 
 func defaultErrorBuilder(
-	fieldName string, ve validator.ValidationErrors) []ErrorDetail {
+	ve validator.ValidationErrors, fieldName string) []ErrorDetail {
 	var all []ErrorDetail
 
 	for _, ve := range ve {
@@ -118,8 +130,6 @@ func defaultErrorBuilder(
 			msg = fmt.Sprintf("%s must be an absolute path", fieldName)
 		case TagProjectName:
 			msg = fmt.Sprintf("%s must be a valid project name", fieldName)
-		case TagCppClassName:
-			msg = fmt.Sprintf("%s must be a valid C++ class name", fieldName)
 		default:
 			msg = fmt.Sprintf("%s is invalid (%s)", fieldName, ve.Tag())
 		}

@@ -73,6 +73,29 @@ func TestValidationHelper_SingleTag(t *testing.T) {
 		}...)
 	}
 
+	runValidationTest(t, dataSet)
+}
+
+func TestValidationHelper_MultipleTag(t *testing.T) {
+	tag1 := NewCombinedTags([]string{TagRequired, TagDirName, TagProjectName})
+	tag2 := NewCombinedTags([]string{
+		TagRequired, TagDirName,
+		NewRegexTag("^[A-Z]"), TagProjectName})
+
+	dataSet := []DataRecord{
+		{"", tag1, false},
+		{"abc ", tag1, false},
+		{"abc# ", tag1, false},
+		{"abc", tag1, true},
+
+		{"abc", tag2, false},
+		{"Abc", tag2, true},
+	}
+
+	runValidationTest(t, dataSet)
+}
+
+func runValidationTest(t *testing.T, dataSet []DataRecord) {
 	for _, data := range dataSet {
 		name := fmt.Sprintf("|%s|%s|%t|", data.value, data.tag, data.pass)
 		t.Run(name, func(t *testing.T) {

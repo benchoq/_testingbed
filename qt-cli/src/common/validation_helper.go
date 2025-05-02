@@ -20,29 +20,15 @@ const (
 	TagAbsPath      = "abspath"
 	TagProjectName  = "projectname"
 	TagCppClassName = "cppclassname"
-
-	// internal tags
-	TagAlreadyExists = "alreadyExists"
-	TagGeneral       = "general"
 )
 
-type ValidationError struct {
-	Field   string
-	Tag     string
-	Message string
+type ValidationHelper struct {
+	delegate     *validator.Validate
+	errorBuilder func(
+		fieldName string, ve validator.ValidationErrors) []ErrorDetail
 }
 
-func (ve ValidationError) Error() string {
-	return ve.Message
-}
-
-type Validator struct {
-	Worker       *validator.Validate
-	ErrorBuilder func(
-		fieldName string, ve validator.ValidationErrors) []ValidationError
-}
-
-func NewValidator() *Validator {
+func NewValidationHelper() *ValidationHelper {
 	v := validator.New()
 	v.RegisterValidation(TagMatch, validateRegex)
 	v.RegisterValidation(TagDirName, validateDirName)
@@ -51,26 +37,25 @@ func NewValidator() *Validator {
 	v.RegisterValidation(TagProjectName, validateProjectName)
 	v.RegisterValidation(TagCppClassName, validateCppClassName)
 
-	return &Validator{
-		Worker:       v,
-		ErrorBuilder: defaultErrorBuilder,
+	return &ValidationHelper{
+		delegate:     v,
+		errorBuilder: defaultErrorBuilder,
 	}
 }
 
-func (v *Validator) Run(
-	fieldName, fieldValue, tag string) []ValidationError {
-	if e := v.Worker.Var(fieldValue, tag); e != nil {
+func (h *ValidationHelper) RunVar(
+	fieldName, fieldValue, tag string) []ErrorDetail {
+	if e := h.delegate.Var(fieldValue, tag); e != nil {
 		if ve, ok := e.(validator.ValidationErrors); ok {
-			if v.ErrorBuilder != nil {
-				return v.ErrorBuilder(fieldName, ve)
+			if h.errorBuilder != nil {
+				return h.errorBuilder(fieldName, ve)
 			} else {
 				return defaultErrorBuilder(fieldName, ve)
 			}
 		}
 
-		return []ValidationError{{
-			Field:   fieldName,
-			Tag:     TagGeneral,
+		return []ErrorDetail{{
+			Field:   "",
 			Message: e.Error(),
 		}}
 	}
@@ -114,8 +99,8 @@ func runRegex(fl validator.FieldLevel, pattern string) bool {
 }
 
 func defaultErrorBuilder(
-	fieldName string, ve validator.ValidationErrors) []ValidationError {
-	var all []ValidationError
+	fieldName string, ve validator.ValidationErrors) []ErrorDetail {
+	var all []ErrorDetail
 
 	for _, ve := range ve {
 		msg := ""
@@ -139,9 +124,8 @@ func defaultErrorBuilder(
 			msg = fmt.Sprintf("%s is invalid (%s)", fieldName, ve.Tag())
 		}
 
-		all = append(all, ValidationError{
+		all = append(all, ErrorDetail{
 			Field:   fieldName,
-			Tag:     ve.Tag(),
 			Message: msg,
 		})
 	}

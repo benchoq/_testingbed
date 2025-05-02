@@ -67,14 +67,14 @@ func (g *Generator) DryRun(on bool) *Generator {
 
 func (g *Generator) Render() *Result {
 	// input validation
-	out := Check(CheckerIn{
+	out := Validate(ValidatorIn{
 		Name:       g.name,
 		WorkingDir: g.workingDir,
 		Preset:     g.preset,
 	})
 
-	if !out.IsSuccess() {
-		return NewErrorResult(out.ConvertToError("Input validation failed"))
+	if out.hasError() {
+		return NewErrorResult(*out.Errors)
 	}
 
 	// prep.
@@ -108,10 +108,7 @@ func (g *Generator) Render() *Result {
 		}
 	}
 
-	return &Result{
-		Success: true,
-		Data:    result,
-	}
+	return NewResult(result)
 }
 
 func (g *Generator) prepContext() error {

@@ -16,3 +16,7 @@ type ErrorDetail struct {
 	Field   string `json:"field"`
 	Message string `json:"message"`
 }
+
+func (e ErrorDetail) Error() string {
+	return e.Message
+}

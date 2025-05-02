@@ -318,13 +318,13 @@ func createInputValidator(
 	}
 
 	// create validation function
-	v := common.NewValidator()
+	v := common.NewValidationHelper()
 	tag := strings.Join(tags, ",")
 
 	return func(data string) error {
-		ves := v.Run(fieldName, data, tag)
-		if len(ves) != 0 {
-			return ves[0]
+		err := v.RunVar(fieldName, data, tag)
+		if len(err) != 0 {
+			return err[0]
 		}
 
 		return nil

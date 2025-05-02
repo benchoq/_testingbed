@@ -16,6 +16,13 @@ type Result struct {
 	Error   common.ErrorWithDetails
 }
 
+func NewResult(data ResultData) *Result {
+	return &Result{
+		Success: true,
+		Data:    data,
+	}
+}
+
 func NewErrorResult(details common.ErrorWithDetails) *Result {
 	return &Result{
 		Success: false,

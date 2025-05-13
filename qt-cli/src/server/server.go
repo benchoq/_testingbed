@@ -78,6 +78,7 @@ func createApiHandler() *gin.Engine {
 
 	v1 := r.Group("/v1")
 
+	v1.GET("/readyz", getReadyz)
 	v1.GET("/presets", getPresets)
 	v1.GET("/presets/:id", getPresetById)
 	v1.GET("/presets/:id/prompt", getPresetPromptById)

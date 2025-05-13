@@ -25,6 +25,10 @@ type ResponsePresetPrompt struct {
 	Prompt util.StringAnyMap `json:"prompt"`
 }
 
+func getReadyz(c *gin.Context) {
+	c.JSON(200, gin.H{"status": "ready"})
+}
+
 func getPresets(c *gin.Context) {
 	var presets []common.PresetData
 	type_s := c.DefaultQuery("type", "")

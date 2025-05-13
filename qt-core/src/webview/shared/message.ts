@@ -15,6 +15,7 @@ export interface PushMessage<T = unknown> {
 export enum CallMessageId {
   ViewSelectWorkingDir,
   ViewCallQtcliApi,
+  ViewCheckIfQtcliReady,
 }
 
 export interface CallMessage<T = unknown> {

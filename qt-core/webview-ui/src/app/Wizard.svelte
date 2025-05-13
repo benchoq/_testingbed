@@ -4,20 +4,12 @@ SPDX-License-Identifier: LicenseRef-Qt-Commercial OR LGPL-3.0-only
 -->
 
 <script lang="ts">
-  import { onMount } from "svelte";
   import { Modal } from "flowbite-svelte";
 
-  import * as utils from "@/logic/utils";
   import * as viewlogic from "./viewlogic.svelte";
   import { wizard } from "./states.svelte";
   import WizardButtons from "./WizardButtons.svelte";
   
-  onMount(() => {
-    if (utils.isDev()) {
-      viewlogic.loadPresets();
-    }
-  });
-
   let currentPage = $derived.by(() => {
     return wizard.pages[wizard.currentIndex]
   })

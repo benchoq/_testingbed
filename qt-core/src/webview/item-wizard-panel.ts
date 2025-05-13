@@ -21,8 +21,9 @@ import {
   CallMessage, CallMessageId, 
 } from "./shared/message";
 
-const qtcliApi = new QtcliRestClient();
+const qtcliRest = new QtcliRestClient();
 let qtcliRunner: QtcliRunner | undefined = undefined;
+// let qtcliRestServerReady = false;
 
 // definitions for webview-panel
 const PanelTitle = "New Item";
@@ -56,7 +57,8 @@ export class ItemWizardPanel {
   }
 
   public dispose() {
-    qtcliApi.delete("/server");
+    qtcliRest.delete("/server");
+    // qtcliRestServerReady = false;
     ItemWizardPanel.instance = undefined;
     this._panel.dispose();
 
@@ -74,8 +76,7 @@ export class ItemWizardPanel {
       ItemWizardPanel.instance = new ItemWizardPanel(p, extensionUri);
     }
 
-    // TODO: check the lifecycle of qtcli
-    startQtcliServer(extensionUri); 
+    void startQtcliServer(extensionUri);
 
     ItemWizardPanel.instance._panel.reveal(PanelColumn);
     ItemWizardPanel.instance._push(PushMessageId.PanelInit, createInitData());
@@ -98,7 +99,7 @@ export class ItemWizardPanel {
     }
 
     if (p.id === PushMessageId.ViewCreateItem) {
-      qtcliApi
+      qtcliRest
         .call({ method: 'post', endpoint: '/items', data: p.data })
         .then((res: any) => {
           openItemsFromQtcliResponseData(res.data);
@@ -131,8 +132,19 @@ export class ItemWizardPanel {
     }
 
     if (r.id === CallMessageId.ViewCallQtcliApi) {
-      qtcliApi
+      qtcliRest
         .call(r.data as QtcliRestRequest) // TODO: check casting
+        .then((res: any) => { this._reply(r.id, r.tag, res); })
+        .catch((err: any) => {
+          console.log("unhandled rest call error", err);
+        })
+
+      return;
+    }
+
+    if (r.id === CallMessageId.ViewCheckIfQtcliReady) {
+      qtcliRest
+        .callWithRetry({ method: "get", endpoint: "/readyz" })
         .then((res: any) => { this._reply(r.id, r.tag, res); })
         .catch((err: any) => {
           console.log("unhandled rest call error", err);

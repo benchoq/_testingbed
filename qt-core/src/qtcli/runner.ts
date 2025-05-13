@@ -53,15 +53,14 @@ export class QtcliRunner {
       await fs.mkdir(this._workingDir, { recursive: true });
       this._disposeFsWatcher();
       this._setupFsWatcher(action, arg);
-      this._showTerminal = false;
+      this._showTerminal = true;
 
       if (action === QtcliAction.NewProject) {
-        this._showTerminal = true;
         this._runQtcli(['new', arg]);
       } else if (action === QtcliAction.NewFile) {
-        this._showTerminal = true;
         this._runQtcli(['new-file', arg]);
       } else if (action === QtcliAction.Server) {
+        this._showTerminal = false;
         this._runQtcli(['server', arg]);
       } else {
         throw new Error("action is invalid");

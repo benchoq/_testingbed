@@ -7,6 +7,7 @@ import { PushMessageId, CallMessageId, type PushMessage } from "@shared/message"
 import { vscodeApi } from "@/logic/vscodeApi";
 import { type Preset } from './types.svelte';
 import { configs, presets, loading, inputValidation, wizard, initData } from './states.svelte';
+import * as utils from "@/logic/utils";
 
 vscodeApi.onDidReceivePushMessage((p: PushMessage) => {
   if (p.id === PushMessageId.PanelInit) {
@@ -14,10 +15,24 @@ vscodeApi.onDidReceivePushMessage((p: PushMessage) => {
       initData.project.workingDir = _.get(p.data, "project.workingDir", initData.project.workingDir) as string;
       initData.others.workingDir = _.get(p.data, "others.workingDir", initData.others.workingDir) as string;
     }
-
-    loadPresets();
   }
 })
+
+export function onAppMount() {
+  if (utils.isDev()) {
+    loadPresets();
+    return;
+  }
+
+  loading.start()
+
+  void vscodeApi
+    .request(CallMessageId.ViewCheckIfQtcliReady)
+    .then((res: any) => {
+      loading.clear();
+      loadPresets();
+    })
+}
 
 export const onModalClosed = () => {
   vscodeApi.push(PushMessageId.ViewWizardClosed);

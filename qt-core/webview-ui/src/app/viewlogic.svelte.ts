@@ -156,3 +156,22 @@ export const dryRunGenerator = async () => {
       }
     })
 }
+
+export const moveWizardPage = (i: number) => {
+  let candidate = wizard.currentIndex + i;
+  candidate = Math.max(0, Math.min(candidate, wizard.pages.length - 1));
+
+  if (wizard.currentIndex != candidate) {
+    wizard.currentIndex = candidate;
+    updateWizardButtons();
+  }
+}
+
+export const updateWizardButtons = () => {
+  const i = wizard.currentIndex;
+  const last = wizard.pages.length - 1;
+
+  wizard.buttons.back.visible = (i > 0);
+  wizard.buttons.next.visible = (i < last);
+  wizard.buttons.finish.visible = (i === last);
+}

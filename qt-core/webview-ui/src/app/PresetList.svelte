@@ -7,7 +7,7 @@ SPDX-License-Identifier: LicenseRef-Qt-Commercial OR LGPL-3.0-only
   import { Listgroup, ListgroupItem, P } from "flowbite-svelte";
 
   import { presets } from "./states.svelte";
-  import { createPresetDisplayText, setSelectedPreset } from "./viewlogic.svelte";
+  import * as viewlogic from "./viewlogic.svelte";
 
   const adjustSelectedIndex = (offset: number) => {
     if (!presets.selected || presets.selectedIndex < 0) {
@@ -19,7 +19,7 @@ SPDX-License-Identifier: LicenseRef-Qt-Commercial OR LGPL-3.0-only
     candidate = Math.min(candidate, presets.all.length - 1);
 
     if (candidate != presets.selectedIndex) {
-      setSelectedPreset(presets.all[candidate], candidate);
+      viewlogic.setSelectedPreset(presets.all[candidate], candidate);
     }
   };
 
@@ -56,10 +56,16 @@ SPDX-License-Identifier: LicenseRef-Qt-Commercial OR LGPL-3.0-only
         currentClass="selected"
         current={presets.selectedIndex === index}
         on:click={() => {
-          setSelectedPreset(preset, index);
+          viewlogic.setSelectedPreset(preset, index);
         }}
       >
-        <div class="flex-1">{createPresetDisplayText(preset)}</div>
+        <div class="flex-1"
+          role="listitem"
+          on:dblclick={() => { viewlogic.moveWizardPage(1); }}
+        >
+          {viewlogic.createPresetDisplayText(preset)}
+        </div>
+
         {#if !preset.name.startsWith("@")}
           <P size="xs" class="qt-label">{preset.meta.title}</P>
         {:else}

@@ -15,25 +15,8 @@ SPDX-License-Identifier: LicenseRef-Qt-Commercial OR LGPL-3.0-only
   import * as viewlogic from "./viewlogic.svelte";
   import IconButton from "@/comps/IconButton.svelte";
 
-  const setCurrentIndex = (i: number) => {
-    const candidate = Math.max(0, Math.min(i, wizard.pages.length - 1));
-    if (wizard.currentIndex != candidate) {
-      wizard.currentIndex = candidate;
-      updateVisibilities();
-    }
-  }
-
-  const updateVisibilities = () => {
-    const i = wizard.currentIndex;
-    const last = wizard.pages.length - 1;
-
-    wizard.buttons.back.visible = (i > 0);
-    wizard.buttons.next.visible = (i < last);
-    wizard.buttons.finish.visible = (i === last);
-  }
-  
   onMount(() => {
-    updateVisibilities();
+    viewlogic.updateWizardButtons();
   });
 
 </script>
@@ -45,14 +28,14 @@ SPDX-License-Identifier: LicenseRef-Qt-Commercial OR LGPL-3.0-only
       icon={AngleLeftOutline}
       flat={true}
       visible={wizard.buttons.back.visible} 
-      onClicked={() => {setCurrentIndex(wizard.currentIndex - 1)}}>
+      onClicked={() => {viewlogic.moveWizardPage(-1)}}>
     </IconButton>
 
     <IconButton
       text="Next"
       icon={AngleRightOutline}
       visible={wizard.buttons.next.visible} 
-      onClicked={() => {setCurrentIndex(wizard.currentIndex + 1)}}>
+      onClicked={() => {viewlogic.moveWizardPage(1)}}>
     </IconButton>
 
     <IconButton

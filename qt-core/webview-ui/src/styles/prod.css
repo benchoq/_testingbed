@@ -37,8 +37,8 @@ body.prod {
   --qt-item-fill: transparent;
   --qt-item-fillHover: var(--vscode-list-hoverBackground, var(--qt-items-fill));
 
-  --qt-itemSelection-text: var(--vscode-list-activeSelectionForeground);
-  --qt-itemSelection-fill: var(--vscode-list-activeSelectionBackground);
+  --qt-itemSelection-text: var(--vscode-button-foreground);
+  --qt-itemSelection-fill: var(--vscode-button-background);
 
   --qt-alert-text: var(--vscode-foreground);
   --qt-alert-fill: var(--vscode-inputValidation-warningBackground);

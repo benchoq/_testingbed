@@ -37,7 +37,7 @@ SPDX-License-Identifier: LicenseRef-Qt-Commercial OR LGPL-3.0-only
   });
 </script>
 
-<div class={`flex flex-col h-full gap-0 ${className}`}>
+<div class={`flex flex-col h-full gap-0.5 ${className}`}>
   {#each items as item, i}
     <Button
       on:click={() => { setCurrentIndex(i); } }
@@ -46,10 +46,6 @@ SPDX-License-Identifier: LicenseRef-Qt-Commercial OR LGPL-3.0-only
       <item.icon />
       {item.label}
     </Button>
-    {#if i < items.length - 1}
-      <div class="qt-vtab-separator"></div>
-    {/if}
   {/each}
   <div class="flex-grow"></div>
 </div>
-

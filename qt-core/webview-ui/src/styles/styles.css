@@ -65,13 +65,18 @@ body {
   @apply qt-focusRing;
 }
 
+.qt-button:hover {
+	background: var(--qt-button-fillHover);
+}
+
 .qt-button.flat {
   color: var(--qt-text-normal);
   background: transparent;
 }
 
-.qt-button:hover {
-	background: var(--qt-button-fillHover);
+.qt-button.flat:hover {
+  color: var(--qt-button-text);
+  background: var(--qt-button-fillHover);
 }
 
 .qt-button:disabled {
@@ -202,9 +207,10 @@ body {
 
 /* vertical tab */
 .qt-vtab-item {
-  color: var(--qt-button-text);
+  color: var(--qt-text-normal);
   background: transparent;
   border-radius: var(--qt-border-radius);
+  border-bottom: 1px solid var(--qt-widget-separator);
   font-weight: var(--qt-font-weight);
 	line-height: normal;
 	cursor: pointer;
@@ -212,18 +218,20 @@ body {
   @apply qt-focusRing;
 }
 
+.qt-vtab-item:last-of-type,
+.qt-vtab-item:has(+ .qt-vtab-item.selected) {
+  border-bottom: none;
+}
+
 .qt-vtab-item.selected {
   color: var(--qt-itemSelection-text);
   background-color: var(--qt-itemSelection-fill);
+  border: 1px solid var(--qt-widget-border);
 }
 
 .qt-vtab-item:hover {
+  color: var(--qt-itemSelection-text);
 	background: var(--qt-itemSelection-fill);
-}
-
-.qt-vtab-separator {
-  height: 1px;
-  background-color: var(--qt-widget-separator);
 }
 
 /* alert - for bad inputs, etc. */

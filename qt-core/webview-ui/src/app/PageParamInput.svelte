@@ -4,6 +4,7 @@ SPDX-License-Identifier: LicenseRef-Qt-Commercial OR LGPL-3.0-only
 -->
 
 <script lang="ts">
+  import { onMount } from "svelte";
   import { Checkbox, Label } from "flowbite-svelte";
 
   import SectionLabel from "@/comps/SectionLabel.svelte";
@@ -13,6 +14,10 @@ SPDX-License-Identifier: LicenseRef-Qt-Commercial OR LGPL-3.0-only
 
   import { presets, configs } from "./states.svelte";
   import { createPresetDisplayText } from "./viewlogic.svelte";
+
+  onMount(() => {
+    console.log("on mount ....")
+  })
 </script>
 
 <div class={`w-full h-full grid gap-2

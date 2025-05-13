@@ -11,6 +11,7 @@ SPDX-License-Identifier: LicenseRef-Qt-Commercial OR LGPL-3.0-only
 
 <InputWithAlert
   bind:value={configs.name}
+  focusOnMount={true}
   onInput={viewlogic.dryRunGenerator}
   errors={inputValidation.nameError} />
 

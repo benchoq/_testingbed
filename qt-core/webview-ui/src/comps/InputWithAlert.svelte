@@ -6,9 +6,11 @@ SPDX-License-Identifier: LicenseRef-Qt-Commercial OR LGPL-3.0-only
 <script lang="ts">
   import { Input, Button, Alert } from "flowbite-svelte";
   import { InfoCircleSolid } from "flowbite-svelte-icons";
+    import { onMount } from "svelte";
 
   let {
     value = $bindable(""),
+    focusOnMount = false,
     onInput,
     errors = undefined,
     ...restProps
@@ -17,6 +19,16 @@ SPDX-License-Identifier: LicenseRef-Qt-Commercial OR LGPL-3.0-only
   const hasError = $derived(errors && (errors.length > 0));
   let hovered = $state(false);
   let focused = $state(false);
+
+  onMount(() => {
+    if (focusOnMount) {
+      setTimeout(() => {
+        const el = document.getElementById("input_name") as HTMLInputElement | null;
+        el?.focus();
+      }, 0);
+    }
+  })
+
 </script>
 
 <div class='relative'>

@@ -4,10 +4,10 @@
 import _ from "lodash";
 
 import { CallMessageId } from '@shared/message';
-import _prompt from "./mockData/_prompt.json";
-import _presetsFile from "./mockData/_presets_file.json";
-import _presetsClass from "./mockData/_presets_class.json";
-import _presetsProject from "./mockData/_presets_project.json";
+import _prompt from "./data/_prompt.json";
+import _presetsFile from "./data/_presets_file.json";
+import _presetsClass from "./data/_presets_class.json";
+import _presetsProject from "./data/_presets_project.json";
 
 class MockHandler {
   public async mockRequest(
@@ -43,4 +43,4 @@ function mockViewCallQtcliApi(data?: unknown) {
   })
 }
 
-export const mock = new MockHandler();
+export const mockHandler = new MockHandler();

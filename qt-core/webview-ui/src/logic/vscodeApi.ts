@@ -7,7 +7,7 @@ import {
   type PushMessage, PushMessageId, 
   type CallMessage, CallMessageId, isPushMessage, isCallMessage
 } from '@shared/message';
-import { mock } from "./mock";
+import { mockHandler } from "@/mock/handler";
 import * as utils from "./utils";
 
 class VSCodeApiWrapper {
@@ -59,7 +59,7 @@ class VSCodeApiWrapper {
   public async request(
     id: CallMessageId, data?: unknown, timeout = 10000): Promise<unknown> {
     if (utils.isDev()) {
-      return mock.mockRequest(id, data, timeout);
+      return mockHandler.mockRequest(id, data, timeout);
     }
 
     if (!this._api) {

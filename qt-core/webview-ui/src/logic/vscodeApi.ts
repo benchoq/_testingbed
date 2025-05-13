@@ -7,8 +7,6 @@ import {
   type PushMessage, PushMessageId, 
   type CallMessage, CallMessageId, isPushMessage, isCallMessage
 } from '@shared/message';
-import { mockHandler } from "@/mock/handler";
-import * as utils from "./utils";
 
 class VSCodeApiWrapper {
   private readonly _api: WebviewApi<unknown> | undefined;
@@ -58,7 +56,8 @@ class VSCodeApiWrapper {
 
   public async request(
     id: CallMessageId, data?: unknown, timeout = 10000): Promise<unknown> {
-    if (utils.isDev()) {
+    if (import.meta.env.Dev) {
+      const { mockHandler } = await import('@/mock/handler')
       return mockHandler.mockRequest(id, data, timeout);
     }
 

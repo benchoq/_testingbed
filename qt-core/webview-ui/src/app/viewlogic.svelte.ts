@@ -7,7 +7,6 @@ import { PushMessageId, CallMessageId, type PushMessage } from "@shared/message"
 import { vscodeApi } from "@/logic/vscodeApi";
 import { type Preset } from './types.svelte';
 import { configs, presets, loading, inputValidation, wizard, initData } from './states.svelte';
-import * as utils from "@/logic/utils";
 
 vscodeApi.onDidReceivePushMessage((p: PushMessage) => {
   if (p.id === PushMessageId.PanelInit) {
@@ -19,7 +18,7 @@ vscodeApi.onDidReceivePushMessage((p: PushMessage) => {
 })
 
 export function onAppMount() {
-  if (utils.isDev()) {
+  if (import.meta.env.DEV) {
     loadPresets();
     return;
   }

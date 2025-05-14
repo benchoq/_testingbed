@@ -11,9 +11,15 @@ import _presetsProject from "./data/_presets_project.json";
 
 class MockHandler {
   public async mockRequest(
-    id: CallMessageId, data?: unknown, timeout = 10000): Promise<unknown> {
+    id: CallMessageId, data?: unknown, timeout = 10_000): Promise<unknown> {
     if (id === CallMessageId.ViewCallQtcliApi) {
       return mockViewCallQtcliApi(data);
+    }
+
+    if (id === CallMessageId.ViewCheckIfQtcliReady) {
+      return new Promise((resolve) => {
+        setTimeout(() => { resolve({ status: "ready" }) }, 1_000);
+      })
     }
 
     return Promise.reject("mock handler doesn't implement this");

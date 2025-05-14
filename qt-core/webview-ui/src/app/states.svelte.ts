@@ -18,6 +18,7 @@ export const configs = $state({
   name: "untitled",
   workingDir: "",
   saveWorkingDir: false,
+  serverReady: false,
 })
 
 export const initData = $state({

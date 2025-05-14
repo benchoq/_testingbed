@@ -20,7 +20,7 @@ class VSCodeApiWrapper {
   
     window.addEventListener("message", (e: MessageEvent) => {
       if (!e.origin.startsWith("vscode-webview://")) {
-        console.log(`received message, but the origin is not expected: ${e.origin}`)
+        // console.log(`received message, but the origin is not expected: ${e.origin}`)
         return;
       }
 
@@ -54,9 +54,8 @@ class VSCodeApiWrapper {
     this._api.postMessage(p);
   }
 
-  public async request(
-    id: CallMessageId, data?: unknown, timeout = 10000): Promise<unknown> {
-    if (import.meta.env.Dev) {
+  public async request(id: CallMessageId, data?: unknown, timeout = 10_000): Promise<unknown> {
+    if (import.meta.env.DEV) {
       const { mockHandler } = await import('@/mock/handler')
       return mockHandler.mockRequest(id, data, timeout);
     }

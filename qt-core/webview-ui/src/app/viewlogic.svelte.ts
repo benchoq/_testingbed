@@ -18,16 +18,12 @@ vscodeApi.onDidReceivePushMessage((p: PushMessage) => {
 })
 
 export function onAppMount() {
-  if (import.meta.env.DEV) {
-    loadPresets();
-    return;
-  }
-
   loading.start()
 
   void vscodeApi
     .request(CallMessageId.ViewCheckIfQtcliReady)
     .then((res: any) => {
+      configs.serverReady = true;
       loading.clear();
       loadPresets();
     })
@@ -50,6 +46,10 @@ export const setPresetType = (type: string) => {
 }
 
 export const setSelectedPreset = (preset: Preset, index: number) => {
+  if (!configs.serverReady) {
+    return;
+  }
+  
   presets.selected = preset
   presets.selectedIndex = index;
 
@@ -61,7 +61,7 @@ export const setSelectedPreset = (preset: Preset, index: number) => {
       .request(CallMessageId.ViewCallQtcliApi, { method, endpoint })
       .then((res: any) => { 
         presets.selectedPrompt = res.data
-        console.log(res.data);
+        console.log(res.data); // TODO: remove this
       })
       .catch((e) => { loading.setError(e) })
       .finally(() => { loading.clear() });
@@ -69,6 +69,10 @@ export const setSelectedPreset = (preset: Preset, index: number) => {
 }
 
 export const loadPresets = () => {
+  if (!configs.serverReady) {
+    return;
+  }
+
   loading.start()
 
   const method = "get"
@@ -113,6 +117,10 @@ export const createItemFromSelectedPreset = async () => {
 };
 
 export const dryRunGenerator = async () => {
+  if (!configs.serverReady) {
+    return;
+  }
+
   if (!presets.selected) {
     // TODO: error display
     return;

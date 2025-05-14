@@ -147,10 +147,10 @@ body {
   border-color: var(--qt-input-textError);
 }
 
-.qt-input-icon.error {
+.qt-input-icon {
   color: var(--qt-input-borderError);
   background-color: transparent;
-  padding: 0px;
+  padding: 0px 5px;
 	cursor: pointer;
   @apply ring-offset-0;
   @apply qt-focusRing;

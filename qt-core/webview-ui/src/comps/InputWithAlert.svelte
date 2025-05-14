@@ -58,8 +58,7 @@ SPDX-License-Identifier: LicenseRef-Qt-Commercial OR LGPL-3.0-only
   >
     <Button
       slot="right"
-      class={`qt-input-icon error ${!hasError ? "hidden" : ""}`}
-      title="Toggle alert"
+      class={`qt-input-icon ${!hasError ? "hidden" : ""}`}
       on:mouseenter={() => { hovered = true; }}
       on:mouseleave={() => { hovered = false; }}
     >

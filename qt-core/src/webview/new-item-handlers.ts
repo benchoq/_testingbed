@@ -31,7 +31,8 @@ export class NewItemCommandHandler {
       [CommandId.UiGetAllPresets, this.onUiGetAllPresets],
       [CommandId.UiGetPresetById, this.onUiGetPresetById],
       [CommandId.UiValidateInputs, this.onUiValidateInputs],
-      [CommandId.UiUpsertCustomPreset, this. onUiUpsertCustomPreset],
+      [CommandId.UiCreateCustomPreset, this.onUiCreateCustomPreset],
+      [CommandId.UiDeleteCustomPreset, this.onUiDeleteCustomPreset],
       [CommandId.UiSelectWorkingDir, this.onUiSelectWorkingDir]
     ]);
   }
@@ -121,13 +122,15 @@ export class NewItemCommandHandler {
     this._panel?.postDataReply(cmd, data);
   };
 
-  // eslint-disable-next-line @typescript-eslint/class-methods-use-this
-  private readonly onUiUpsertCustomPreset = async (cmd: Command) => {
-    // const id = _.toString(cmd.payload);
-    console.log("handler:", cmd.payload);
+  private readonly onUiCreateCustomPreset = async (cmd: Command) => {
     const data = await this._qtcliRest.post(`/presets`, cmd.payload);
     this._panel?.postDataReply(cmd, data);
-    console.log("handler:", data);
+  }
+
+  private readonly onUiDeleteCustomPreset = async (cmd: Command) => {
+    const id = _.toString(cmd.payload);
+    const data = await this._qtcliRest.delete(`/presets/${id}`);
+    this._panel?.postDataReply(cmd, data);
   }
 
   private readonly onUiValidateInputs = async (cmd: Command) => {

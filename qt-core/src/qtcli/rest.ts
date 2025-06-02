@@ -29,8 +29,8 @@ export class QtcliRestClient {
     return this.call({ method: 'post', url, data, params });
   }
 
-  public async delete(url: string) {
-    return this.call({ method: 'delete', url });
+  public async delete(url: string, data?: unknown) {
+    return this.call({ method: 'delete', url, data });
   }
 
   public async call<T = unknown>(req: AxiosRequestConfig): Promise<T> {

@@ -74,6 +74,13 @@ export async function setPresetType(type: string) {
   }
 }
 
+export async function setSelectedPresetByName(name: string) {
+  const index = data.presets.findIndex(p => p.name === name);
+  if (index !== -1) {
+    setSelectedPreset(data.presets[index], index);
+  }
+}
+
 export async function setSelectedPreset(preset: Preset, index: number) {
   if (!data.serverReady) return;
 
@@ -144,23 +151,37 @@ export async function validateInput() {
   }
 }
 
-export async function saveOptions() {
+export async function deleteCustomPreset() {
+  const presetId = data.selected.preset?.id;
+  if (!presetId) {
+    return;
+  }
+
+  try {
+    const r = await vscode.post(CommandId.UiDeleteCustomPreset, presetId);
+    loadPresets();
+  } catch (e) {
+    reportUiError('Error deleting preset', e);
+  }
+}
+
+export async function createCustomPreset(name: string) {
   const presetId = data.selected.preset?.id;
   const changes = data.selected.optionChanges;
-
   if (!presetId || Object.keys(changes).length === 0) {
     return;
   }
 
   try {
     const payload = {
-      name: "myapp", // TODO: get name from ui
+      name,
       presetId,
       options: $state.snapshot(changes)
     }
    
-    const r = await vscode.post(CommandId.UiUpsertCustomPreset, payload);
-    console.log(r);
+    const r = await vscode.post(CommandId.UiCreateCustomPreset, payload);
+    loadPresets();
+    setSelectedPresetByName(name);
   } catch (e) {
     reportUiError('Error saving preset', e);
   }

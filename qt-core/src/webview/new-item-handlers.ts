@@ -31,7 +31,7 @@ export class NewItemCommandHandler {
       [CommandId.UiGetAllPresets, this.onUiGetAllPresets],
       [CommandId.UiGetPresetById, this.onUiGetPresetById],
       [CommandId.UiValidateInputs, this.onUiValidateInputs],
-      [CommandId.UiSaveCustomPreset, this. onUiSaveCustomPreset],
+      [CommandId.UiUpsertCustomPreset, this. onUiUpsertCustomPreset],
       [CommandId.UiSelectWorkingDir, this.onUiSelectWorkingDir]
     ]);
   }
@@ -122,11 +122,12 @@ export class NewItemCommandHandler {
   };
 
   // eslint-disable-next-line @typescript-eslint/class-methods-use-this
-  private readonly onUiSaveCustomPreset = async (cmd: Command) => {
+  private readonly onUiUpsertCustomPreset = async (cmd: Command) => {
     // const id = _.toString(cmd.payload);
-    // const data = await this._qtcliRest.get(`/presets/${id}`);
     console.log("handler:", cmd.payload);
-    this._panel?.postDataReply(cmd, cmd.payload);
+    const data = await this._qtcliRest.post(`/presets`, cmd.payload);
+    this._panel?.postDataReply(cmd, data);
+    console.log("handler:", data);
   }
 
   private readonly onUiValidateInputs = async (cmd: Command) => {

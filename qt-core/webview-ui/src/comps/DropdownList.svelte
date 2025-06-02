@@ -78,7 +78,7 @@ SPDX-License-Identifier: LicenseRef-Qt-Commercial OR LGPL-3.0-only
   bind:this={wrapper}
   tabindex="0"
   role="listbox"
-  class="qt-dropdown-wrapper max-h-[200px] z-[1000]"
+  class="qt-dropdown-wrapper max-h-[200px] z-[100]"
   style={`position: absolute; 
     left: ${triggerRect.left}px; 
     top: ${triggerRect.bottom}px; 

@@ -31,6 +31,7 @@ export class NewItemCommandHandler {
       [CommandId.UiGetAllPresets, this.onUiGetAllPresets],
       [CommandId.UiGetPresetById, this.onUiGetPresetById],
       [CommandId.UiValidateInputs, this.onUiValidateInputs],
+      [CommandId.UiSaveCustomPreset, this. onUiSaveCustomPreset],
       [CommandId.UiSelectWorkingDir, this.onUiSelectWorkingDir]
     ]);
   }
@@ -103,7 +104,7 @@ export class NewItemCommandHandler {
         method: 'get',
         url: '/ready'
       });
-      this._panel?.post(cmd.id, { data }, cmd.tag);
+      this._panel?.postDataReply(cmd, data);
     } catch {
       await vscode.window.showErrorMessage(texts.newItem.errorQtCliNotReady);
     }
@@ -111,31 +112,33 @@ export class NewItemCommandHandler {
 
   private readonly onUiGetAllPresets = async (cmd: Command) => {
     const data = await this._qtcliRest.get('/presets', { type: cmd.payload });
-    this._panel?.post(cmd.id, { data }, cmd.tag);
+    this._panel?.postDataReply(cmd, data);
   };
 
   private readonly onUiGetPresetById = async (cmd: Command) => {
     const id = _.toString(cmd.payload);
     const data = await this._qtcliRest.get(`/presets/${id}`);
-    this._panel?.post(cmd.id, { data }, cmd.tag);
+    this._panel?.postDataReply(cmd, data);
   };
+
+  // eslint-disable-next-line @typescript-eslint/class-methods-use-this
+  private readonly onUiSaveCustomPreset = async (cmd: Command) => {
+    // const id = _.toString(cmd.payload);
+    // const data = await this._qtcliRest.get(`/presets/${id}`);
+    console.log("handler:", cmd.payload);
+    this._panel?.postDataReply(cmd, cmd.payload);
+  }
 
   private readonly onUiValidateInputs = async (cmd: Command) => {
     try {
       const data = await this._qtcliRest.post('/items/validate', cmd.payload);
-      this._panel?.post(cmd.id, { data }, cmd.tag);
+      this._panel?.postDataReply(cmd, data);
     } catch (e) {
       if (e instanceof QtcliRestError) {
-        this._panel?.post(
-          cmd.id,
-          {
-            error: {
-              error: e.message,
-              details: e.details
-            } as ErrorResponse
-          },
-          cmd.tag
-        );
+        this._panel?.postErrorReply(cmd, {
+          error: e.message,
+          details: e.details
+        } as ErrorResponse);
       }
     }
   };
@@ -157,7 +160,7 @@ export class NewItemCommandHandler {
         folder = folder.charAt(0).toUpperCase() + folder.slice(1);
       }
 
-      this._panel?.post(cmd.id, { data: folder }, cmd.tag);
+      this._panel?.postDataReply(cmd, folder);
     }
   };
 }

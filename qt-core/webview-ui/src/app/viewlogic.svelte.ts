@@ -79,6 +79,7 @@ export async function setSelectedPreset(preset: Preset, index: number) {
 
   data.selected.preset = preset;
   data.selected.presetIndex = index;
+  data.selected.optionChanges = {};
 
   if (preset.id.length > 0) {
     try {
@@ -143,6 +144,28 @@ export async function validateInput() {
   }
 }
 
+export async function saveOptions() {
+  const id = data.selected.preset?.id;
+  const changes = data.selected.optionChanges;
+
+  if (!id || Object.keys(changes).length === 0) {
+    return;
+  }
+
+  try {
+    const payload = {
+      id,
+      options: $state.snapshot(changes)
+    }
+   
+    const r = await vscode.post(CommandId.UiSaveCustomPreset, payload);
+    console.log(r);
+  } catch (e) {
+    reportUiError('Error saving preset', e);
+  }
+}
+
+// helpers
 async function loadPresets() {
   if (!data.serverReady) return;
 
@@ -219,3 +242,4 @@ function clearLoadingDelayTimer() {
     ui.loading.delayedTimerId = null;
   }
 }
+

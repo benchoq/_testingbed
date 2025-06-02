@@ -12,7 +12,7 @@ import {
   getNewProjectBaseDir
 } from '@/qtcli/commands';
 import { getUri, getNonce } from './utils';
-import { CommandId } from '@/webview/shared/message';
+import { CommandId, Command } from '@/webview/shared/message';
 import { NewItemCommandHandler } from './new-item-handlers';
 import * as texts from '@/texts';
 
@@ -81,6 +81,14 @@ export class NewItemPanel {
     tag: string | undefined = undefined
   ) {
     void this._panel.webview.postMessage({ id, payload, tag });
+  }
+
+  public postDataReply(cmd: Command, data: unknown) {
+    this.post(cmd.id, { data }, cmd.tag);
+  }
+
+  public postErrorReply(cmd: Command, error: unknown) {
+    this.post(cmd.id, { error }, cmd.tag);
   }
 }
 

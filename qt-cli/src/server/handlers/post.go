@@ -28,6 +28,16 @@ type NewItemResponse struct {
 	DryRun     bool     `json:"dryRun" binding:"required"`
 }
 
+type UpsertCustomPresetRequest struct {
+	Name     string         `json:"name" binding:"required"`
+	PresetId string         `json:"presetId" binding:"required"`
+	Options  map[string]any `json:"options"`
+}
+type UpsertCustomPresetResponse struct {
+	PresetId string `json:"presetId" binding:"required"`
+	Status   string `json:"status" binding:"required"`
+}
+
 type PostNewItemContext struct {
 	name       string
 	workingDir string
@@ -105,4 +115,29 @@ func PostItemsValidate(c *gin.Context) {
 	}
 
 	ReplyStatus(c, common.InputOkay)
+}
+
+func PostUpsertCustomPreset(c *gin.Context) {
+	var req UpsertCustomPresetRequest
+	if err := c.ShouldBindJSON(&req); err != nil {
+		ReplyErrorMsg(c, err.Error())
+		return
+	}
+
+	preset, err := runner.Presets.Any.FindByUniqueId(req.PresetId)
+	if err != nil {
+		ReplyErrorMsg(c, err.Error())
+		return
+	}
+
+	// TODO: validate name - ensure not starting with '@', not special chars...
+	name := preset.GetName()
+	preset.Name = req.Name
+	// preset.MergeOptions(req.Options)
+
+	f := runner.Presets.User.GetFile()
+	f.Add(preset)
+	f.Save()
+
+	ReplyErrorMsg(c, "not fully implemented yet"+name)
 }

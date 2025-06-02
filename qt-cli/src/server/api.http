@@ -69,6 +69,21 @@ Content-Type: application/json
     "presetId": "{{presetConsoleApp}}"
 }
 
+### Delete custom preset
+DELETE {{baseUrl}}/presets/1575099176 HTTP/1.1
+Content-Type: application/json
+
+### Upsert a custom preset
+POST {{baseUrl}}/presets/upsert HTTP/1.1
+Content-Type: application/json
+
+{
+    "name": "myconoleapp",
+    "presetId": "{{presetConsoleApp}}"
+}
+
+
+
 ###
 ### Delete server
 ###

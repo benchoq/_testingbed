@@ -6,6 +6,7 @@ package handlers
 import (
 	"os"
 	"qtcli/common"
+	"qtcli/runner"
 	"qtcli/util"
 	"time"
 
@@ -19,4 +20,19 @@ func DeleteServer(c *gin.Context) {
 		time.Sleep(1 * time.Second)
 		util.SendSigTermOrKill(os.Getpid())
 	}()
+}
+
+func DeleteCustomPreset(c *gin.Context) {
+	id := c.Param("id")
+	p, err := runner.Presets.User.FindByUniqueId(id)
+	if err != nil {
+		ReplyErrorMsg(c, common.ServerNoPreset)
+		return
+	}
+
+	f := runner.Presets.User.GetFile()
+	f.Remove(p.Name)
+	f.Save()
+
+	ReplyDelete(c, p.GetUniqueId())
 }

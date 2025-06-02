@@ -104,10 +104,15 @@ func createApiHandler() *gin.Engine {
 	v1 := r.Group("/v1")
 
 	v1.GET("/ready", handlers.GetReady)
+
 	v1.GET("/presets", handlers.GetPresets)
 	v1.GET("/presets/:id", handlers.GetPresetById)
+	v1.POST("/presets/upsert", handlers.PostUpsertCustomPreset)
+	v1.DELETE("/presets/:id", handlers.DeleteCustomPreset)
+
 	v1.POST("/items", handlers.PostItems)
 	v1.POST("/items/validate", handlers.PostItemsValidate)
+
 	v1.DELETE("/server", handlers.DeleteServer)
 
 	return r

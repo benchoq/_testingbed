@@ -28,4 +28,5 @@ const (
 	ServerNoPresets      = "Cannot find presets"
 	ServerNoTemplateFile = "Cannot open the template file"
 	ServerClosing        = "The server is shutting down"
+	ServerPresetDeleted  = "The preset has been deleted"
 )

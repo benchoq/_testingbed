@@ -4,40 +4,38 @@ SPDX-License-Identifier: LicenseRef-Qt-Commercial OR LGPL-3.0-only
 -->
 
 <script lang="ts">
-  import { Listgroup, ListgroupItem, P } from "flowbite-svelte";
+  import { Listgroup, ListgroupItem } from 'flowbite-svelte';
 
-  import { presets } from "./states.svelte";
-  import * as viewlogic from "./viewlogic.svelte";
+  import { data } from './states.svelte';
+  import * as viewlogic from './viewlogic.svelte';
 
   const adjustSelectedIndex = (offset: number) => {
-    if (!presets.selected || presets.selectedIndex < 0) {
+    if (!data.selected.preset || data.selected.presetIndex < 0) {
       return;
     }
 
-    let candidate = presets.selectedIndex + offset;
+    let candidate = data.selected.presetIndex + offset;
     candidate = Math.max(0, candidate);
-    candidate = Math.min(candidate, presets.all.length - 1);
+    candidate = Math.min(candidate, data.presets.length - 1);
 
-    if (candidate != presets.selectedIndex) {
-      viewlogic.setSelectedPreset(presets.all[candidate], candidate);
+    if (candidate != data.selected.presetIndex) {
+      viewlogic.setSelectedPreset(data.presets[candidate], candidate);
     }
   };
 
   const onKeyPressed = (e: KeyboardEvent) => {
-    if (e.key === "ArrowUp") {
+    if (e.key === 'ArrowUp') {
       adjustSelectedIndex(-1);
-    } else if (e.key === "ArrowDown") {
+    } else if (e.key === 'ArrowDown') {
       adjustSelectedIndex(+1);
-    } else if (e.key === "Enter") {
-      viewlogic.moveWizardPage(1)
     } else {
       return;
     }
 
     const el = e.currentTarget as HTMLElement;
     if (el) {
-      const items = el?.querySelectorAll("button");
-      const item = items[presets.selectedIndex];
+      const items = el?.querySelectorAll('button');
+      const item = items[data.selected.presetIndex];
       if (item instanceof HTMLButtonElement) {
         item.focus();
       }
@@ -48,28 +46,25 @@ SPDX-License-Identifier: LicenseRef-Qt-Commercial OR LGPL-3.0-only
 <div class="flex flex-col">
   <Listgroup
     active
-    class="flex-grow overflow-y-auto qt-list"
+    class="flex-grow overflow-y-auto qt-list items-center"
     onkeydown={onKeyPressed}
     tabindex={0}
   >
-    {#each presets.all as preset, index}
+    {#each data.presets as preset, index (index)}
       <ListgroupItem
         class="qt-list-item flex flex-row"
         currentClass="selected"
-        current={presets.selectedIndex === index}
+        current={data.selected.presetIndex === index}
         on:click={() => {
           viewlogic.setSelectedPreset(preset, index);
         }}
       >
-        <div class="flex-1"
-          role="listitem"
-          on:dblclick={() => { viewlogic.moveWizardPage(1); }}
-        >
+        <div class="flex-1">
           {viewlogic.createPresetDisplayText(preset)}
         </div>
 
-        {#if !preset.name.startsWith("@")}
-          <P size="xs" class="qt-label">{preset.meta.title}</P>
+        {#if !preset.name.startsWith('@')}
+          <div class="ml-auto mr-0.5 qt-badge">{preset.meta.title}</div>
         {:else}
           <div></div>
         {/if}

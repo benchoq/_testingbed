@@ -11,12 +11,14 @@ import { spawnSync } from 'child_process';
 import { createLogger, isError, OSExeSuffix } from 'qt-lib';
 
 export enum QtcliAction {
-  NewFile,
-  NewProject,
-  Server
+  ServerControl
 }
 
-export const QtcliExeName = 'qtcli' + OSExeSuffix;
+export const qtcliSubCommands: Record<QtcliAction, string> = {
+  [QtcliAction.ServerControl]: 'server'
+};
+
+export const qtcliExeName = 'qtcli' + OSExeSuffix;
 export const logger = createLogger('qtcli');
 
 export function errorString<T>(e: T) {
@@ -65,7 +67,7 @@ export async function openUri(uri: vscode.Uri) {
     const stats = await fs.stat(uri.fsPath);
 
     if (stats.isFile()) {
-      await vscode.commands.executeCommand('vscode.open', uri);
+      void vscode.commands.executeCommand('vscode.open', uri);
       return;
     }
 
@@ -78,7 +80,7 @@ export async function openUri(uri: vscode.Uri) {
 
       const fileToOpen = await findPrimaryFileUnder(uri.fsPath);
       if (fileToOpen) {
-        await vscode.commands.executeCommand(
+        void vscode.commands.executeCommand(
           'vscode.open',
           vscode.Uri.file(fileToOpen)
         );
@@ -91,8 +93,8 @@ export async function openUri(uri: vscode.Uri) {
 
 export async function openFilesUnder(baseDir: string, names: string[]) {
   for (const name of names) {
-    await openUri(vscode.Uri.file(path.join(baseDir, name)))
-  };
+    await openUri(vscode.Uri.file(path.join(baseDir, name)));
+  }
 }
 
 export async function findPrimaryFileUnder(dir: string) {

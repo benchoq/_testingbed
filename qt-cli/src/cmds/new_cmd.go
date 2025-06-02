@@ -5,6 +5,8 @@ package cmds
 
 import (
 	"fmt"
+	"os"
+	"path/filepath"
 	"qtcli/common"
 	"qtcli/generator"
 	"qtcli/runner"
@@ -22,13 +24,16 @@ var newCmd = &cobra.Command{
 	Args:  cobra.ExactArgs(1),
 	RunE: func(cmd *cobra.Command, args []string) error {
 		name := args[0]
-		if util.EntryExists(name) {
-			return fmt.Errorf(util.Msg("'%s' already exists"), name)
-		}
+		cwd, _ := os.Getwd()
+		out := generator.Validate(generator.ValidatorIn{
+			Name:       name,
+			WorkingDir: filepath.ToSlash(cwd),
+			TypeId:     common.TargetTypeProject,
+		})
 
-		if !util.IsValidDirName(name) {
+		if out.HasError() {
 			return fmt.Errorf(
-				util.Msg("'%s' is not a valid directory name"), name)
+				util.Msg("Cannot generate the project\n%s"), out)
 		}
 
 		const targetType = common.TargetTypeProject
@@ -45,8 +50,8 @@ var newCmd = &cobra.Command{
 
 		if !result.Success {
 			return fmt.Errorf(
-				util.Msg("failed to generate a project: '%w'"),
-				result.Error.Message)
+				util.Msg("failed to generate a project\n%s"),
+				result.Error)
 		}
 
 		if verbose {

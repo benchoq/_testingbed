@@ -40,51 +40,35 @@ type TemplateItem struct {
 	Bypass bool   `yaml:"bypass"`
 }
 
-func NewTemplateFileFS(fs fs.FS, filePath string) *TemplateFile {
-	return &TemplateFile{
-		fs:       fs,
-		filePath: filePath,
-	}
-}
-
-func OpenTemplateFileFromPreset(fs fs.FS, preset Preset) (*TemplateFile, error) {
-	dir := preset.GetTemplateDir()
-	filePath := path.Join(dir, TemplateFileName)
-
-	if len(dir) == 0 {
-		return nil, errors.New(util.Msg("cannot determine a config file path"))
+func OpenTemplateFile(fs fs.FS, filePath string) (*TemplateFile, error) {
+	if len(filePath) == 0 {
+		return nil, errors.New(util.Msg("cannot determine a file path"))
 	}
 
 	if !util.EntryExistsFS(fs, filePath) {
-		return nil,
-			fmt.Errorf(
-				util.Msg("template definition does not exist, dir = '%v'"), dir)
+		return nil, fmt.Errorf(
+			util.Msg("template definition does not exist, path = '%v'"), filePath)
 	}
 
-	template := NewTemplateFileFS(fs, filePath)
-	err := template.Open()
+	template := TemplateFile{
+		fs:       fs,
+		filePath: filePath,
+	}
+
+	err := template.open()
 	if err != nil {
 		return nil, err
 	}
 
-	return template, nil
+	return &template, nil
 }
 
-func (f *TemplateFile) Open() error {
-	logrus.Debug(fmt.Sprintf(
-		"reading template definition, file = '%v'", f.filePath))
+func OpenTemplateFileIn(fs fs.FS, dir string) (*TemplateFile, error) {
+	return OpenTemplateFile(fs, path.Join(dir, TemplateFileName))
+}
 
-	raw, err := util.ReadAllFromFS(f.fs, f.filePath)
-	if err != nil {
-		return err
-	}
-
-	err = yaml.Unmarshal(raw, &f.contents)
-	if err != nil {
-		return err
-	}
-
-	return nil
+func (f *TemplateFile) GetTypeName() string {
+	return f.contents.Meta.Type
 }
 
 func (f *TemplateFile) GetTargetType() TargetType {
@@ -101,4 +85,21 @@ func (f *TemplateFile) GetFields() []util.StringAnyMap {
 
 func (f *TemplateFile) GetMeta() TemplateMeta {
 	return f.contents.Meta
+}
+
+func (f *TemplateFile) open() error {
+	logrus.Debug(fmt.Sprintf(
+		"reading template definition, file = '%v'", f.filePath))
+
+	raw, err := util.ReadAllFromFS(f.fs, f.filePath)
+	if err != nil {
+		return err
+	}
+
+	err = yaml.Unmarshal(raw, &f.contents)
+	if err != nil {
+		return err
+	}
+
+	return nil
 }

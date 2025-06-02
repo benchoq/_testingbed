@@ -1,15 +1,15 @@
 #!/bin/bash
 
-show_help() {
+show-help() {
   echo "Usage: ./run.sh <command>"
   echo "Commands:"
-  echo "  build            build binaries, copy to qt-core/res/qtcli"
-  echo "  tests            run end-to-end tests"
-  echo "  unittests        run unittests"
-  echo "  print-version    print current version"
-  echo "  install-tools    install tools for build, license update, etc."
-  echo "  update-license   update license files"
-  echo "  help             print help"
+  echo "  build               build binaries, copy to qt-core/res/qtcli"
+  echo "  test <unit|e2e|all> run test (default: all)"
+  echo "  gen-all             generate items from all presets for manual check"
+  echo "  print-version       print current version"
+  echo "  install-tools       install tools for build, license update, etc."
+  echo "  update-license      update license files"
+  echo "  help                print help"
 }
 
 build() {
@@ -30,7 +30,12 @@ build() {
   ls -l $TARGET_DIR
 }
 
-tests() {
+test-unit() {
+  echo ">>> Running unittests ... (add -v for verbose mode)" && \
+  go test -C ./src ./... $@
+}
+
+test-e2e() {
   echo ">>> Building binaries..." && \
   rm -rf ./tests/qtcli ./tests/qtcli.* && \
   go build -C ./src -o ../tests && \
@@ -38,16 +43,54 @@ tests() {
   go test -C ./tests/e2e -v
 }
 
-unittests() {
-  echo ">>> Running unittests ..." && \
-  go test -C ./src ./... -v
+gen-all() {
+  outdir="_new-all"
+
+  echo ">>> Building binary..." && \
+  rm -rf ./tests/qtcli ./tests/qtcli.* ./tests/${outdir} && \
+  go build -C ./src -o ../tests && \
+
+  echo ">>> Creating items with default options to ${outdir}" && \
+  mkdir ./tests/${outdir} && cd $_ || exit 1
+
+  ext=""
+  if [[ "$(uname -s)" =~ MINGW|MSYS|CYGWIN ]]; then
+    ext=".exe"
+  fi
+
+  presets=(
+    "@projects/cpp/console"
+    "@projects/cpp/qtquick"
+    "@projects/cpp/qwidget"
+    "@types/qml"
+    "@types/qrc"
+    "@types/ui"
+    "@cpp/class"
+  )
+
+  for preset in "${presets[@]}"; do
+    name="new_$(echo "$preset" | sed 's/^@//' | tr '/' '_')"
+    subcmd="new-file"
+    if [[ "$preset" == @projects/* ]]; then
+      subcmd="new"
+    fi
+
+    cmd="../qtcli${ext} $subcmd $name --preset $preset"
+    echo "Running: $cmd"
+    $cmd
+  done
+
+  echo '-----------------------------------'
+  echo Output Dir: $(pwd)
+  echo '-----------------------------------'
+  ls -al
 }
 
-print_version() {
+print-version() {
   echo $(head -n 1 version.txt | xargs)
 }
 
-install_tools() {
+install-tools() {
   echo ">>> Installing goreleaser ..."
   go install github.com/goreleaser/goreleaser/v2@latest
 
@@ -55,7 +98,7 @@ install_tools() {
   go install github.com/google/go-licenses@latest
 }
 
-update_license() {
+update-license() {
   TARGET_DIR=..
   TARGET_FILE=ThirdPartyNotices.txt
 
@@ -73,22 +116,37 @@ case "$1" in
   build)
     build
     ;;
-  tests)
-    tests
+  test)
+    case "$2" in
+      unit)
+        shift 2
+        test-unit $@
+        ;;
+      e2e)
+        test-e2e
+        ;;
+      all|"")
+        test-unit && test-e2e
+        ;;
+      *)
+        echo "Unknown test type: $1"
+        exit 1
+        ;;
+    esac
     ;;
-  unittests)
-    unittests
+  gen-all)
+    gen-all
     ;;
   print-version)
-    print_version
+    print-version
     ;;
   install-tools)
-    install_tools
+    install-tools
     ;;
   update-license)
-    update_license
+    update-license
     ;;
   help|*)
-    show_help
+    show-help
     ;;
 esac

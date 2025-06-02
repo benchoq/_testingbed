@@ -4,14 +4,14 @@ SPDX-License-Identifier: LicenseRef-Qt-Commercial OR LGPL-3.0-only
 -->
 
 <script lang="ts">
-  import { Button } from "flowbite-svelte";
+  import { Button } from 'flowbite-svelte';
 
   let {
     items,
     currentIndex = -1,
     onCurrentIndexChanged = null,
     class: className = '',
-    buttonClass = '',
+    buttonClass = ''
   } = $props();
 
   function setCurrentIndex(i: number) {
@@ -38,11 +38,14 @@ SPDX-License-Identifier: LicenseRef-Qt-Commercial OR LGPL-3.0-only
 </script>
 
 <div class={`flex flex-col h-full gap-0.5 ${className}`}>
-  {#each items as item, i}
+  {#each items as item, i (i)}
     <Button
-      on:click={() => { setCurrentIndex(i); } }
+      on:click={() => {
+        setCurrentIndex(i);
+      }}
       class={`flex flex-col gap-1 qt-vtab-item ${buttonClass}
-        ${i === currentIndex ? 'selected' : ''}`}>
+        ${i === currentIndex ? 'selected' : ''}`}
+    >
       <item.icon />
       {item.label}
     </Button>

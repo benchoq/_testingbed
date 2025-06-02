@@ -1,35 +1,43 @@
 // Copyright (C) 2025 The Qt Company Ltd.
 // SPDX-License-Identifier: LicenseRef-Qt-Commercial OR LGPL-3.0-only
 
-export enum PushMessageId {
-  PanelInit,
-  ViewCreateItem,
-  ViewWizardClosed,
+export enum CommandId {
+  // one-way
+  PanelRevealed,
+  UiClosed,
+  UiItemCreationRequested,
+  UiHasError,
+  EndOfNotification,
+
+  // request-response type
+  UiCheckIfQtcliReady,
+  UiGetAllPresets,
+  UiGetPresetById,
+  UiValidateInputs,
+  UiSelectWorkingDir
 }
 
-export interface PushMessage<T = unknown> {
-  id: PushMessageId;
-  data?: T;
+export interface Command<T = unknown> {
+  id: CommandId;
+  tag?: string;
+  payload?: T;
 }
 
-export enum CallMessageId {
-  ViewSelectWorkingDir,
-  ViewCallQtcliApi,
-  ViewCheckIfQtcliReady,
-}
-
-export interface CallMessage<T = unknown> {
-  id: CallMessageId;
+export interface CommandReply<T = unknown> {
+  id: CommandId;
   tag: string;
-  data?: T;
+  payload: {
+    data?: T;
+    error?: unknown;
+  };
 }
 
-export function isPushMessage(x: unknown): x is PushMessage {
-  return typeof x === 'object' && x !== null &&
-         'id' in x && (x as PushMessage).id in PushMessageId && !('tag' in x);
-}
-
-export function isCallMessage(x: unknown): x is CallMessage {
-  return typeof x === 'object' && x !== null &&
-         'id' in x && (x as CallMessage).id in CallMessageId && 'tag' in x;
+// type guard functions
+export function IsCommand(x: unknown): x is Command {
+  return (
+    typeof x === 'object' &&
+    x !== null &&
+    'id' in x &&
+    (x as Command).id in CommandId
+  );
 }

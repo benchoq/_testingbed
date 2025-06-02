@@ -1,5 +1,13 @@
 # Change Log
 
+## 1.5.1 (Apr 16, 2025)
+
+The same as `1.5.0`
+
+## 1.5.0 (Apr 14, 2025)
+
+The same as `1.3.1`
+
 ## 1.3.1 (Mar 5, 2025)
 
 🐞 **Fixed**

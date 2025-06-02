@@ -4,40 +4,40 @@ SPDX-License-Identifier: LicenseRef-Qt-Commercial OR LGPL-3.0-only
 -->
 
 <script lang="ts">
-  import { 
-    Label,
-    Table, TableBody, TableBodyRow, TableBodyCell
-  } from "flowbite-svelte";
+  import {
+    P,
+    Table,
+    TableBody,
+    TableBodyRow,
+    TableBodyCell
+  } from 'flowbite-svelte';
 
-  import { presets } from "./states.svelte";
-  
-  const steps = $derived(presets.selectedPrompt?.prompt.steps)
-  const toDisplayValue = (value: any) => {
-    if (typeof value === 'string' && value.length === 0) {
-      return "-";
-    } else if (typeof value === 'boolean') {
-      return value ? "Yes" : "No";
-    }
+  import StepInput from "./StepInput.svelte";
+  import StepPicker from "./StepPicker.svelte";
+  import StepConfirm from "./StepConfirm.svelte";
+  import { data } from './states.svelte';
+  import type { PresetPromptStep } from "./types.svelte";
 
-    return value;
+  const stepComponents: Record<string, any> = {
+    input: StepInput,
+    picker: StepPicker,
+    confirm: StepConfirm,
+  };
+
+  const steps = $derived(data.selected.preset?.prompt?.steps);
+  function onValueChanged(step: PresetPromptStep, value: any) {
+    data.selected.optionChanges[step.id] = value
   }
 </script>
 
 {#if steps}
-
-<Table color="custom" class="qt-simple-table">
-  <TableBody>
-    {#each steps as step}
-    <TableBodyRow class="last:border-0">
-      <TableBodyCell class="p-0.5">
-        <Label class="qt-label">{step.question}</Label>
-      </TableBodyCell>
-      <TableBodyCell class="p-0.5">
-        <Label class="qt-label">{toDisplayValue(step.default)}</Label>
-      </TableBodyCell>
-    </TableBodyRow>
+  <div class="grid grid-cols-2 gap-1">
+    {#each steps as step (step.id)}
+      <P class="qt-label">{step.question}</P>
+      {#if step.type in stepComponents}
+        {@const StepComp = stepComponents[step.type]}
+        <StepComp enabled={true} {step} {onValueChanged} />
+      {/if}
     {/each}
-  </TableBody>
-</Table>
-
+  </div>
 {/if}

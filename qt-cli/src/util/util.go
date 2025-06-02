@@ -5,8 +5,10 @@ package util
 
 import (
 	"fmt"
+	"hash/crc32"
 	"io"
 	"io/fs"
+	"maps"
 	"os"
 	"path"
 	"path/filepath"
@@ -17,19 +19,11 @@ import (
 	"syscall"
 )
 
-type StringAnyMap map[string]interface{}
+type StringAnyMap map[string]any
 
-func MergeMap(base StringAnyMap, other StringAnyMap) StringAnyMap {
-	all := StringAnyMap{}
-
-	for k, v := range base {
-		all[k] = v
-	}
-
-	for k, v := range other {
-		all[k] = v
-	}
-
+func Merge(base StringAnyMap, other StringAnyMap) StringAnyMap {
+	all := maps.Clone(base)
+	maps.Copy(all, other)
 	return all
 }
 
@@ -79,7 +73,7 @@ func EntryExistsFS(targetFS fs.FS, path string) bool {
 	return !os.IsNotExist(err)
 }
 
-func ToBool(value interface{}, defaultValue bool) bool {
+func ToBool(value any, defaultValue bool) bool {
 	switch c := value.(type) {
 	case bool:
 		return c
@@ -101,7 +95,7 @@ func ToBool(value interface{}, defaultValue bool) bool {
 	}
 }
 
-func ToFloat64(value interface{}, defaultValue float64) float64 {
+func ToFloat64(value any, defaultValue float64) float64 {
 	switch c := value.(type) {
 	case string:
 		v, err := strconv.ParseFloat(c, 64)
@@ -153,95 +147,6 @@ func IsValidFileName(name string) bool {
 	return true
 }
 
-func IsWindowsReservedName(name string) bool {
-	name = strings.ToUpper(name)
-	if name == "CON" || name == "PRN" || name == "AUX" || name == "NUL" {
-		return true
-	}
-	match, _ := regexp.MatchString(`^(COM[1-9]|LPT[1-9])$`, name)
-	return match
-}
-
-func IsValidFolderName(name string) bool {
-	name = strings.TrimSpace(filepath.Base(name))
-	if name == "" {
-		return false
-	}
-
-	if runtime.GOOS == "windows" {
-		invalidChars := regexp.MustCompile(`[<>:"/\\|?*]`)
-		if invalidChars.MatchString(name) {
-			return false
-		}
-
-		if IsWindowsReservedName(name) {
-			return false
-		}
-	} else {
-		if strings.ContainsRune(name, '/') || strings.ContainsRune(name, 0) {
-			return false
-		}
-	}
-
-	return true
-}
-
-func IsDriveExists(path string) bool {
-	if runtime.GOOS != "windows" {
-		return true
-	}
-
-	if len(path) < 2 || path[1] != ':' {
-		return true
-	}
-
-	driveRoot := path[:2] + `\`
-	info, err := os.Stat(driveRoot)
-	return err == nil && info.IsDir()
-}
-
-func IsValidFullPath(path string) bool {
-	// 'C:\Users' => valid? true
-	// 'D:\NotExists' => valid? false
-	// 'COM1' => valid? false
-	// 'COM10' => valid? true
-	// 'valid_folder' => valid? true
-	// 'invalid:name' => valid? false
-	// '/tmp/test' => valid? true
-	// 'my/folder' => valid? false
-	// '.hidden' => valid? true
-	// ' ' => valid? false
-
-	return IsDriveExists(path) && IsValidFolderName(path)
-}
-
-func IsAbsPath(path string) bool {
-	return filepath.IsAbs(path)
-}
-
-func IsValidProjectName(name string) bool {
-	if len(name) == 0 {
-		return false
-	}
-
-	validNameRegex := regexp.MustCompile("^[a-zA-Z][a-zA-Z0-9_-]+$")
-	if !validNameRegex.MatchString(name) {
-		return false
-	}
-
-	if runtime.GOOS == "windows" {
-		if strings.ContainsAny(name, `\/:*?"<>|`) {
-			return false
-		}
-	} else {
-		if strings.ContainsAny(name, "/") {
-			return false
-		}
-	}
-
-	return true
-}
-
 func DirExists(path string) bool {
 	info, err := os.Stat(path)
 	if err != nil || os.IsNotExist(err) {
@@ -249,6 +154,26 @@ func DirExists(path string) bool {
 	}
 
 	return info.IsDir()
+}
+
+func HasValidWindowsDrive(path string) bool {
+	if len(path) < 2 || path[1] != ':' {
+		return false
+	}
+
+	driveRoot := path[:2] + `\`
+	info, err := os.Stat(driveRoot)
+	return err == nil && info.IsDir()
+}
+
+func IsWindowsReservedName(name string) bool {
+	pattern := "(?i)^(CON|PRN|AUX|NUL|COM[1-9]|LPT[1-9])$"
+	re, err := regexp.Compile(pattern)
+	if err != nil {
+		return false
+	}
+
+	return re.MatchString(name)
 }
 
 func SendSigTermOrKill(pid int) error {
@@ -262,4 +187,30 @@ func SendSigTermOrKill(pid int) error {
 	} else {
 		return process.Signal(syscall.SIGTERM)
 	}
+}
+
+func CreatePresetUniqueId(name string) string {
+	return fmt.Sprintf("%010d", crc32.ChecksumIEEE([]byte(name)))
+}
+
+var multiDotRegex = regexp.MustCompile(`\.{2,}`)
+
+func NormalizeFileExt(fileName, fallbackExt string) string {
+	fileName = multiDotRegex.ReplaceAllString(fileName, ".")
+	ext := filepath.Ext(fileName)
+	base := strings.TrimSuffix(fileName, ext)
+	if ext == "." {
+		ext = ""
+	}
+
+	effectiveName := base + ext
+	if fallbackExt == "" || fallbackExt == "." || ext != "" {
+		return effectiveName
+	}
+
+	if !strings.HasPrefix(fallbackExt, ".") {
+		fallbackExt = "." + fallbackExt
+	}
+
+	return effectiveName + fallbackExt
 }

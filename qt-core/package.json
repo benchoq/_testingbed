@@ -2,7 +2,7 @@
   "name": "qt-core",
   "displayName": "Qt Core",
   "description": "Qt Core",
-  "version": "1.5.0",
+  "version": "1.7.0",
   "homepage": "https://www.qt.io/",
   "icon": "res/icons/qt.png",
   "publisher": "theqtcompany",
@@ -74,18 +74,8 @@
         "category": "Qt"
       },
       {
-        "command": "qt-core.createNewFile",
-        "title": "%qt-core.command.createNewFile.title%",
-        "category": "Qt"
-      },
-      {
-        "command": "qt-core.createNewProject",
-        "title": "%qt-core.command.createNewProject.title%",
-        "category": "Qt"
-      },
-      {
-        "command": "qt-core.createNewItemGui",
-        "title": "%qt-core.command.createNewItemGui.title%",
+        "command": "qt-core.createNewItem",
+        "title": "%qt-core.command.createNewItem.title%",
         "category": "Qt"
       }
     ],
@@ -195,13 +185,19 @@
           "default": false,
           "description": "Open online documentation in external browser",
           "scope": "machine-overridable"
+        },
+        "qt-core.defaultProjectDirectory": {
+          "type": "string",
+          "default": "",
+          "description": "Specify the default project directory when creating new projects",
+          "scope": "machine-overridable"
         }
       }
     }
   },
   "scripts": {
-    "vscode:prepublish": "cross-env NODE_ENV=production node ./esbuild.mjs && git rev-parse HEAD > commit",
-    "compile": "node ./esbuild.mjs",
+    "vscode:prepublish": "cross-env NODE_ENV=production npm run compile && git rev-parse HEAD > commit",
+    "compile": "npm run build:webview && node ./esbuild.mjs",
     "watch": "node ./esbuild.mjs --watch",
     "pretest": "npm run compile && npm run lint",
     "lint": "npm run prettierWrite && eslint . --fix --cache",
@@ -209,9 +205,12 @@
     "prettierCheck": "npm run prettierBase -- --check \"**/*.{js,ts,json,mjs,cjs}\"",
     "prettierBase": "prettier --config \"../common/.prettierrc\" --ignore-path \"../common/.prettierignore\" --cache --cache-strategy metadata",
     "package": "vsce package --out out",
-    "ci:webview": "cd webview-ui && npm install --frozen-lockfile",
-    "install:webview": "cd webview-ui && npm run install",
-    "compile:webview": "cd webview-ui && npm run build"
+    "ci:all": "npm run ci:webview && npm ci",
+    "install:all": "npm run install:webview && npm install",
+    "ci:webview": "cd webview-ui && npm ci",
+    "dev:webview": "cd webview-ui && npm run dev",
+    "build:webview": "cd webview-ui && npm run build",
+    "install:webview": "cd webview-ui && npm install"
   },
   "devDependencies": {
     "@eslint/eslintrc": "^3.3.0",
@@ -231,7 +230,7 @@
     "typescript": "^5.6.3"
   },
   "dependencies": {
-    "axios": "^1.8.4",
+    "axios": "^1.9.0",
     "command-exists": "^1.2.9",
     "lodash": "^4.17.21",
     "module-alias": "^2.2.3",

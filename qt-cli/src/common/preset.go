@@ -5,7 +5,6 @@ package common
 
 import (
 	"fmt"
-	"hash/crc32"
 	"qtcli/util"
 	"strings"
 
@@ -34,14 +33,25 @@ type PresetData struct {
 
 func NewPresetData(
 	name, templateDir string, options util.StringAnyMap) PresetData {
-	return PresetData{
+	p := PresetData{
 		Name:        name,
 		TemplateDir: templateDir,
 		Options:     options,
-
-		uniqueId:     "",
-		targetTypeId: TargetTypeUnknown,
 	}
+
+	p.ComputeDerivedFields()
+	return p
+}
+
+func (p *PresetData) ComputeDerivedFields() {
+	targetTypeId := TargetTypeFile
+	templateFile, err := OpenTemplateFileIn(TemplatesFS, p.TemplateDir)
+	if err == nil {
+		targetTypeId = templateFile.GetTargetType()
+	}
+
+	p.targetTypeId = targetTypeId
+	p.uniqueId = util.CreatePresetUniqueId(p.Name)
 }
 
 func (p PresetData) GetName() string {
@@ -49,13 +59,6 @@ func (p PresetData) GetName() string {
 }
 
 func (p PresetData) GetTypeId() TargetType {
-	if p.targetTypeId == TargetTypeUnknown {
-		templateFile, err := OpenTemplateFileFromPreset(TemplatesFS, p)
-		if err == nil {
-			p.targetTypeId = templateFile.GetTargetType()
-		}
-	}
-
 	return p.targetTypeId
 }
 
@@ -80,10 +83,6 @@ func (p PresetData) GetOptions() util.StringAnyMap {
 }
 
 func (p PresetData) GetUniqueId() string {
-	if len(p.uniqueId) == 0 {
-		p.uniqueId = fmt.Sprintf("%010d", crc32.ChecksumIEEE([]byte(p.Name)))
-	}
-
 	return p.uniqueId
 }
 
@@ -97,5 +96,5 @@ func (item PresetData) ToYaml() string {
 }
 
 func (p *PresetData) MergeOptions(data util.StringAnyMap) {
-	p.Options = util.MergeMap(p.Options, data)
+	p.Options = util.Merge(p.Options, data)
 }

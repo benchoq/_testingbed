@@ -26,10 +26,8 @@ import { EXTENSION_ID } from '@/constants';
 import { createCoreProject, CoreProjectManager } from '@/project';
 import { resetCommand } from '@/reset';
 import { registerQtByQtpaths } from '@/qtpaths';
-import { newFileCommand, newProjectCommand } from '@/qtcli/commands';
 import { checkVcpkg } from '@/vcpkg';
-import { ItemWizardPanel } from '@/webview/item-wizard-panel';
-
+import { NewItemPanel } from '@/webview/new-item-panel';
 
 const logger = createLogger('extension');
 
@@ -54,8 +52,6 @@ export async function activate(context: vscode.ExtensionContext) {
   context.subscriptions.push(registerSetRecommendedSettingsCommand());
   context.subscriptions.push(resetCommand());
   context.subscriptions.push(registerQtByQtpaths());
-  context.subscriptions.push(newFileCommand(context));
-  context.subscriptions.push(newProjectCommand(context));
   context.subscriptions.push(
     vscode.commands.registerCommand(`${EXTENSION_ID}.openSettings`, () => {
       telemetry.sendAction('openSettings');
@@ -72,8 +68,8 @@ export async function activate(context: vscode.ExtensionContext) {
     vscode.languages.registerColorProvider('qss', createColorProvider())
   );
   context.subscriptions.push(
-    vscode.commands.registerCommand(`${EXTENSION_ID}.createNewItemGui`, () => {
-      ItemWizardPanel.render(context.extensionUri);
+    vscode.commands.registerCommand(`${EXTENSION_ID}.createNewItem`, () => {
+      NewItemPanel.render(context.extensionUri);
     })
   );
 

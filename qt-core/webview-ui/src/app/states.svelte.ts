@@ -1,80 +1,41 @@
 // Copyright (C) 2025 The Qt Company Ltd.
-// SPDX-License-Identifier: LicenseRef-Qt-Commercial OR LGPL-3.0-only 
+// SPDX-License-Identifier: LicenseRef-Qt-Commercial OR LGPL-3.0-only
 
-import _ from "lodash";
-import { type PresetInfo } from "./types.svelte";
-import PageParamInput from "./PageParamInput.svelte";
-import PagePresetSelector from "./PagePresetSelector.svelte";
+import { type Preset, InputIssue } from './types.svelte';
 
-export const presets = $state<PresetInfo>({
-  all: [],
-  selected: undefined,
-  selectedIndex: -1,
-  selectedPrompt: undefined,
+export const data = $state({
+  serverReady: false,
+  configs: {
+    newFileBaseDir: '',
+    newProjectBaseDir: ''
+  },
+  presets: [] as Preset[],
+  selected: {
+    type: 'project',
+    preset: undefined as Preset | undefined,
+    presetIndex: -1,
+    optionChanges: {} as Record<string, any>
+  },
 });
 
-export const configs = $state({
-  type: "project",
-  name: "untitled",
-  workingDir: "",
-  saveWorkingDir: false,
-  serverReady: false,
-})
+export const input = $state({
+  name: 'untitled',
+  workingDir: '',
+  saveProjectDir: false,
 
-export const initData = $state({
-  project: {
-    workingDir: "",
-    saveWorkingDir: true
-  },
-  
-  others: {
-    workingDir: ""
+  issues: {
+    name: new InputIssue(),
+    workingDir: new InputIssue()
   }
-})
+});
 
-export const inputValidation = $state({
-  nameError: "",
-  workingDirError: "",
-})
-
-export const wizard = $state({
-  pages: [
-    { component: PagePresetSelector, title: "Select what to create" },
-    { component: PageParamInput, title: "Configure details" }
-  ],
-  currentIndex: 0,
-  buttons: {
-    back: {
-      visible: true,
-    },
-    next: { 
-      visible: true,
-    },
-    finish: { 
-      visible: true,
-      disabled: false,
-    },
-  }
-})
-
-export const loading = $state({
-  busy: false,
-  error: undefined,
-  forceHidden: false,
-
-  start: function() {
-    this.busy = true;
-    this.error = undefined;
-    this.forceHidden = false;
+export const ui = $state({
+  loading: {
+    busy: false,
+    error: undefined as unknown,
+    forceHidden: false,
+    delayedTimerId: null as NodeJS.Timeout | null
   },
 
-  setError: function(e: any) {
-    this.busy = false;
-    this.error = e;
-  },
-
-  clear: function() {
-    this.busy = false;
-    this.error = undefined;
-  }
+  canCreate: true
 });

@@ -4,26 +4,22 @@ SPDX-License-Identifier: LicenseRef-Qt-Commercial OR LGPL-3.0-only
 -->
 
 <script lang="ts">
-  import VerticalTabs from "@/comps/VerticalTabs.svelte";
-  import {
-    FolderOpenOutline,
-    FileOutline,
-    GridPlusOutline
-  } from "flowbite-svelte-icons";
-  import * as viewlogic from "./viewlogic.svelte";
+  import { FolderOpenOutline, FileOutline } from 'flowbite-svelte-icons';
+
+  import VerticalTabs from '@/comps/VerticalTabs.svelte';
+  import { setPresetType } from './viewlogic.svelte';
+  import { wizard } from './texts';
 
   const items = [
-    { label: "Project", icon: FolderOpenOutline, data: "project" },
-    { label: "File", icon: FileOutline, data: "file" },
-    { label: "Class", icon: GridPlusOutline, data: "class" },
+    { label: wizard.types.project, icon: FolderOpenOutline, data: 'project' },
+    { label: wizard.types.file, icon: FileOutline, data: 'file' }
   ];
 
   function onCurrentIndexChanged(i: number) {
     if (i >= 0 && i < items.length) {
-      viewlogic.setPresetType(items[i].data);
+      setPresetType(items[i].data);
     }
   }
-
 </script>
 
 <VerticalTabs {items} {onCurrentIndexChanged} buttonClass="p-3" />

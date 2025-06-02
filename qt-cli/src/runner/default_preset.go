@@ -18,9 +18,8 @@ type DefaultPresetManager struct {
 
 func NewDefaultPresetManager(baseFS fs.FS) DefaultPresetManager {
 	presets := map[common.TargetType][]common.PresetData{
-		common.TargetTypeProject: loadPresets(baseFS, common.TargetTypeProject),
 		common.TargetTypeFile:    loadPresets(baseFS, common.TargetTypeFile),
-		common.TargetTypeClass:   loadPresets(baseFS, common.TargetTypeClass),
+		common.TargetTypeProject: loadPresets(baseFS, common.TargetTypeProject),
 	}
 
 	return DefaultPresetManager{
@@ -31,11 +30,8 @@ func NewDefaultPresetManager(baseFS fs.FS) DefaultPresetManager {
 
 func (m DefaultPresetManager) GetAll() []common.PresetData {
 	return append(
-		append(
-			m.FindByType(common.TargetTypeProject),
-			m.FindByType(common.TargetTypeFile)...,
-		),
-		m.FindByType(common.TargetTypeClass)...,
+		m.FindByType(common.TargetTypeProject),
+		m.FindByType(common.TargetTypeFile)...,
 	)
 }
 
@@ -48,32 +44,6 @@ func (m DefaultPresetManager) FindByType(
 	}
 
 	return []common.PresetData{}
-}
-
-func loadPresets(baseFS fs.FS, t common.TargetType) []common.PresetData {
-	all := []common.PresetData{}
-	dirs, err := findAllTemplateDirNames(baseFS, t)
-
-	if err == nil {
-		for _, dir := range dirs {
-			p := common.NewPresetData("@"+dir, dir, readDefaultOptions(baseFS, dir))
-			all = append(all, p)
-		}
-	}
-
-	return all
-}
-
-func (m DefaultPresetManager) FindByUniqueId(id string) (common.PresetData, error) {
-	all := m.GetAll()
-
-	for _, preset := range all {
-		if preset.GetUniqueId() == id {
-			return preset, nil
-		}
-	}
-
-	return common.PresetData{}, errors.New("not found")
 }
 
 func (m DefaultPresetManager) FindByName(n string) (common.PresetData, error) {
@@ -95,7 +65,31 @@ func (m DefaultPresetManager) FindByTypeAndName(
 	return common.FindByTypeAndName(m, t, name)
 }
 
+func (m DefaultPresetManager) FindByUniqueId(id string) (common.PresetData, error) {
+	for _, preset := range m.GetAll() {
+		if preset.GetUniqueId() == id {
+			return preset, nil
+		}
+	}
+
+	return common.PresetData{}, errors.New("not found")
+}
+
 // helpers
+func loadPresets(baseFS fs.FS, t common.TargetType) []common.PresetData {
+	all := []common.PresetData{}
+	dirs, err := findAllTemplateDirNames(baseFS, t)
+
+	if err == nil {
+		for _, dir := range dirs {
+			p := common.NewPresetData("@"+dir, dir, readDefaultOptions(baseFS, dir))
+			all = append(all, p)
+		}
+	}
+
+	return all
+}
+
 func findAllTemplateDirNames(
 	baseFS fs.FS,
 	t common.TargetType,
@@ -110,9 +104,7 @@ func findAllTemplateDirNames(
 
 			if d.IsDir() && walkingPath != "." {
 				fullPath := path.Join(walkingPath, common.TemplateFileName)
-				templateFile := common.NewTemplateFileFS(baseFS, fullPath)
-				err := templateFile.Open()
-
+				templateFile, err := common.OpenTemplateFile(baseFS, fullPath)
 				if err == nil && templateFile.GetTargetType() == t {
 					found = append(found, walkingPath)
 				}

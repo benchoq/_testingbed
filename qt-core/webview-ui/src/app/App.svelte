@@ -7,10 +7,12 @@ SPDX-License-Identifier: LicenseRef-Qt-Commercial OR LGPL-3.0-only
   import { onMount } from 'svelte';
 
   import './app.css';
-  import Wizard from "./Wizard.svelte";
-  import { onAppMount } from './viewlogic.svelte'; 
+  import { onAppMount } from './viewlogic.svelte';
+  import Wizard from './Wizard.svelte';
 
   onMount(onAppMount);
 </script>
 
-<Wizard />
+<div class="w-screen h-screen flex items-center justify-center">
+  <Wizard />
+</div>

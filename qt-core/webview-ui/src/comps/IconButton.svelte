@@ -4,26 +4,27 @@ SPDX-License-Identifier: LicenseRef-Qt-Commercial OR LGPL-3.0-only
 -->
 
 <script lang="ts">
-  import { Button } from "flowbite-svelte";
-  import { CheckOutline } from "flowbite-svelte-icons";
+  import { Button } from 'flowbite-svelte';
+  import { CheckOutline } from 'flowbite-svelte-icons';
 
   let {
-    id = "",
-    text = "",
+    id = '',
+    text = '',
     icon = CheckOutline,
     flat = false,
     visible = true,
     disabled = false,
-    onClicked,
+    onClicked
   } = $props();
-
 </script>
 
 {#if visible}
-  <Button 
+  <Button
     {disabled}
-    class={`qt-button ${flat ? "flat" : ""}`}
-    on:click={() => { onClicked(id)}}
+    class={`qt-button ${flat ? 'flat' : ''}`}
+    on:click={() => {
+      onClicked(id);
+    }}
   >
     {@const IconComp = icon}
     {#if IconComp}
@@ -32,4 +33,3 @@ SPDX-License-Identifier: LicenseRef-Qt-Commercial OR LGPL-3.0-only
     {text}
   </Button>
 {/if}
-

@@ -7,93 +7,118 @@ import (
 	"os"
 	"path/filepath"
 	"qtcli/common"
-	"qtcli/util"
 	"strings"
+
+	"github.com/go-playground/validator/v10"
 )
 
-const (
-	FieldName       = "Name"
-	FieldWorkingDir = "WorkingDir"
-)
-
-var ProjectNameTags = strings.Join([]string{
+var NameTagsOnProject = strings.Join([]string{
 	common.TagRequired,
+	common.TagSafeProjectName,
 	common.TagDirName,
-	common.TagProjectName,
+	common.NewTagWithParam(common.TagMaxLength, "255"),
 }, ",")
 
-var FileNameTags = strings.Join([]string{
+var NameTagsOnFile = strings.Join([]string{
 	common.TagRequired,
+	common.TagSafeFileName,
 	common.TagFileName,
+	common.NewTagWithParam(common.TagMaxLength, "255"),
 }, ",")
 
 var WorkingDirTags = strings.Join([]string{
 	common.TagRequired,
 	common.TagAbsPath,
+	common.TagWindowsDrive,
 }, ",")
 
-// in
+const (
+	FieldIdName       = "name"
+	FieldIdWorkingDir = "workingdir"
+)
+
 type ValidatorIn struct {
 	Name       string
 	WorkingDir string
-	Preset     common.Preset
+	TypeId     common.TargetType
 }
 
-// out
-type ValidatorOut struct {
-	Errors   *common.ErrorWithDetails
-	Warnings []string
-}
+func Validate(in ValidatorIn) common.Issues {
+	in.Name = strings.TrimSpace(in.Name)
+	in.WorkingDir = strings.TrimSpace(in.WorkingDir)
 
-func (o *ValidatorOut) hasError() bool {
-	return o.Errors != nil
-}
+	all := common.Issues{}
+	v := common.NewStringValidator().
+		CustomIssueBuilder(buildIssue)
 
-func Validate(in ValidatorIn) ValidatorOut {
-	isProject := in.Preset.GetTypeId() == common.TargetTypeProject
-	var nameTags string = FileNameTags
-	if isProject {
-		nameTags = ProjectNameTags
+	if i := in.checkNameIssue(v); i != nil {
+		all = append(all, *i)
 	}
 
-	v := common.NewValidationHelper()
-	errorDetails := append(
-		v.RunVar(FieldName, in.Name, nameTags),
-		v.RunVar(FieldWorkingDir, in.WorkingDir, WorkingDirTags)...,
-	)
-
-	if len(errorDetails) > 0 {
-		return ValidatorOut{
-			Errors: &common.ErrorWithDetails{
-				Message: "Input validation failed",
-				Details: errorDetails,
-			}}
+	if i := in.checkWorkingDirIssue(v); i != nil {
+		all = append(all, *i)
 	}
 
-	if isProject {
-		targetPath := filepath.Join(in.WorkingDir, in.Name)
-		if _, err := os.Stat(targetPath); err == nil {
-			errorDetails = append(errorDetails, common.ErrorDetail{
-				Field:   FieldName,
-				Message: "target folder already exists: " + targetPath,
-			})
+	return all
+}
 
-			return ValidatorOut{
-				Errors: &common.ErrorWithDetails{
-					Message: "Input validation failed",
-					Details: errorDetails,
-				}}
+func (in *ValidatorIn) checkNameIssue(v *common.StringValidator) *common.Issue {
+	var tags string = NameTagsOnFile
+	project := in.TypeId == common.TargetTypeProject
+	if project {
+		tags = NameTagsOnProject
+	}
+
+	if issue := v.Run(FieldIdName, in.Name, tags); issue != nil {
+		return issue
+	}
+
+	if project {
+		dir := filepath.Join(in.WorkingDir, in.Name)
+		stat, err := os.Stat(dir)
+		if err != nil || os.IsNotExist(err) {
+			return nil
+		}
+
+		msg := common.ValidatorSameFileExists
+		if stat.IsDir() {
+			msg = common.ValidatorTargetFolderExists
+		}
+
+		return common.NewErrorIssue(FieldIdName, msg+": "+dir)
+	}
+
+	return nil
+}
+
+func (in *ValidatorIn) checkWorkingDirIssue(v *common.StringValidator) *common.Issue {
+	issue := v.Run(FieldIdWorkingDir, in.WorkingDir, WorkingDirTags)
+	if issue != nil {
+		return issue
+	}
+
+	stat, err := os.Stat(in.WorkingDir)
+	if err != nil || os.IsNotExist(err) {
+		return common.NewWarningIssue(
+			FieldIdWorkingDir,
+			common.ValidatorDirWillCreated+": "+in.WorkingDir)
+	} else {
+		if !stat.IsDir() {
+			return common.NewErrorIssue(
+				FieldIdWorkingDir,
+				common.ValidatorDirInvalid+": "+in.WorkingDir)
 		}
 	}
 
-	// warning if working directory doesn't exist
-	if !util.DirExists(in.WorkingDir) {
-		warnings := []string{
-			"working directory doesn't exist: " + in.WorkingDir,
-		}
+	return nil
+}
 
-		return ValidatorOut{Warnings: warnings}
+func buildIssue(
+	fieldName string,
+	allErrors validator.ValidationErrors) *common.Issue {
+	if len(allErrors) == 0 {
+		return nil
 	}
 
-	return ValidatorOut{}
+	return nil
 }

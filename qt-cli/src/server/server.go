@@ -5,12 +5,13 @@ package server
 
 import (
 	"fmt"
+	"net"
 	"net/http"
 	"os"
 	"os/signal"
 	"path/filepath"
+	"qtcli/server/handlers"
 	"qtcli/util"
-	"runtime"
 	"strconv"
 	"strings"
 	"syscall"
@@ -21,22 +22,46 @@ import (
 	"github.com/sirupsen/logrus"
 )
 
-var addr = ":8080"
+type Options struct {
+	UseTcp  bool
+	TcpPort string
+}
+
 var pidFile = getPidFilePath()
 
-func Start() {
-	handler := createApiHandler()
+func init() {
+	gin.SetMode(gin.ReleaseMode)
+}
+
+func getNetListener(o Options) (net.Listener, error) {
+	if o.UseTcp {
+		if o.TcpPort == "" {
+			o.TcpPort = "8080"
+		}
+
+		return net.Listen("tcp", ":"+o.TcpPort)
+	}
+
+	return getLocalIpcListener()
+}
+
+func Start(o Options) {
+	listener, err := getNetListener(o)
+	if err != nil {
+		logrus.Fatalf("Cannot open listener: %v", err)
+	}
+
+	defer listener.Close()
 	server := &http.Server{
-		Addr:    addr,
-		Handler: handler,
+		Handler: createApiHandler(),
 	}
 
 	go func() {
 		ensurePrevRunStopped(pidFile)
 		savePidToFile(os.Getpid(), pidFile)
 
-		logrus.Infof("Starting server on %s", addr)
-		if err := server.ListenAndServe(); err != nil {
+		logrus.Infof("Starting server at %s", listener.Addr().String())
+		if err := server.Serve(listener); err != nil {
 			logrus.Fatalf("Server error: %v", err)
 		}
 	}()
@@ -66,7 +91,7 @@ func createApiHandler() *gin.Engine {
 
 	r := gin.Default()
 	r.Use(cors.New(cors.Config{
-		AllowMethods:     []string{"GET", "POST", "DELETE", "PUT", "OPTIONS"},
+		AllowMethods:     []string{"GET", "POST", "DELETE", "OPTIONS"},
 		AllowHeaders:     []string{"Content-Type", "Authorization"},
 		ExposeHeaders:    []string{"Content-Length"},
 		MaxAge:           12 * time.Hour,
@@ -78,12 +103,12 @@ func createApiHandler() *gin.Engine {
 
 	v1 := r.Group("/v1")
 
-	v1.GET("/readyz", getReadyz)
-	v1.GET("/presets", getPresets)
-	v1.GET("/presets/:id", getPresetById)
-	v1.GET("/presets/:id/prompt", getPresetPromptById)
-	v1.POST("/items", postNewItem)
-	v1.DELETE("/server", shutdownServer)
+	v1.GET("/ready", handlers.GetReady)
+	v1.GET("/presets", handlers.GetPresets)
+	v1.GET("/presets/:id", handlers.GetPresetById)
+	v1.POST("/items", handlers.PostItems)
+	v1.POST("/items/validate", handlers.PostItemsValidate)
+	v1.DELETE("/server", handlers.DeleteServer)
 
 	return r
 }
@@ -118,12 +143,4 @@ func getActivePid(filePath string) (int, error) {
 	}
 
 	return strconv.Atoi(string(data))
-}
-
-func getPidFilePath() string {
-	if runtime.GOOS == "windows" {
-		return os.Getenv("LOCALAPPDATA") + "\\qtcli\\qtcli-server.pid"
-	}
-
-	return "/tmp/qtcli/qtcli-server.pid"
 }

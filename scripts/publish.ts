@@ -15,7 +15,7 @@ function extractAndPlaceQtCli(qtcorePath: string, zipPath: string) {
     // Remove outputDir if it exists to clean up the previous extraction
     if (fs.existsSync(outputDir)) {
       console.log(`Removing existing ${outputDir}`);
-      fs.rmdirSync(outputDir, { recursive: true });
+      fs.rmSync(outputDir, { recursive: true });
     }
     console.log(`Creating "${outputDir}"`);
     fs.mkdirSync(outputDir, { recursive: true });
@@ -23,6 +23,20 @@ function extractAndPlaceQtCli(qtcorePath: string, zipPath: string) {
     // https://github.com/ZJONSSON/node-unzipper/issues/216
     console.log(`Extracting "${zipPath}" to "${outputDir}"`);
     execSync(`unzip -o ${zipPath} -d ${outputDir}`, { stdio: 'inherit' });
+    // chmod 755 to all files in the outputDir
+    console.log(`Setting permissions for files in "${outputDir}"`);
+    const setPermissions = (dir: string) => {
+      const entries = fs.readdirSync(dir, { withFileTypes: true });
+      for (const entry of entries) {
+        const fullPath = path.join(dir, entry.name);
+        if (entry.isDirectory()) {
+          setPermissions(fullPath);
+        } else {
+          fs.chmodSync(fullPath, 0o755);
+        }
+      }
+    };
+    setPermissions(outputDir);
   } catch (error) {
     console.error(error);
     process.exit(1);
@@ -51,6 +65,7 @@ function main() {
   if (isQtcore && !qtcliZipPath) {
     throw new Error('qt-cli.zip path must be provided for qt-core extension');
   }
+  const isQtcpp = targetExtension.includes('qt-cpp');
   const isEven = (num: number) => num % 2 === 0;
   const parsedVersion = semver.parse(version);
   if (parsedVersion === null) {
@@ -68,6 +83,9 @@ function main() {
   }
 
   execSync(`npm run _prepublish`, { stdio: 'inherit' });
+  if (isQtcpp) {
+    execSync(`npm run prepareNatvisFiles`, { stdio: 'inherit' });
+  }
   execSync(`npm run ci:${targetExtension}`, { stdio: 'inherit' });
   execSync(`npm run compile:${targetExtension}`, { stdio: 'inherit' });
   execSync(`npm run ci-lint:${targetExtension}`, { stdio: 'inherit' });

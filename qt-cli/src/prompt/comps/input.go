@@ -12,7 +12,7 @@ import (
 )
 
 // definition, builder
-type ValidatorFunc func(string) error
+type InputValidateFunc func(string) error
 
 type InputPrompt struct {
 	compType     prompt.CompType
@@ -55,7 +55,7 @@ func (p *InputPrompt) DefaultValue(v string) *InputPrompt {
 	return p
 }
 
-func (p *InputPrompt) Validator(v ValidatorFunc) *InputPrompt {
+func (p *InputPrompt) ValidateFunc(v InputValidateFunc) *InputPrompt {
 	p.validator = v
 	return p
 }

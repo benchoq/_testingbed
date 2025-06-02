@@ -4,32 +4,27 @@ SPDX-License-Identifier: LicenseRef-Qt-Commercial OR LGPL-3.0-only
 -->
 
 <script lang="ts">
-  import { onMount } from "svelte";
-  import { Button } from "flowbite-svelte";
-  import { FolderOpenOutline } from "flowbite-svelte-icons";
+  import { Button } from 'flowbite-svelte';
+  import { FolderOpenOutline } from 'flowbite-svelte-icons';
 
-  import { configs, inputValidation, initData } from "./states.svelte";
-  import * as viewlogic from "./viewlogic.svelte";
-  import InputWithAlert from "@/comps/InputWithAlert.svelte";
-
-  onMount(() => {
-    configs.workingDir = (configs.type === "project") 
-      ? initData.project.workingDir 
-      : initData.others.workingDir;
-  })
+  import InputWithIssue from '@/comps/InputWithIssue.svelte';
+  import * as texts from './texts';
+  import { input } from './states.svelte';
+  import { onWorkingDirBrowseClicked, validateInput } from './viewlogic.svelte';
 </script>
 
 <div class="w-full grid grid-cols-[min-content_1fr] gap-0">
   <Button
     class="qt-button px-2 py-0 rounded-r-none! z-1"
-    title="Browse"
-    on:click={viewlogic.onWorkingDirBrowseClicked}
+    title={texts.wizard.workingDirTooltip}
+    on:click={onWorkingDirBrowseClicked}
     ><FolderOpenOutline />
   </Button>
 
-  <InputWithAlert 
-    bind:value={configs.workingDir}
-    onInput={viewlogic.dryRunGenerator}
-    errors={inputValidation.workingDirError} />
-  <!-- class={`qt-input -ml-px rounded-l-none! ${workingDirInputHasFocus || workingDirHasError ? "z-10" : "z-0"}`} -->
+  <InputWithIssue
+    bind:value={input.workingDir}
+    onInput={validateInput}
+    level={input.issues.workingDir.level}
+    message={input.issues.workingDir.message}
+  />
 </div>

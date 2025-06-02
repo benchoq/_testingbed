@@ -7,36 +7,54 @@ import (
 	"fmt"
 	"testing"
 
-	"github.com/stretchr/testify/assert"
+	"github.com/stretchr/testify/require"
 )
 
-func TestIsValidFullPath(t *testing.T) {
-	dataSet := []struct {
-		path   string
-		result bool
+func TestNormalizeFileExt(t *testing.T) {
+	tests := []struct {
+		fileName    string
+		fallbackExt string
+		expected    string
 	}{
-		{"", false},
-		{"COM1", false},
-		{"COM10", true},
-		{"invalid:name", false},
-		{"/tmp/test", true},
-		{"C:\\Users", true},
-	}
-	// 'C:\Users' => valid? true
-	// 'D:\NotExists' => valid? false
-	// 'COM1' => valid? false
-	// 'COM10' => valid? true
-	// 'valid_folder' => valid? true
-	// 'invalid:name' => valid? false
-	// '/tmp/test' => valid? true
-	// 'my/folder' => valid? false
-	// '.hidden' => valid? true
-	// ' ' => valid? false
+		// normal extension appending when no extension exists
+		{"my", "qml", "my.qml"},
+		{"my", ".qml", "my.qml"},
+		{"my.", "qml", "my.qml"},
+		{"my.", ".qml", "my.qml"},
 
-	for _, data := range dataSet {
-		name := fmt.Sprintf("'%s'", data.path)
-		t.Run(name, func(t *testing.T) {
-			assert.Equal(t, data.result, IsValidFullPath(data.path))
+		// already has correct extension — should stay unchanged
+		{"my.qml", "", "my.qml"},
+		{"my.qml", "qml", "my.qml"},
+		{"my.qml", ".qml", "my.qml"},
+
+		// has different extension — should stay unchanged
+		{"my.txt", "", "my.txt"},
+		{"my.txt", "qml", "my.txt"},
+		{"my.txt", ".qml", "my.txt"},
+
+		// has multiple extensions — should stay unchanged
+		{"my.tar.gz", "", "my.tar.gz"},
+		{"my.tar.gz", "qml", "my.tar.gz"},
+		{"my.tar.gz", ".qml", "my.tar.gz"},
+
+		// edge cases
+		{"", "", ""},
+		{"", "someignore", ".someignore"},
+		{"", ".someignore", ".someignore"},
+
+		{"wierdbutvalidfile..", "", "wierdbutvalidfile"},
+		{"wierdbutvalidfile..", "qml", "wierdbutvalidfile.qml"},
+		{"wierdbutvalidfile..", ".qml", "wierdbutvalidfile.qml"},
+	}
+
+	for _, tc := range tests {
+		testname := fmt.Sprintf("|%s|%s|", tc.fileName, tc.fallbackExt)
+		t.Run(testname, func(t *testing.T) {
+			actual := NormalizeFileExt(tc.fileName, tc.fallbackExt)
+			require.Equal(t,
+				tc.expected, actual,
+				fmt.Sprintf("expected '%s', got '%s'", tc.expected, actual),
+			)
 		})
 	}
 }

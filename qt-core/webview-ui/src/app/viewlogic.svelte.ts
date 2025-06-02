@@ -1,184 +1,221 @@
 // Copyright (C) 2025 The Qt Company Ltd.
-// SPDX-License-Identifier: LicenseRef-Qt-Commercial OR LGPL-3.0-only 
+// SPDX-License-Identifier: LicenseRef-Qt-Commercial OR LGPL-3.0-only
 
-import _ from "lodash";
+import { vscode } from '@/app/vscode';
+import { isErrorResponse } from '@shared/types';
+import { type CommandReply, CommandId } from '@shared/message';
+import { type Preset, isPreset, isPresetArray } from './types.svelte';
+import { data, input, ui } from './states.svelte';
 
-import { PushMessageId, CallMessageId, type PushMessage } from "@shared/message";
-import { vscodeApi } from "@/logic/vscodeApi";
-import { type Preset } from './types.svelte';
-import { configs, presets, loading, inputValidation, wizard, initData } from './states.svelte';
+export async function onAppMount() {
+  vscode.onDidReceiveNotification(async (r: CommandReply) => {
+    if (r.id === CommandId.PanelRevealed && r.payload) {
+      data.configs = {
+        ...data.configs,
+        ...r.payload
+      };
 
-vscodeApi.onDidReceivePushMessage((p: PushMessage) => {
-  if (p.id === PushMessageId.PanelInit) {
-    if (p.data) {
-      initData.project.workingDir = _.get(p.data, "project.workingDir", initData.project.workingDir) as string;
-      initData.others.workingDir = _.get(p.data, "others.workingDir", initData.others.workingDir) as string;
+      try {
+        void loadDefaultWorkingDir();
+        await validateInput();
+      } catch (e) {
+        reportUiError('Error in PanelRevealed handler:', e);
+      }
+    }
+  });
+
+  try {
+    startLoading();
+
+    await vscode.post(CommandId.UiCheckIfQtcliReady);
+    data.serverReady = true;
+
+    await loadPresets();
+    await selectAnyPresetAndValidate();
+  } catch (e) {
+    reportUiError('Error during onAppMount', e);
+  } finally {
+    endLoading();
+  }
+}
+
+export function onModalClosed() {
+  void vscode.post(CommandId.UiClosed);
+}
+
+export function onWorkingDirBrowseClicked() {
+  void vscode
+    .post(CommandId.UiSelectWorkingDir, input.workingDir)
+    .then((data) => {
+      if (typeof data === 'string' && input.workingDir != data) {
+        input.workingDir = data;
+        void validateInput();
+      }
+    })
+    .catch((e) => {
+      reportUiError('Error selecting working dir', e);
+    });
+}
+
+export async function setPresetType(type: string) {
+  if (data.selected.type !== type) {
+    data.selected.type = type;
+    loadDefaultWorkingDir();
+
+    try {
+      startLoading(1000);
+      await loadPresets();
+      await selectAnyPresetAndValidate();
+    } catch (e) {
+      reportUiError('Error while setting preset type', e);
+    } finally {
+      endLoading();
     }
   }
-})
-
-export function onAppMount() {
-  loading.start()
-
-  void vscodeApi
-    .request(CallMessageId.ViewCheckIfQtcliReady)
-    .then((res: any) => {
-      configs.serverReady = true;
-      loading.clear();
-      loadPresets();
-    })
 }
 
-export const onModalClosed = () => {
-  vscodeApi.push(PushMessageId.ViewWizardClosed);
-}
+export async function setSelectedPreset(preset: Preset, index: number) {
+  if (!data.serverReady) return;
 
-export const onWorkingDirBrowseClicked = () => {
-  vscodeApi
-    .request(CallMessageId.ViewSelectWorkingDir, configs.workingDir)
-    .then((data) => { configs.workingDir = data as string; })
-    .catch((e) => { console.log("catch,", e) })
-};
-
-export const setPresetType = (type: string) => {
-  configs.type = type;
-  loadPresets();
-}
-
-export const setSelectedPreset = (preset: Preset, index: number) => {
-  if (!configs.serverReady) {
-    return;
-  }
-  
-  presets.selected = preset
-  presets.selectedIndex = index;
+  data.selected.preset = preset;
+  data.selected.presetIndex = index;
 
   if (preset.id.length > 0) {
-    const method = "get"
-    const endpoint = `/presets/${preset.id}/prompt`;
-
-    vscodeApi
-      .request(CallMessageId.ViewCallQtcliApi, { method, endpoint })
-      .then((res: any) => { 
-        presets.selectedPrompt = res.data
-        console.log(res.data); // TODO: remove this
-      })
-      .catch((e) => { loading.setError(e) })
-      .finally(() => { loading.clear() });
-  }
-}
-
-export const loadPresets = () => {
-  if (!configs.serverReady) {
-    return;
-  }
-
-  loading.start()
-
-  const method = "get"
-  const endpoint = "/presets";
-  const params = { type: configs.type };
-
-  vscodeApi
-    .request(CallMessageId.ViewCallQtcliApi, { method, endpoint, params })
-    .then((res: any) => {
-      presets.all = res.data;
-      if (res.data.length !== 0) {
-        setSelectedPreset(res.data[0], 0)
+    try {
+      const r = await vscode.post(CommandId.UiGetPresetById, preset.id);
+      if (isPreset(r)) {
+        data.selected.preset = r;
       }
-    })
-};
-
-export function createPresetDisplayText(preset: any) {
-  if (preset.name.startsWith("@")) {
-    return preset.meta.title;
-  } else {
-    return preset.name;
-  }
-}
-
-export const createItemFromSelectedPreset = async () => {
-  if (!presets.selected) {
-    // TODO: error display
-    return;
-  }
-
-  const data = {
-    // must-have
-    name: configs.name, 
-    workingDir: configs.workingDir, 
-    presetId: presets.selected?.id,
-    
-    // options
-    saveWorkingDir: configs.saveWorkingDir,
-  }
-
-  vscodeApi.push(PushMessageId.ViewCreateItem, data)
-};
-
-export const dryRunGenerator = async () => {
-  if (!configs.serverReady) {
-    return;
-  }
-
-  if (!presets.selected) {
-    // TODO: error display
-    return;
-  }
-
-  const body = {
-    method: "post",
-    endpoint: "/items",
-    params: { dry_run: true },
-    data: {
-      name: configs.name, 
-      workingDir: configs.workingDir, 
-      presetId: presets.selected?.id,
+    } catch (e) {
+      reportUiError('Error getting preset by id', e);
     }
   }
-
-  vscodeApi
-    .request(CallMessageId.ViewCallQtcliApi, body)
-    .then((res: any) => { 
-      // console.log(res)
-      // res ==> { data: {}, status: number }
-      // TODO: make this type safe, robust ...
-      inputValidation.nameError = ""
-      inputValidation.workingDirError = ""
-      wizard.buttons.finish.disabled = false
-
-      if (_.has(res, "data.error")) {
-        const details = _.get(res, "data.error.details", []);
-
-        details.forEach((item: any) => {
-          const field = (_.get(item, "field", "") as string).toLowerCase();
-          const message = _.get(item, "message", "") as string;
-          if (message.length !== 0) {
-            if (field === "name") inputValidation.nameError = message;
-            if (field === "workingdir") inputValidation.workingDirError = message;
-          }
-        });
-
-        wizard.buttons.finish.disabled = true
-      }
-    })
 }
 
-export const moveWizardPage = (i: number) => {
-  let candidate = wizard.currentIndex + i;
-  candidate = Math.max(0, Math.min(candidate, wizard.pages.length - 1));
+export function createPresetDisplayText(preset: Preset | undefined): string {
+  if (!preset) return '';
+  return preset.name.startsWith('@') ? preset.meta.title : preset.name;
+}
 
-  if (wizard.currentIndex != candidate) {
-    wizard.currentIndex = candidate;
-    updateWizardButtons();
+export async function createItemFromSelectedPreset() {
+  if (!data.selected.preset) return;
+
+  try {
+    await vscode.post(CommandId.UiItemCreationRequested, {
+      type: data.selected.type,
+      name: input.name,
+      workingDir: input.workingDir,
+      presetId: data.selected.preset?.id,
+      options: data.selected.optionChanges,
+      saveProjectDir: input.saveProjectDir
+    });
+  } catch (e) {
+    reportUiError('Error creating item', e);
   }
 }
 
-export const updateWizardButtons = () => {
-  const i = wizard.currentIndex;
-  const last = wizard.pages.length - 1;
+export async function validateInput() {
+  if (!data.serverReady) return;
 
-  wizard.buttons.back.visible = (i > 0);
-  wizard.buttons.next.visible = (i < last);
-  wizard.buttons.finish.visible = (i === last);
+  const payload = {
+    name: input.name,
+    workingDir: input.workingDir,
+    presetId: data.selected.preset?.id
+  };
+
+  try {
+    await vscode.post(CommandId.UiValidateInputs, payload);
+    clearInputErrors();
+  } catch (e) {
+    clearInputErrors();
+
+    if (isErrorResponse(e)) {
+      e.details?.forEach(function (item) {
+        const field = item.field.toLowerCase();
+        if (field === 'name') input.issues.name.loadFrom(item);
+        if (field === 'workingdir') input.issues.workingDir.loadFrom(item);
+      });
+
+      ui.canCreate = !(
+        input.issues.name.isError() || input.issues.workingDir.isError()
+      );
+    }
+  }
+}
+
+async function loadPresets() {
+  if (!data.serverReady) return;
+
+  try {
+    const r = await vscode.post(CommandId.UiGetAllPresets, data.selected.type);
+    if (isPresetArray(r)) {
+      data.presets = r;
+    }
+  } catch (e) {
+    reportUiError('Error loading presets', e);
+  }
+}
+
+function loadDefaultWorkingDir() {
+  let candidate = input.workingDir;
+
+  if (import.meta.env.DEV) {
+    candidate = '/dev';
+  } else {
+    candidate =
+      data.selected.type === 'file'
+        ? data.configs.newFileBaseDir
+        : data.configs.newProjectBaseDir;
+  }
+
+  if (input.workingDir !== candidate) {
+    input.workingDir = candidate;
+  }
+}
+
+async function selectAnyPresetAndValidate() {
+  if (data.presets.length > 0) {
+    await setSelectedPreset(data.presets[0], 0);
+    await validateInput();
+  }
+}
+
+function reportUiError(msg: string, e?: unknown) {
+  const detail = e instanceof Error ? e.message : String(e);
+  void vscode.post(CommandId.UiHasError, `${msg}: ${detail}`);
+}
+
+function clearInputErrors() {
+  input.issues.name.clear();
+  input.issues.workingDir.clear();
+  ui.canCreate = true;
+}
+
+// loading mask
+function startLoading(delay = 0) {
+  ui.loading.busy = true;
+  ui.loading.error = undefined;
+  clearLoadingDelayTimer();
+
+  if (delay === 0) {
+    ui.loading.forceHidden = false;
+  } else {
+    ui.loading.forceHidden = true;
+    ui.loading.delayedTimerId = setTimeout(function () {
+      ui.loading.forceHidden = false;
+    }, delay);
+  }
+}
+
+function endLoading() {
+  clearLoadingDelayTimer();
+  ui.loading.busy = false;
+  ui.loading.error = undefined;
+}
+
+function clearLoadingDelayTimer() {
+  if (ui.loading.delayedTimerId) {
+    clearTimeout(ui.loading.delayedTimerId);
+    ui.loading.delayedTimerId = null;
+  }
 }

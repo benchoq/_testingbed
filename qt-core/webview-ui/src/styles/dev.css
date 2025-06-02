@@ -3,14 +3,20 @@ Copyright (C) 2025 The Qt Company Ltd.
 SPDX-License-Identifier: LicenseRef-Qt-Commercial OR LGPL-3.0-only 
 */
 
-@import "tailwindcss";
+@import 'tailwindcss';
 
-body.dev {
+html.dev {
+  --qt-border-radius: 2px;
+
+  --qt-font-size: 13px;
+  --qt-font-family: sans-serif;
+
   --qt-widget-fill: var(--color-gray-500);
   --qt-widget-border: var(--color-gray-700);
   --qt-widget-borderFocus: var(--color-green-400);
   --qt-widget-separator: var(--color-gray-400);
 
+  --qt-text-info: var(--color-green-400);
   --qt-text-normal: var(--color-gray-300);
   --qt-text-highlight: var(--color-yellow-300);
 
@@ -40,6 +46,12 @@ body.dev {
 
   --qt-itemSelection-text: white;
   --qt-itemSelection-fill: var(--color-green-600);
+
+  --qt-dropdown-text: var(--color-gray-200);
+  --qt-dropdown-fill: var(--color-gray-600);
+  --qt-dropdown-fillHover: var(--color-gray-500);
+  --qt-dropdown-wrapper-fill: var(--color-gray-400);
+  --qt-dropdown-wrapper-border: var(--qt-widget-borderFocus);
 
   --qt-alert-text: white;
   --qt-alert-fill: rgb(86, 66, 66);

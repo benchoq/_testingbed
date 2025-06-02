@@ -262,7 +262,7 @@ func createPrompt(
 			Question(question).
 			Description(description).
 			Value(step.Value).
-			Validator(validator), nil
+			ValidateFunc(validator), nil
 
 	case "picker":
 		return comps.NewPicker().
@@ -295,7 +295,8 @@ func createPrompt(
 }
 
 func createInputValidator(
-	fieldName string, rules []common.PromptInputRules) (comps.ValidatorFunc, error) {
+	fieldName string,
+	rules []common.PromptInputRules) (comps.InputValidateFunc, error) {
 	// compose validation tags
 	tags := []string{}
 
@@ -318,13 +319,13 @@ func createInputValidator(
 	}
 
 	// create validation function
-	v := common.NewValidationHelper()
+	v := common.NewStringValidator()
 	tag := strings.Join(tags, ",")
 
 	return func(data string) error {
-		err := v.RunVar(fieldName, data, tag)
-		if len(err) != 0 {
-			return err[0]
+		issue := v.Run(fieldName, data, tag)
+		if issue != nil {
+			return errors.New(issue.Message)
 		}
 
 		return nil

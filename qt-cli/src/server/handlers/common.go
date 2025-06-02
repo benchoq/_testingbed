@@ -19,7 +19,7 @@ type StatusResponse struct {
 	Status string `json:"status" binding:"required"`
 }
 
-type DeleteResponse struct {
+type StatusAndIdResponse struct {
 	Status string `json:"status" binding:"required"`
 	Id     any    `json:"id" binding:"required"`
 }
@@ -33,11 +33,8 @@ func ReplyPost[T any](c *gin.Context, data T) {
 	c.JSON(http.StatusCreated, data)
 }
 
-func ReplyDelete[T any](c *gin.Context, id T) {
-	c.JSON(http.StatusOK, DeleteResponse{
-		Status: common.ServerPresetDeleted,
-		Id:     id,
-	})
+func ReplyDelete[T any](c *gin.Context, data T) {
+	c.JSON(http.StatusOK, data)
 }
 
 func ReplyStatus(c *gin.Context, msg string) {

@@ -24,9 +24,12 @@ const (
 	InputOkay      = "Input validation passed successfully"
 	InputHasIssues = "Cannot validate input"
 
-	ServerNoPreset       = "Cannot find a matching preset"
-	ServerNoPresets      = "Cannot find presets"
-	ServerNoTemplateFile = "Cannot open the template file"
-	ServerClosing        = "The server is shutting down"
-	ServerPresetDeleted  = "The preset has been deleted"
+	ServerNoPreset            = "Cannot find a matching preset"
+	ServerNoPresets           = "Cannot find presets"
+	ServerNoTemplateFile      = "Cannot open the template file"
+	ServerClosing             = "The server is shutting down"
+	ServerPresetDeleted       = "The preset has been deleted"
+	ServerPresetAlreadyExists = "The preset name is already taken"
+
+	ServerStatusCreated = "Created"
 )

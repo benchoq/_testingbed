@@ -105,6 +105,7 @@ func createApiHandler() *gin.Engine {
 
 	v1.GET("/ready", handlers.GetReady)
 
+	// TODO: add an endpoint for getting details from name
 	v1.GET("/presets", handlers.GetPresets)
 	v1.GET("/presets/:id", handlers.GetPresetById)
 	v1.POST("/presets", handlers.PostCustomPreset)

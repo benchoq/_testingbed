@@ -22,21 +22,6 @@ SPDX-License-Identifier: LicenseRef-Qt-Commercial OR LGPL-3.0-only
   function onValueChanged(step: PresetPromptStep, value: any) {
     data.selected.optionChanges[step.id] = value;
   }
-
-  // let nameInput = $state("untitle");
-  // let openNameDialog = $state(false);
-
-  // function onDeleteClicked() {
-  //   deleteCurrentPreset();
-  // }
-
-  // function onSaveClicked() {
-  //   openNameDialog = true;
-  // }
-
-  // function onNameDialogAccepted() {
-  //   createCustomPreset(nameInput);
-  // }
 </script>
 
 {#if steps}

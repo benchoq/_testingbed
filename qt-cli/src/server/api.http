@@ -33,7 +33,7 @@ GET {{baseUrl}}/presets/{{presetCppClass}} HTTP/1.1
 GET {{baseUrl}}/presets/{{presetConsoleApp}} HTTP/1.1
 
 ### Get details of a specific preset - non existing
-GET {{baseUrl}}/presets/{{presetInvalid}} HTTP/1.1
+GET {{baseUrl}}/presets/0510367801 HTTP/1.1
 
 ###
 ### Create a new item

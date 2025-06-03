@@ -47,9 +47,7 @@ SPDX-License-Identifier: LicenseRef-Qt-Commercial OR LGPL-3.0-only
 
   <div class="grow"></div>
 
-  <Button class="qt-button"
-    hidden={!ui.preset.canSave}
-  >
+  <Button class="qt-button flat" hidden={!ui.preset.canSave}>
     {texts.wizard.buttons.save}
   </Button>
 

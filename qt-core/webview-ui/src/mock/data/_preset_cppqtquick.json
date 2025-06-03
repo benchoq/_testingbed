@@ -45,7 +45,7 @@
         "question": "Qt Quick Controls style:",
         "description": "",
         "value": "",
-        "default": "",
+        "default": "Material",
         "when": "",
         "items": [
           {
@@ -75,7 +75,7 @@
         "question": "Qt Quick Controls theme:",
         "description": "",
         "value": "",
-        "default": "Light",
+        "default": "Dark",
         "when": "{{ not (eq .qqcStyle \"\") }}",
         "items": [
           {

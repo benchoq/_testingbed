@@ -42,6 +42,6 @@ SPDX-License-Identifier: LicenseRef-Qt-Commercial OR LGPL-3.0-only
       <PresetOptionsTable />
     {/if}
     
-    <PresetToolbar class="mt-3"/>
+    <PresetToolbar class="mt-5"/>
   </div>
 </div>

@@ -81,11 +81,16 @@ func GetPresetById(c *gin.Context) {
 		return
 	}
 
+	prompt := getPromptFileContents(p.GetTemplateDir())
+	if prompt != nil {
+		prompt.UpdateDefaultValues(p.GetOptions())
+	}
+
 	ReplyGet(c, PresetDetailResponse{
 		Id:     p.GetUniqueId(),
 		Name:   p.GetName(),
 		Meta:   template.GetMeta(),
-		Prompt: getPromptFileContents(p.GetTemplateDir()),
+		Prompt: prompt,
 	})
 }
 

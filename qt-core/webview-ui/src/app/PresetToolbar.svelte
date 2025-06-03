@@ -11,11 +11,11 @@ SPDX-License-Identifier: LicenseRef-Qt-Commercial OR LGPL-3.0-only
    } from 'flowbite-svelte-icons';
 
   import { 
-    createCustomPreset,
+    renameCustomPreset,
     deleteCustomPreset 
   } from './viewlogic.svelte';
   import * as texts from './texts';
-  import { ui } from './states.svelte';
+  import { data, ui } from './states.svelte';
   import IconButton from '@/comps/IconButton.svelte';
   import InputDialog from '@/comps/InputDialog.svelte';
   import ConfirmDialog from '@/comps/ConfirmDialog.svelte';
@@ -24,7 +24,10 @@ SPDX-License-Identifier: LicenseRef-Qt-Commercial OR LGPL-3.0-only
     class: className = ''
   } = $props();
   
+  let openRenameDialog = $state(false);
   let openDeleteConfirm = $state(false);
+
+  let newPresetName = $state('');
 </script>
 
 <div class={`w-full flex flex-row justify-end gap-2 ${className}`}>
@@ -39,6 +42,7 @@ SPDX-License-Identifier: LicenseRef-Qt-Commercial OR LGPL-3.0-only
     icon={EditOutline} flat 
     visible={ui.preset.canRename}
     tooltip={texts.wizard.buttons.rename}
+    onClicked={() => { openRenameDialog = true; }}
   />
   <div class="grow"></div>
 
@@ -48,15 +52,16 @@ SPDX-License-Identifier: LicenseRef-Qt-Commercial OR LGPL-3.0-only
 </div>
 
 <!-- dialogs -->
-<!-- {#if openCreateDialog}
+{#if openRenameDialog}
   <InputDialog
     acceptOnEnter
-    bind:open={openCreateDialog}
+    bind:open={openRenameDialog}
     bind:value={newPresetName}
     text={texts.wizard.enterNewPresetName}
-    onAccepted={() => { createCustomPreset(newPresetName); }}
+    onReady={() => { newPresetName = data.selected.preset?.name?? ''; }}
+    onAccepted={() => { renameCustomPreset(newPresetName); }}
   />
-{/if} -->
+{/if}
 
 {#if openDeleteConfirm}
   <ConfirmDialog

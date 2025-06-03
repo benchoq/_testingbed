@@ -19,12 +19,11 @@ SPDX-License-Identifier: LicenseRef-Qt-Commercial OR LGPL-3.0-only
   onMount(() => {value=step.default})
 </script>
 
-<div class="w-full">
-  <Input
-    type="text"
-    class="qt-input w-full"
-    disabled={!enabled}
-    bind:value={value}
-    on:input={() => { onValueChanged(step, value)}}
-    />
-</div>
+<Input
+  type="text"
+  class="qt-input w-full"
+  disabled={!enabled}
+  bind:value={value}
+  on:input={() => { onValueChanged(step, value)}}
+  />
+

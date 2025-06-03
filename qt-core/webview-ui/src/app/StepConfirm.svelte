@@ -10,7 +10,7 @@ SPDX-License-Identifier: LicenseRef-Qt-Commercial OR LGPL-3.0-only
 
   let { 
     step, 
-    enabled = true, 
+    enabled = true,
     onValueChanged = (step: PresetPromptStep, value: any) => {}
   } = $props();
   let checked = $state(false)

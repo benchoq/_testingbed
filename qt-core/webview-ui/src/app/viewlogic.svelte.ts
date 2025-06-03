@@ -157,6 +157,26 @@ export async function validateInput() {
   }
 }
 
+export async function renameCustomPreset(newName: string) {
+  const presetId = data.selected.preset?.id;
+  if (!presetId || newName.length === 0) {
+    return;
+  }
+
+  try {
+     const payload = {
+      name: newName,
+      presetId
+    }
+   
+    await vscode.post(CommandId.UiRenameCustomPreset, payload);
+    await loadPresets();
+    await setSelectedPresetByName(newName);
+  } catch (e) {
+    reportUiError('Error deleting preset', e);
+  }
+}
+
 export async function deleteCustomPreset() {
   const presetId = data.selected.preset?.id;
   if (!presetId) {
@@ -219,8 +239,6 @@ function updateToolbarStates() {
   ui.preset.canRename = custom;
   ui.preset.canSave = custom;
   ui.preset.canCreate = !custom && (steps !== undefined) && (steps.length > 0);
-
-  console.log(custom, steps, steps?.length, data.selected.preset.name);
 }
 
 async function loadPresets() {
@@ -299,4 +317,3 @@ function clearLoadingDelayTimer() {
     ui.loading.delayedTimerId = null;
   }
 }
-

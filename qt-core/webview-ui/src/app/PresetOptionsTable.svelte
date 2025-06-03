@@ -25,12 +25,16 @@ SPDX-License-Identifier: LicenseRef-Qt-Commercial OR LGPL-3.0-only
 </script>
 
 {#if steps}
-  <div class="grid grid-cols-2 gap-1">
+  <div class="grid grid-cols-[1fr_max-content] gap-1">
     {#each steps as step (step.id)}
       <P class="qt-label">{step.question}</P>
       {#if step.type in stepComponents}
-        {@const StepComp = stepComponents[step.type]}
-        <StepComp enabled={true} {step} {onValueChanged} />
+      {@const StepComp = stepComponents[step.type]}
+        <div class="w-[120px]">
+          <StepComp enabled={true} {step} {onValueChanged} />
+        </div>
+      {:else}
+        <P class="qt-label">{step.default}</P>
       {/if}
     {/each}
   </div>

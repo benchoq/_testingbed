@@ -4,8 +4,8 @@ SPDX-License-Identifier: LicenseRef-Qt-Commercial OR LGPL-3.0-only
 -->
 
 <script lang="ts">
-  import { Modal, Button, P } from 'flowbite-svelte';
   import { onMount } from 'svelte';
+  import { Modal, Button, P } from 'flowbite-svelte';
 
   import InputWithIssue from './InputWithIssue.svelte';
 
@@ -16,6 +16,7 @@ SPDX-License-Identifier: LicenseRef-Qt-Commercial OR LGPL-3.0-only
     rejectText = 'Cancel',
     value = $bindable(""),
     acceptOnEnter = false,
+    onReady = () => {},
     onAccepted = (input: string) => {},
     onRejected = () => {}
   } = $props();
@@ -39,9 +40,10 @@ SPDX-License-Identifier: LicenseRef-Qt-Commercial OR LGPL-3.0-only
   }
 
   onMount(() => {
-    if (inputComp) {
-      inputComp.focus();
-    }
+    onReady();
+    setTimeout(() => {
+      inputComp?.focus();
+    }, 0);
   })
 </script>
 
@@ -53,9 +55,6 @@ SPDX-License-Identifier: LicenseRef-Qt-Commercial OR LGPL-3.0-only
   classBackdrop="qt-backdrop"
   bodyClass="p-4"
   outsideclose
-  on:visibilitychange={
-    () => { console.log("onvisi.."); }
-  }
   on:close={() => { onRejectClicked(); }}
 >
   <div class="flex flex-col gap-2">

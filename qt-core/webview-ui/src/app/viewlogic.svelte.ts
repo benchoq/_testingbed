@@ -77,7 +77,7 @@ export async function setPresetType(type: string) {
 export async function setSelectedPresetByName(name: string) {
   const index = data.presets.findIndex(p => p.name === name);
   if (index !== -1) {
-    setSelectedPresetAt(index);
+    await setSelectedPresetAt(index);
   }
 }
 
@@ -163,9 +163,9 @@ export async function deleteCustomPreset() {
   }
 
   try {
-    const r = await vscode.post(CommandId.UiDeleteCustomPreset, presetId);
-    loadPresets();
-    setSelectedPresetAt(Math.max(0, data.selected.presetIndex - 1));
+    await vscode.post(CommandId.UiDeleteCustomPreset, presetId);
+    await loadPresets();
+    await setSelectedPresetAt(Math.max(0, data.selected.presetIndex - 1));
   } catch (e) {
     reportUiError('Error deleting preset', e);
   }
@@ -173,12 +173,12 @@ export async function deleteCustomPreset() {
 
 export async function createCustomPreset(name: string) {
   const presetId = data.selected.preset?.id;
-  const changes = data.selected.optionChanges;
-  if (!presetId || Object.keys(changes).length === 0) {
+  if (!presetId) {
     return;
   }
-
+  
   try {
+    const changes = data.selected.optionChanges;
     const payload = {
       name,
       presetId,
@@ -186,8 +186,8 @@ export async function createCustomPreset(name: string) {
     }
    
     const r = await vscode.post(CommandId.UiCreateCustomPreset, payload);
-    loadPresets();
-    setSelectedPresetByName(name);
+    await loadPresets();
+    await setSelectedPresetByName(name);
   } catch (e) {
     reportUiError('Error saving preset', e);
   }
@@ -196,18 +196,18 @@ export async function createCustomPreset(name: string) {
 // helpers
 function updateToolbarStates() {
   if (data.selected.preset === undefined) {
-    ui.toolbar.canDelete = false;
-    ui.toolbar.canRename = false;
-    ui.toolbar.canSave = false;
-    ui.toolbar.canCreate = false;
+    ui.preset.canDelete = false;
+    ui.preset.canRename = false;
+    ui.preset.canSave = false;
+    ui.preset.canCreate = false;
     return;
   }
 
   const custom = !data.selected.preset.name.startsWith("@");
-  ui.toolbar.canDelete = custom;
-  ui.toolbar.canRename = custom;
-  ui.toolbar.canSave = custom;
-  ui.toolbar.canCreate = !custom;
+  ui.preset.canDelete = custom;
+  ui.preset.canRename = custom;
+  ui.preset.canSave = custom;
+  ui.preset.canCreate = !custom;
 }
 
 async function loadPresets() {

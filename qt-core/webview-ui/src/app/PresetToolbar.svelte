@@ -25,47 +25,30 @@ SPDX-License-Identifier: LicenseRef-Qt-Commercial OR LGPL-3.0-only
     class: className = ''
   } = $props();
   
-  let nameInput = $state("untitle");
-  let openNameDialog = $state(false);
+  let openCreateDialog = $state(false);
   let openDeleteConfirm = $state(false);
 
-  function onRenameClicked() {
-    // deleteCustomPreset();
-  }
-
-  function onSaveClicked() {
-    // openNameDialog = true;
-  }
-
-  function onCreateClicked() {
-    openNameDialog = true;
-  }
-
-  function onNameDialogAccepted() {
-    createCustomPreset(nameInput);
-  }
+  let newPresetName = $state("untitle");
 </script>
 
 <div class={`w-full flex flex-row justify-end gap-2 ${className}`}>
   <IconButton
     icon={TrashBinOutline} flat 
-    visible={ui.toolbar.canDelete}
+    visible={ui.preset.canDelete}
     tooltip={texts.wizard.buttons.delete}
     onClicked={() => { openDeleteConfirm = true; }}
   />
 
   <IconButton
     icon={EditOutline} flat 
-    visible={ui.toolbar.canRename}
+    visible={ui.preset.canRename}
     tooltip={texts.wizard.buttons.rename}
-    onClicked={onRenameClicked}
   />
 
   <div class="grow"></div>
 
   <Button class="qt-button"
-    hidden={!ui.toolbar.canSave}
-    on:click={onSaveClicked}
+    hidden={!ui.preset.canSave}
   >
     {texts.wizard.buttons.save}
   </Button>
@@ -73,19 +56,26 @@ SPDX-License-Identifier: LicenseRef-Qt-Commercial OR LGPL-3.0-only
   <IconButton
     icon={PlusOutline}
     text={texts.wizard.buttons.createCustomPreset}
-    visible={ui.toolbar.canCreate}
-    onClicked={onCreateClicked}
+    visible={ui.preset.canCreate}
+    onClicked={() => { openCreateDialog = true; }}
   />
 </div>
 
-<InputDialog
-  bind:value={nameInput}
-  bind:open={openNameDialog}
-  onAccepted={onNameDialogAccepted}
-/>
+<!-- dialogs -->
+{#if openCreateDialog}
+  <InputDialog
+    acceptOnEnter
+    bind:open={openCreateDialog}
+    bind:value={newPresetName}
+    text={texts.wizard.enterNewPresetName}
+    onAccepted={() => { createCustomPreset(newPresetName); }}
+  />
+{/if}
 
-<ConfirmDialog
-  bind:open={openDeleteConfirm}
-  text={texts.wizard.confirmDeletePreset}
-  onAccepted={deleteCustomPreset}
-/>
+{#if openDeleteConfirm}
+  <ConfirmDialog
+    bind:open={openDeleteConfirm}
+    text={texts.wizard.confirmDeletePreset}
+    onAccepted={deleteCustomPreset}
+  />
+{/if}

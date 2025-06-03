@@ -27,6 +27,7 @@ export const wizard = {
   workingDirTooltip: 'Browse',
   workingDirSaveCheckbox: 'Use as default project directory',
 
+  enterNewPresetName: 'Enter a new name for the custom preset',
   confirmDeletePreset: 'Do you want to delete the preset?' 
 };
 

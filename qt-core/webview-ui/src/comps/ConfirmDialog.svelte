@@ -5,7 +5,6 @@ SPDX-License-Identifier: LicenseRef-Qt-Commercial OR LGPL-3.0-only
 
 <script lang="ts">
   import { Modal, Button, P } from 'flowbite-svelte';
-  import { ArrowRightOutline } from 'flowbite-svelte-icons';
 
   let {
     open = $bindable(true),
@@ -33,16 +32,13 @@ SPDX-License-Identifier: LicenseRef-Qt-Commercial OR LGPL-3.0-only
   class="qt-modal"
   size="sm"
   classBackdrop="qt-backdrop"
-  bodyClass="px-2 py-4"
+  bodyClass="p-4"
   outsideclose
   on:close={() => {
     onRejected();
   }}
 >
-  <div class="flex flex-row gap-1">
-    <ArrowRightOutline size="lg" class="qt-label dialog"/>
-    <P class='qt-label dialog'>{text}</P>
-  </div>
+  <P class='qt-label dialog'>{text}</P>
 
   <div class="flex flex-row gap-2 mt-5">
     <div class="grow"></div>
@@ -52,6 +48,5 @@ SPDX-License-Identifier: LicenseRef-Qt-Commercial OR LGPL-3.0-only
     <Button class="qt-button" on:click={onRejectClicked}>
       {rejectText}
     </Button>
-    <div></div>
   </div>
 </Modal>

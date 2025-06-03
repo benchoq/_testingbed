@@ -4,24 +4,32 @@ SPDX-License-Identifier: LicenseRef-Qt-Commercial OR LGPL-3.0-only
 -->
 
 <script lang="ts">
+  import { nanoid } from 'nanoid';
   import { Input, Button, Alert } from 'flowbite-svelte';
   import { CircleMinusSolid, InfoCircleOutline } from 'flowbite-svelte-icons';
 
   let {
     value = $bindable(''),
-    onInput,
     level = '',
     message = undefined,
+    onInput,
+    onEnter = () => {},
     ...restProps
   } = $props();
 
-  const id = 'input_name';
+  const id = `input_${nanoid()}`;
   let hovered = $state(false);
   let focused = $state(false);
   let hasIssue = $derived(message && message.length > 0);
 
   export function focus() {
     document.getElementById(id)?.focus();
+  }
+
+  function onKeyDown(e: KeyboardEvent) {
+    if (e.key === 'Enter') {
+      onEnter();
+    }
   }
 </script>
 
@@ -50,6 +58,7 @@ SPDX-License-Identifier: LicenseRef-Qt-Commercial OR LGPL-3.0-only
       (e.target as HTMLInputElement).select();
       focused = true;
     }}
+    on:keydown={onKeyDown}
     {...restProps}
   >
     <Button

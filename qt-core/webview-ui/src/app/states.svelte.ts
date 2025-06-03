@@ -37,7 +37,7 @@ export const ui = $state({
     delayedTimerId: null as NodeJS.Timeout | null
   },
 
-  toolbar: {
+  preset: {
     canDelete: false,
     canRename: false,
     canSave: false,

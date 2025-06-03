@@ -10,6 +10,7 @@ SPDX-License-Identifier: LicenseRef-Qt-Commercial OR LGPL-3.0-only
   import * as texts from './texts';
   import { data } from './states.svelte';
   import PresetList from './PresetList.svelte';
+  import PresetToolbar from './PresetToolbar.svelte';
   import PresetTypeSelector from './PresetTypeSelector.svelte';
   import PresetOptionsTable from './PresetOptionsTable.svelte';
 </script>
@@ -39,6 +40,7 @@ SPDX-License-Identifier: LicenseRef-Qt-Commercial OR LGPL-3.0-only
     {#if data.selected.preset?.prompt?.steps}
       <SectionLabel text={texts.wizard.options} />
       <PresetOptionsTable />
+      <PresetToolbar />
     {/if}
   </div>
 </div>

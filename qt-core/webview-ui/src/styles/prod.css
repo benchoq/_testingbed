@@ -13,6 +13,10 @@ html.prod {
 
   --qt-widget-fill: var(--vscode-sideBar-background);
   --qt-widget-border: var(--vscode-widget-border, transparent);
+  --qt-widget-borderGuaranteed:
+    var(--vscode-widget-border,
+    var(--vscode-settings-headerBorder, 
+    var(--vscode-focusBorder, darkgray)));
   --qt-widget-borderFocus: var(--vscode-focusBorder);
   --qt-widget-separator: var(--vscode-settings-headerBorder);
 
@@ -57,4 +61,8 @@ html.prod {
   --qt-alert-text: var(--vscode-foreground);
   --qt-alert-fill: var(--vscode-inputValidation-warningBackground);
   --qt-alert-border: var(--vscode-inputValidation-warningBorder);
+
+  --qt-tooltip-text: var(--vscode-foreground);
+  --qt-tooltip-fill: var(--vscode-input-background);
+  --qt-tooltip-border: var(--qt-widget-borderGuaranteed);
 }

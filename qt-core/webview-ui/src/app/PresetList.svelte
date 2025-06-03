@@ -64,7 +64,9 @@ SPDX-License-Identifier: LicenseRef-Qt-Commercial OR LGPL-3.0-only
         </div>
 
         {#if !preset.name.startsWith('@')}
-          <div class="ml-auto mr-0.5 qt-badge">{preset.meta.title}</div>
+          <div class="ml-auto mr-0.5 qt-badge flex flex-row gap-2">
+            {preset.meta.title}
+          </div>
         {:else}
           <div></div>
         {/if}

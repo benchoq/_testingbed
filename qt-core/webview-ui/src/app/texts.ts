@@ -4,7 +4,10 @@
 export const wizard = {
   title: 'Create a new project or file',
   buttons: {
-    create: 'Create'
+    create: 'Create',
+    rename: 'Rename',
+    delete: 'Delete',
+    save: 'Save'
   },
 
   types: {

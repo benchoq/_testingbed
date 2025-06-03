@@ -13,6 +13,7 @@ html.dev {
 
   --qt-widget-fill: var(--color-gray-500);
   --qt-widget-border: var(--color-gray-700);
+  --qt-widget-borderGuaranteed: var(--color-gray-400);
   --qt-widget-borderFocus: var(--color-green-400);
   --qt-widget-separator: var(--color-gray-400);
 
@@ -56,4 +57,8 @@ html.dev {
   --qt-alert-text: white;
   --qt-alert-fill: rgb(86, 66, 66);
   --qt-alert-border: var(--color-red-300);
+
+  --qt-tooltip-text: var(--color-gray-300);
+  --qt-tooltip-fill: var(--color-gray-600);
+  --qt-tooltip-border: var(--qt-widget-borderGuaranteed);
 }

@@ -40,7 +40,7 @@ html {
 .qt-modal {
   color: var(--qt-widget-separator);
   background: var(--qt-widget-fill);
-  border-color: var(--qt-widget-separator);
+  border-color: var(--qt-widget-borderGuaranteed);
   border-width: 1px;
   border-radius: var(--qt-border-radius);
 }
@@ -71,6 +71,7 @@ html {
 .qt-button.flat {
   color: var(--qt-text-normal);
   background: transparent;
+  border: 1px solid var(--qt-widget-borderGuaranteed);
 }
 
 .qt-button.flat:hover {
@@ -288,4 +289,12 @@ html {
   color: var(--qt-widget-separator);
   @apply bg-transparent;
   @apply text-base;
+}
+
+.qt-tooltip {
+  color: var(--qt-tooltip-text);
+  background: var(--qt-tooltip-fill);
+  border: 1px solid var(--qt-tooltip-border);
+  border-radius: var(--qt-border-radius);
+  @apply px-5 py-3;
 }

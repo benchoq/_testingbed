@@ -98,6 +98,7 @@ export async function setSelectedPresetAt(index: number) {
       const r = await vscode.post(CommandId.UiGetPresetById, preset.id);
       if (isPreset(r)) {
         data.selected.preset = r;
+        updateToolbarStates();
       }
     } catch (e) {
       reportUiError('Error getting preset by id', e);
@@ -204,10 +205,14 @@ function updateToolbarStates() {
   }
 
   const custom = !data.selected.preset.name.startsWith("@");
+  const steps = data.selected.preset.prompt?.steps;
+
   ui.preset.canDelete = custom;
   ui.preset.canRename = custom;
   ui.preset.canSave = custom;
-  ui.preset.canCreate = !custom;
+  ui.preset.canCreate = !custom && (steps !== undefined) && (steps.length > 0);
+
+  console.log(custom, steps, steps?.length, data.selected.preset.name);
 }
 
 async function loadPresets() {

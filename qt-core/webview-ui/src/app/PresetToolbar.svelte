@@ -6,7 +6,6 @@ SPDX-License-Identifier: LicenseRef-Qt-Commercial OR LGPL-3.0-only
 <script lang="ts">
   import { Button } from 'flowbite-svelte';
   import { 
-    PlusOutline,
     EditOutline, 
     TrashBinOutline
    } from 'flowbite-svelte-icons';
@@ -25,10 +24,7 @@ SPDX-License-Identifier: LicenseRef-Qt-Commercial OR LGPL-3.0-only
     class: className = ''
   } = $props();
   
-  let openCreateDialog = $state(false);
   let openDeleteConfirm = $state(false);
-
-  let newPresetName = $state("untitle");
 </script>
 
 <div class={`w-full flex flex-row justify-end gap-2 ${className}`}>
@@ -44,23 +40,15 @@ SPDX-License-Identifier: LicenseRef-Qt-Commercial OR LGPL-3.0-only
     visible={ui.preset.canRename}
     tooltip={texts.wizard.buttons.rename}
   />
-
   <div class="grow"></div>
 
   <Button class="qt-button flat" hidden={!ui.preset.canSave}>
     {texts.wizard.buttons.save}
   </Button>
-
-  <IconButton
-    icon={PlusOutline}
-    text={texts.wizard.buttons.createCustomPreset}
-    visible={ui.preset.canCreate}
-    onClicked={() => { openCreateDialog = true; }}
-  />
 </div>
 
 <!-- dialogs -->
-{#if openCreateDialog}
+<!-- {#if openCreateDialog}
   <InputDialog
     acceptOnEnter
     bind:open={openCreateDialog}
@@ -68,7 +56,7 @@ SPDX-License-Identifier: LicenseRef-Qt-Commercial OR LGPL-3.0-only
     text={texts.wizard.enterNewPresetName}
     onAccepted={() => { createCustomPreset(newPresetName); }}
   />
-{/if}
+{/if} -->
 
 {#if openDeleteConfirm}
   <ConfirmDialog

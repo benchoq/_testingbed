@@ -5,14 +5,25 @@ SPDX-License-Identifier: LicenseRef-Qt-Commercial OR LGPL-3.0-only
 
 <script lang="ts">
   import { P } from 'flowbite-svelte';
+  import { PlusOutline } from 'flowbite-svelte-icons';
 
+  import IconButton from '@/comps/IconButton.svelte';
+  import InputDialog from '@/comps/InputDialog.svelte';
   import SectionLabel from '@/comps/SectionLabel.svelte';
   import * as texts from './texts';
-  import { data } from './states.svelte';
+  import { ui, data } from './states.svelte';
+  import {
+    isCustomPreset,
+    isDefaultPreset,
+    createCustomPreset
+   } from './viewlogic.svelte';
   import PresetList from './PresetList.svelte';
   import PresetToolbar from './PresetToolbar.svelte';
   import PresetTypeSelector from './PresetTypeSelector.svelte';
   import PresetOptionsTable from './PresetOptionsTable.svelte';
+
+  let openCreateDialog = $state(false);
+  let newPresetName = $state("untitle");
 </script>
 
 <div
@@ -38,10 +49,37 @@ SPDX-License-Identifier: LicenseRef-Qt-Commercial OR LGPL-3.0-only
     <div class="flex-grow"></div>
 
     {#if data.selected.preset?.prompt?.steps}
-      <SectionLabel text={texts.wizard.options} />
+      <div class="w-full flex flex-row mb-1">
+        <div><SectionLabel text={texts.wizard.options} /></div>
+        <div class="grow"></div>
+        {#if isDefaultPreset(data.selected.preset?.name)}
+          <IconButton
+            flat
+            icon={PlusOutline}
+            text={texts.wizard.buttons.saveAs}
+            tooltip={texts.wizard.buttons.saveAsTooltip}
+            tooltipPlacement="left"
+            visible={ui.preset.canCreate}
+            onClicked={() => { openCreateDialog = true; }}
+          />
+        {/if}
+      </div>
       <PresetOptionsTable />
     {/if}
-    
-    <PresetToolbar class="mt-5"/>
+
+    {#if isCustomPreset(data.selected.preset?.name)}
+      <PresetToolbar class="mt-5"/>
+    {/if}
   </div>
 </div>
+
+<!-- dialogs -->
+{#if openCreateDialog}
+  <InputDialog
+    acceptOnEnter
+    bind:open={openCreateDialog}
+    bind:value={newPresetName}
+    text={texts.wizard.enterNewPresetName}
+    onAccepted={() => { createCustomPreset(newPresetName); }}
+  />
+{/if}

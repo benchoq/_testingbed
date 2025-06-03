@@ -8,7 +8,8 @@ export const wizard = {
     rename: 'Rename',
     delete: 'Delete',
     save: 'Save',
-    createCustomPreset: 'New preset'
+    saveAs: 'Save as',
+    saveAsTooltip: 'Create a new custom preset with current options'
   },
 
   types: {

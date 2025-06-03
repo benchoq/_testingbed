@@ -108,7 +108,7 @@ export async function setSelectedPresetAt(index: number) {
 
 export function createPresetDisplayText(preset: Preset | undefined): string {
   if (!preset) return '';
-  return preset.name.startsWith('@') ? preset.meta.title : preset.name;
+  return isDefaultPreset(preset.name) ? preset.meta.title : preset.name;
 }
 
 export async function createItemFromSelectedPreset() {
@@ -194,6 +194,14 @@ export async function createCustomPreset(name: string) {
   }
 }
 
+export function isDefaultPreset(name: string | undefined): boolean {
+  return ((name !== undefined) && name.startsWith('@'));
+}
+
+export function isCustomPreset(name: string | undefined): boolean {
+  return ((name !== undefined) && !name.startsWith('@'));
+}
+
 // helpers
 function updateToolbarStates() {
   if (data.selected.preset === undefined) {
@@ -204,8 +212,8 @@ function updateToolbarStates() {
     return;
   }
 
-  const custom = !data.selected.preset.name.startsWith("@");
   const steps = data.selected.preset.prompt?.steps;
+  const custom = isCustomPreset(data.selected.preset.name);
 
   ui.preset.canDelete = custom;
   ui.preset.canRename = custom;

@@ -86,6 +86,7 @@ html {
 .qt-button.flat:hover {
   color: var(--qt-button-text);
   background: var(--qt-button-fillHover);
+  border: 1px solid var(--qt-widget-border);
 }
 
 .qt-button:disabled {

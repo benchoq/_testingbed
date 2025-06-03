@@ -10,36 +10,6 @@
     "version": "1",
     "steps": [
       {
-        "id": "minimumQtVersion",
-        "type": "picker",
-        "question": "Minimum Qt version:",
-        "description": "",
-        "value": "",
-        "default": "6.5",
-        "when": "",
-        "items": [
-          {
-            "text": "6.5",
-            "data": null,
-            "description": "",
-            "checked": ""
-          },
-          {
-            "text": "6.4",
-            "data": null,
-            "description": "",
-            "checked": ""
-          },
-          {
-            "text": "6.2",
-            "data": null,
-            "description": "",
-            "checked": ""
-          }
-        ],
-        "rules": null
-      },
-      {
         "id": "qqcStyle",
         "type": "picker",
         "question": "Qt Quick Controls style:",

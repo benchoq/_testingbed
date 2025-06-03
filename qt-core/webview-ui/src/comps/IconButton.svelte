@@ -4,6 +4,7 @@ SPDX-License-Identifier: LicenseRef-Qt-Commercial OR LGPL-3.0-only
 -->
 
 <script lang="ts">
+  import type { Placement } from '@floating-ui/dom';
   import { Button, Tooltip } from 'flowbite-svelte';
   import { CheckOutline } from 'flowbite-svelte-icons';
 
@@ -11,6 +12,7 @@ SPDX-License-Identifier: LicenseRef-Qt-Commercial OR LGPL-3.0-only
     id = '',
     text = '',
     tooltip = '',
+    tooltipPlacement = 'top' as Placement,
     icon = CheckOutline,
     flat = false,
     visible = true,
@@ -42,7 +44,7 @@ SPDX-License-Identifier: LicenseRef-Qt-Commercial OR LGPL-3.0-only
     {text}
   </Button>
   {#if tooltip.length !== 0}
-    <Tooltip class="qt-tooltip">
+    <Tooltip placement={tooltipPlacement} class="qt-tooltip">
       {tooltip}
     </Tooltip>
   {/if}

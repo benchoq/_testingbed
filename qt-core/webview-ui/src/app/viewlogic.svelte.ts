@@ -77,16 +77,21 @@ export async function setPresetType(type: string) {
 export async function setSelectedPresetByName(name: string) {
   const index = data.presets.findIndex(p => p.name === name);
   if (index !== -1) {
-    setSelectedPreset(data.presets[index], index);
+    setSelectedPresetAt(index);
   }
 }
 
-export async function setSelectedPreset(preset: Preset, index: number) {
+export async function setSelectedPresetAt(index: number) {
   if (!data.serverReady) return;
+  if (index < 0 || index >= data.presets.length) return;
+
+  const preset = data.presets[index];
+  if (!preset) return;
 
   data.selected.preset = preset;
   data.selected.presetIndex = index;
   data.selected.optionChanges = {};
+  updateToolbarStates();
 
   if (preset.id.length > 0) {
     try {
@@ -160,6 +165,7 @@ export async function deleteCustomPreset() {
   try {
     const r = await vscode.post(CommandId.UiDeleteCustomPreset, presetId);
     loadPresets();
+    setSelectedPresetAt(Math.max(0, data.selected.presetIndex - 1));
   } catch (e) {
     reportUiError('Error deleting preset', e);
   }
@@ -188,6 +194,22 @@ export async function createCustomPreset(name: string) {
 }
 
 // helpers
+function updateToolbarStates() {
+  if (data.selected.preset === undefined) {
+    ui.toolbar.canDelete = false;
+    ui.toolbar.canRename = false;
+    ui.toolbar.canSave = false;
+    ui.toolbar.canCreate = false;
+    return;
+  }
+
+  const custom = !data.selected.preset.name.startsWith("@");
+  ui.toolbar.canDelete = custom;
+  ui.toolbar.canRename = custom;
+  ui.toolbar.canSave = custom;
+  ui.toolbar.canCreate = !custom;
+}
+
 async function loadPresets() {
   if (!data.serverReady) return;
 
@@ -220,7 +242,7 @@ function loadDefaultWorkingDir() {
 
 async function selectAnyPresetAndValidate() {
   if (data.presets.length > 0) {
-    await setSelectedPreset(data.presets[0], 0);
+    await setSelectedPresetAt(0);
     await validateInput();
   }
 }

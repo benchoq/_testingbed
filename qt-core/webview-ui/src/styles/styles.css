@@ -8,6 +8,10 @@ SPDX-License-Identifier: LicenseRef-Qt-Commercial OR LGPL-3.0-only
   @apply focus:ring-1 focus:ring-[var(--qt-widget-borderFocus)];
 }
 
+.qt-backdrop {
+  @apply bg-black/50;
+}
+
 .qt-roundness {
   border-radius: var(--qt-border-radius);
 }
@@ -34,6 +38,11 @@ html {
   color: var(--qt-text-highlight);
   font-size: 1.1rem;
   @apply font-semibold
+}
+
+.qt-label.dialog {
+  color: var(--qt-text-highlight);
+  font-size: 1.05rem;
 }
 
 /* modal */
@@ -82,6 +91,7 @@ html {
 .qt-button:disabled {
   cursor: not-allowed;
   color: var(--qt-text-normal);
+  border: 1px solid var(--qt-widget-borderGuaranteed);
   background: transparent;
 }
 

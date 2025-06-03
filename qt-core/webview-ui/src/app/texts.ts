@@ -7,7 +7,8 @@ export const wizard = {
     create: 'Create',
     rename: 'Rename',
     delete: 'Delete',
-    save: 'Save'
+    save: 'Save',
+    createCustomPreset: 'New preset'
   },
 
   types: {
@@ -24,7 +25,9 @@ export const wizard = {
   name: 'Name',
   workingDir: 'Create in',
   workingDirTooltip: 'Browse',
-  workingDirSaveCheckbox: 'Use as default project directory'
+  workingDirSaveCheckbox: 'Use as default project directory',
+
+  confirmDeletePreset: 'Do you want to delete the preset?' 
 };
 
 export const loading = {

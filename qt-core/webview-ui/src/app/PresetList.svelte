@@ -4,7 +4,7 @@ SPDX-License-Identifier: LicenseRef-Qt-Commercial OR LGPL-3.0-only
 -->
 
 <script lang="ts">
-  import { Listgroup, ListgroupItem } from 'flowbite-svelte';
+  import { Listgroup, ListgroupItem, Button } from 'flowbite-svelte';
 
   import { data } from './states.svelte';
   import * as viewlogic from './viewlogic.svelte';
@@ -19,7 +19,7 @@ SPDX-License-Identifier: LicenseRef-Qt-Commercial OR LGPL-3.0-only
     candidate = Math.min(candidate, data.presets.length - 1);
 
     if (candidate != data.selected.presetIndex) {
-      viewlogic.setSelectedPreset(data.presets[candidate], candidate);
+      viewlogic.setSelectedPresetAt(candidate);
     }
   };
 
@@ -56,7 +56,7 @@ SPDX-License-Identifier: LicenseRef-Qt-Commercial OR LGPL-3.0-only
         currentClass="selected"
         current={data.selected.presetIndex === index}
         on:click={() => {
-          viewlogic.setSelectedPreset(preset, index);
+          viewlogic.setSelectedPresetAt(index);
         }}
       >
         <div class="flex-1">

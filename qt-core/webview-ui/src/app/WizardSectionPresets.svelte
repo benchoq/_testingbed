@@ -40,7 +40,8 @@ SPDX-License-Identifier: LicenseRef-Qt-Commercial OR LGPL-3.0-only
     {#if data.selected.preset?.prompt?.steps}
       <SectionLabel text={texts.wizard.options} />
       <PresetOptionsTable />
-      <PresetToolbar />
     {/if}
+    
+    <PresetToolbar class="mt-3"/>
   </div>
 </div>

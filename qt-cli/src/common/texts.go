@@ -32,4 +32,5 @@ const (
 	ServerPresetAlreadyExists = "The preset name is already taken"
 
 	ServerStatusCreated = "Created"
+	ServerStatusUpdated = "Updated"
 )

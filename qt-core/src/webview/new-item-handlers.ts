@@ -32,8 +32,9 @@ export class NewItemCommandHandler {
       [CommandId.UiGetPresetById, this.onUiGetPresetById],
       [CommandId.UiValidateInputs, this.onUiValidateInputs],
       [CommandId.UiCreateCustomPreset, this.onUiCreateCustomPreset],
-      [CommandId.UiDeleteCustomPreset, this.onUiDeleteCustomPreset],
       [CommandId.UiRenameCustomPreset, this.onUiRenameCustomPreset],
+      [CommandId.UiUpdateCustomPreset, this.onUiUpdateCustomPreset],
+      [CommandId.UiDeleteCustomPreset, this.onUiDeleteCustomPreset],
       [CommandId.UiSelectWorkingDir, this.onUiSelectWorkingDir]
     ]);
   }
@@ -128,20 +129,23 @@ export class NewItemCommandHandler {
     this._panel?.postDataReply(cmd, data);
   }
 
+  private readonly onUiRenameCustomPreset = async (cmd: Command) => {
+    const id = _.get(cmd.payload, 'presetId', '');
+    await this._qtcliRest.post('/presets', cmd.payload);
+    await this._qtcliRest.delete(`/presets/${id}`);
+    this._panel?.postDataReply(cmd, cmd.payload);
+  }
+  
+  private readonly onUiUpdateCustomPreset = async (cmd: Command) => {
+    const id = _.get(cmd.payload, 'presetId', '');
+    await this._qtcliRest.patch(`/presets/${id}`, cmd.payload);
+    this._panel?.postDataReply(cmd, cmd.payload);
+  }
+
   private readonly onUiDeleteCustomPreset = async (cmd: Command) => {
     const id = _.toString(cmd.payload);
     const data = await this._qtcliRest.delete(`/presets/${id}`);
     this._panel?.postDataReply(cmd, data);
-  }
-
-  private readonly onUiRenameCustomPreset = async (cmd: Command) => {
-    console.log("--------", cmd.payload)
-
-    const id = _.get(cmd.payload, 'presetId', '');
-    await this._qtcliRest.post('/presets', cmd.payload);
-    await this._qtcliRest.delete(`/presets/${id}`);
-
-    this._panel?.postDataReply(cmd, cmd.payload);
   }
 
   private readonly onUiValidateInputs = async (cmd: Command) => {

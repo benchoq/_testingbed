@@ -4,6 +4,7 @@ SPDX-License-Identifier: LicenseRef-Qt-Commercial OR LGPL-3.0-only
 -->
 
 <script lang="ts">
+  import { fade } from 'svelte/transition';
   import { Button } from 'flowbite-svelte';
   import { 
     EditOutline, 
@@ -11,8 +12,9 @@ SPDX-License-Identifier: LicenseRef-Qt-Commercial OR LGPL-3.0-only
    } from 'flowbite-svelte-icons';
 
   import { 
+    updateCustomPreset,
     renameCustomPreset,
-    deleteCustomPreset 
+    deleteCustomPreset,
   } from './viewlogic.svelte';
   import * as texts from './texts';
   import { data, ui } from './states.svelte';
@@ -26,7 +28,6 @@ SPDX-License-Identifier: LicenseRef-Qt-Commercial OR LGPL-3.0-only
   
   let openRenameDialog = $state(false);
   let openDeleteConfirm = $state(false);
-
   let newPresetName = $state('');
 </script>
 
@@ -46,9 +47,16 @@ SPDX-License-Identifier: LicenseRef-Qt-Commercial OR LGPL-3.0-only
   />
   <div class="grow"></div>
 
-  <Button class="qt-button flat" hidden={!ui.preset.canSave}>
-    {texts.wizard.buttons.save}
-  </Button>
+  {#if ui.preset.canSave && (Object.keys(data.selected.optionChanges).length !== 0)}
+    <div in:fade={{ duration: 200 }} out:fade={{ duration: 200 }}>
+      <Button
+        class="qt-button" 
+        on:click={updateCustomPreset}
+      >
+        {texts.wizard.buttons.update}
+      </Button>
+    </div>
+  {/if}
 </div>
 
 <!-- dialogs -->

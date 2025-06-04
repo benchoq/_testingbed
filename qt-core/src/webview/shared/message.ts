@@ -15,8 +15,9 @@ export enum CommandId {
   UiGetPresetById,
   UiValidateInputs,
   UiCreateCustomPreset,
-  UiDeleteCustomPreset,
   UiRenameCustomPreset,
+  UiUpdateCustomPreset,
+  UiDeleteCustomPreset,
   UiSelectWorkingDir
 }
 

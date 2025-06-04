@@ -4,6 +4,7 @@ SPDX-License-Identifier: LicenseRef-Qt-Commercial OR LGPL-3.0-only
 -->
 
 <script lang="ts">
+  import { fade } from 'svelte/transition';
   import { P } from 'flowbite-svelte';
   import { PlusOutline } from 'flowbite-svelte-icons';
 
@@ -23,7 +24,7 @@ SPDX-License-Identifier: LicenseRef-Qt-Commercial OR LGPL-3.0-only
   import PresetOptionsTable from './PresetOptionsTable.svelte';
 
   let openCreateDialog = $state(false);
-  let newPresetName = $state("untitle");
+  let newPresetName = $state("my_preset");
 </script>
 
 <div
@@ -49,19 +50,20 @@ SPDX-License-Identifier: LicenseRef-Qt-Commercial OR LGPL-3.0-only
     <div class="flex-grow"></div>
 
     {#if data.selected.preset?.prompt?.steps}
-      <div class="w-full flex flex-row mb-1">
+      <div class="w-full flex items-end justify-between mb-2">
         <div><SectionLabel text={texts.wizard.options} /></div>
-        <div class="grow"></div>
-        {#if isDefaultPreset(data.selected.preset?.name)}
-          <IconButton
-            flat
-            icon={PlusOutline}
-            text={texts.wizard.buttons.saveAs}
-            tooltip={texts.wizard.buttons.saveAsTooltip}
-            tooltipPlacement="left"
-            visible={ui.preset.canCreate}
-            onClicked={() => { openCreateDialog = true; }}
-          />
+        {#if isDefaultPreset(data.selected.preset?.name) 
+          && (Object.keys(data.selected.optionChanges).length !== 0)
+        }
+          <div in:fade={{ duration: 200 }} out:fade={{ duration: 200 }}>
+            <IconButton
+              icon={PlusOutline}
+              tooltip={texts.wizard.buttons.saveAsTooltip}
+              tooltipPlacement="top-end"
+              visible={ui.preset.canCreate}
+              onClicked={() => { openCreateDialog = true; }}
+            />
+          </div>
         {/if}
       </div>
       <PresetOptionsTable />

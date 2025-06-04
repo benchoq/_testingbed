@@ -307,5 +307,5 @@ html {
   background: var(--qt-tooltip-fill);
   border: 1px solid var(--qt-tooltip-border);
   border-radius: var(--qt-border-radius);
-  @apply px-5 py-3;
+  @apply px-4 py-2;
 }

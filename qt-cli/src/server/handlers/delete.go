@@ -28,17 +28,13 @@ func DeleteServer(c *gin.Context) {
 	}()
 }
 
-func DeleteCustomPreset(c *gin.Context) {
+func DeleteCustomPresetById(c *gin.Context) {
 	id := c.Param("id")
-	name := c.Query("name")
-
 	var preset common.PresetData
 	var err error
 
 	if id != "" {
 		preset, err = runner.Presets.User.FindByUniqueId(id)
-	} else if name != "" {
-		preset, err = runner.Presets.User.FindByName(name)
 	} else {
 		ReplyErrorMsg(c, common.ServerNoPreset)
 		return

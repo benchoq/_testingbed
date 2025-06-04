@@ -103,19 +103,21 @@ func createApiHandler() *gin.Engine {
 
 	v1 := r.Group("/v1")
 
-	v1.GET("/ready", handlers.GetReady)
-
-	// TODO: add an endpoint for getting details from name
-	v1.GET("/presets", handlers.GetPresets)
-	v1.GET("/presets/:id", handlers.GetPresetById)
+	// preset collection
+	v1.GET("/presets", handlers.GetPresetsByNameOrType)
 	v1.POST("/presets", handlers.PostCustomPreset)
-	v1.PATCH("/presets/:id", handlers.PatchCustomPresetById)
-	v1.DELETE("/presets", handlers.DeleteCustomPreset)
-	v1.DELETE("/presets/:id", handlers.DeleteCustomPreset)
 
+	// preset item by id
+	v1.GET("/presets/:id", handlers.GetPresetById)
+	v1.PATCH("/presets/:id", handlers.PatchCustomPresetById)
+	v1.DELETE("/presets/:id", handlers.DeleteCustomPresetById)
+
+	// item (project or file) creation & validation
 	v1.POST("/items", handlers.PostItems)
 	v1.POST("/items/validate", handlers.PostItemsValidate)
 
+	// others
+	v1.GET("/ready", handlers.GetReady)
 	v1.DELETE("/server", handlers.DeleteServer)
 
 	return r

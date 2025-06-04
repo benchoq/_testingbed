@@ -58,6 +58,7 @@ SPDX-License-Identifier: LicenseRef-Qt-Commercial OR LGPL-3.0-only
           <div in:fade={{ duration: 200 }} out:fade={{ duration: 200 }}>
             <IconButton
               icon={PlusOutline}
+              class="px-3 py-2"
               tooltip={texts.wizard.buttons.saveAsTooltip}
               tooltipPlacement="top-end"
               visible={ui.preset.canCreate}

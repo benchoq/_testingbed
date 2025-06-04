@@ -34,13 +34,15 @@ SPDX-License-Identifier: LicenseRef-Qt-Commercial OR LGPL-3.0-only
 <div class={`w-full flex flex-row justify-end gap-2 ${className}`}>
   <IconButton
     icon={TrashBinOutline} flat 
+    class="px-3 py-2"
     visible={ui.preset.canDelete}
     tooltip={texts.wizard.buttons.delete}
     onClicked={() => { openDeleteConfirm = true; }}
   />
 
   <IconButton
-    icon={EditOutline} flat 
+    icon={EditOutline} flat
+    class="px-3 py-2"
     visible={ui.preset.canRename}
     tooltip={texts.wizard.buttons.rename}
     onClicked={() => { openRenameDialog = true; }}
@@ -50,7 +52,7 @@ SPDX-License-Identifier: LicenseRef-Qt-Commercial OR LGPL-3.0-only
   {#if ui.preset.canSave && (Object.keys(data.selected.optionChanges).length !== 0)}
     <div in:fade={{ duration: 200 }} out:fade={{ duration: 200 }}>
       <Button
-        class="qt-button" 
+        class="qt-button py-2"
         on:click={updateCustomPreset}
       >
         {texts.wizard.buttons.update}

@@ -1,0 +1,114 @@
+{
+  "id": "0000000000",
+  "name": "mypreset",
+  "meta": {
+    "type": "file",
+    "title": "Qt Quick application",
+    "description": "Creates a Qt Quick application that can have both QML and C++ code. You can build the application and deploy it to desktop, embedded,  and mobile target platforms."
+  },
+  "prompt": {
+    "version": "1",
+    "steps": [
+      {
+        "id": "qqcStyle",
+        "type": "picker",
+        "question": "Qt Quick Controls style:",
+        "description": "",
+        "value": "",
+        "default": "Material",
+        "when": "",
+        "items": [
+          {
+            "text": "\u003cNone\u003e",
+            "data": "",
+            "description": "",
+            "checked": ""
+          },
+          {
+            "text": "Material",
+            "data": null,
+            "description": "",
+            "checked": ""
+          },
+          {
+            "text": "Universal",
+            "data": null,
+            "description": "",
+            "checked": ""
+          }
+        ],
+        "rules": null
+      },
+      {
+        "id": "qqcTheme",
+        "type": "picker",
+        "question": "Qt Quick Controls theme:",
+        "description": "",
+        "value": "",
+        "default": "Dark",
+        "when": "{{ not (eq .qqcStyle \"\") }}",
+        "items": [
+          {
+            "text": "Light",
+            "data": null,
+            "description": "",
+            "checked": ""
+          },
+          {
+            "text": "Dark",
+            "data": null,
+            "description": "",
+            "checked": ""
+          }
+        ],
+        "rules": null
+      },
+      {
+        "id": "Test Input",
+        "type": "input",
+        "question": "Enter what you like:",
+        "description": "",
+        "value": "ttt",
+        "rules": null
+      },
+      {
+        "id": "Test Confirm",
+        "type": "confirm",
+        "question": "Confirm anything:",
+        "description": "",
+        "rules": null
+      },
+      {
+        "id": "minimumQtVersion2",
+        "type": "picker",
+        "question": "Minimum Qt version:",
+        "description": "",
+        "value": "",
+        "default": "6.5",
+        "when": "",
+        "items": [
+          {
+            "text": "6.5",
+            "data": null,
+            "description": "",
+            "checked": ""
+          },
+          {
+            "text": "6.4",
+            "data": null,
+            "description": "",
+            "checked": ""
+          },
+          {
+            "text": "6.2",
+            "data": null,
+            "description": "",
+            "checked": ""
+          }
+        ],
+        "rules": null
+      }
+    ],
+    "consts": null
+  }
+}

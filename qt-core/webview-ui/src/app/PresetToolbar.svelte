@@ -52,7 +52,7 @@ SPDX-License-Identifier: LicenseRef-Qt-Commercial OR LGPL-3.0-only
 
   <Button
     class={`
-      qt-button
+      qt-button py-1
       transition-opacity duration-200
       ${!saveEnabled ? 'opacity-0 pointer-events-none' : ''}
     `}

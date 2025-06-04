@@ -18,7 +18,7 @@ SPDX-License-Identifier: LicenseRef-Qt-Commercial OR LGPL-3.0-only
     visible = true,
     disabled = false,
     class: className = '',
-    iconOnlyClass = 'p-3',
+    iconOnlyClass = 'p-2',
     onClicked = () => {}
   } = $props();
 

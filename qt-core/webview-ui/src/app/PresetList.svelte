@@ -4,9 +4,9 @@ SPDX-License-Identifier: LicenseRef-Qt-Commercial OR LGPL-3.0-only
 -->
 
 <script lang="ts">
-  import { Listgroup, ListgroupItem, Button } from 'flowbite-svelte';
+  import { Listgroup, ListgroupItem } from 'flowbite-svelte';
 
-  import { data } from './states.svelte';
+  import { data, ui } from './states.svelte';
   import * as viewlogic from './viewlogic.svelte';
 
   const adjustSelectedIndex = (offset: number) => {
@@ -28,6 +28,10 @@ SPDX-License-Identifier: LicenseRef-Qt-Commercial OR LGPL-3.0-only
       adjustSelectedIndex(-1);
     } else if (e.key === 'ArrowDown') {
       adjustSelectedIndex(+1);
+    } else if (e.key === 'Delete') {
+      if (viewlogic.isCustomPreset(data.selected.preset?.name)) {
+        ui.dialogs.confirmDelete = true;
+      }
     } else {
       return;
     }

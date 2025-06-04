@@ -159,7 +159,7 @@ export async function validateInput() {
         if (field === 'workingdir') input.issues.workingDir.loadFrom(item);
       });
 
-      ui.canCreate = !(
+      ui.canCreateItem = !(
         input.issues.name.isError() || input.issues.workingDir.isError()
       );
     }
@@ -218,7 +218,7 @@ export async function updateCustomPreset() {
 
 export async function deleteCustomPreset() {
   const presetId = data.selected.preset?.id;
-  if (!presetId) {
+  if (!presetId || !isCustomPreset(data.selected.preset?.name)) {
     return;
   }
 
@@ -303,7 +303,7 @@ function reportUiError(msg: string, e?: unknown) {
 function clearInputErrors() {
   input.issues.name.clear();
   input.issues.workingDir.clear();
-  ui.canCreate = true;
+  ui.canCreateItem = true;
 }
 
 // loading mask

@@ -43,6 +43,12 @@ export const ui = $state({
     canSave: false,
     canCreate: false
   },
+  
+  dialogs: {
+    inputCreate: false,
+    inputRename: false,
+    confirmDelete: false
+  },
 
-  canCreate: true
+  canCreateItem: true,
 });

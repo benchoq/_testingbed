@@ -55,7 +55,7 @@ SPDX-License-Identifier: LicenseRef-Qt-Commercial OR LGPL-3.0-only
     <IconButton
       text={texts.wizard.buttons.create}
       icon={CheckOutline}
-      disabled={!ui.canCreate}
+      disabled={!ui.canCreateItem}
       onClicked={createItemFromSelectedPreset}
     ></IconButton>
   </div>

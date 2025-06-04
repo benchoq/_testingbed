@@ -10,24 +10,15 @@ SPDX-License-Identifier: LicenseRef-Qt-Commercial OR LGPL-3.0-only
     TrashBinOutline
    } from 'flowbite-svelte-icons';
 
-  import { 
-    updateCustomPreset,
-    renameCustomPreset,
-    deleteCustomPreset,
-  } from './viewlogic.svelte';
+  import { updateCustomPreset } from './viewlogic.svelte';
   import * as texts from './texts';
   import { data, ui } from './states.svelte';
   import IconButton from '@/comps/IconButton.svelte';
-  import InputDialog from '@/comps/InputDialog.svelte';
-  import ConfirmDialog from '@/comps/ConfirmDialog.svelte';
 
   let {
     class: className = ''
   } = $props();
   
-  let openRenameDialog = $state(false);
-  let openDeleteConfirm = $state(false);
-  let newPresetName = $state('');
   let saveEnabled = $derived.by(() => {
     return ui.preset.canSave && (Object.keys(data.selected.unsavedOptionChanges).length !== 0);
   });
@@ -39,14 +30,14 @@ SPDX-License-Identifier: LicenseRef-Qt-Commercial OR LGPL-3.0-only
     icon={TrashBinOutline} flat 
     visible={ui.preset.canDelete}
     tooltip={texts.wizard.buttons.delete}
-    onClicked={() => { openDeleteConfirm = true; }}
+    onClicked={() => { ui.dialogs.confirmDelete = true; }}
   />
 
   <IconButton
     icon={EditOutline} flat
     visible={ui.preset.canRename}
     tooltip={texts.wizard.buttons.rename}
-    onClicked={() => { openRenameDialog = true; }}
+    onClicked={() => { ui.dialogs.inputRename = true; }}
   />
   <div class="grow"></div>
 
@@ -61,23 +52,3 @@ SPDX-License-Identifier: LicenseRef-Qt-Commercial OR LGPL-3.0-only
     {texts.wizard.buttons.update}
   </Button>
 </div>
-
-<!-- dialogs -->
-{#if openRenameDialog}
-  <InputDialog
-    acceptOnEnter
-    bind:open={openRenameDialog}
-    bind:value={newPresetName}
-    text={texts.wizard.enterNewPresetName}
-    onReady={() => { newPresetName = data.selected.preset?.name?? ''; }}
-    onAccepted={() => { renameCustomPreset(newPresetName); }}
-  />
-{/if}
-
-{#if openDeleteConfirm}
-  <ConfirmDialog
-    bind:open={openDeleteConfirm}
-    text={texts.wizard.confirmDeletePreset}
-    onAccepted={deleteCustomPreset}
-  />
-{/if}

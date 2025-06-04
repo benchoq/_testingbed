@@ -8,22 +8,15 @@ SPDX-License-Identifier: LicenseRef-Qt-Commercial OR LGPL-3.0-only
   import { PlusOutline } from 'flowbite-svelte-icons';
 
   import IconButton from '@/comps/IconButton.svelte';
-  import InputDialog from '@/comps/InputDialog.svelte';
   import SectionLabel from '@/comps/SectionLabel.svelte';
   import * as texts from './texts';
   import { ui, data } from './states.svelte';
-  import {
-    isCustomPreset,
-    isDefaultPreset,
-    createCustomPreset
-   } from './viewlogic.svelte';
+  import { isCustomPreset, isDefaultPreset } from './viewlogic.svelte';
   import PresetList from './PresetList.svelte';
   import PresetToolbar from './PresetToolbar.svelte';
   import PresetTypeSelector from './PresetTypeSelector.svelte';
   import PresetOptionsTable from './PresetOptionsTable.svelte';
 
-  let openCreateDialog = $state(false);
-  let newPresetName = $state("my_preset");
   let createEnabled = $derived.by(() => {
     return isDefaultPreset(data.selected.preset?.name) 
           && (Object.keys(data.selected.unsavedOptionChanges).length !== 0);
@@ -64,7 +57,7 @@ SPDX-License-Identifier: LicenseRef-Qt-Commercial OR LGPL-3.0-only
           tooltip={texts.wizard.buttons.saveAsTooltip}
           tooltipPlacement="top-end"
           visible={ui.preset.canCreate}
-          onClicked={() => { openCreateDialog = true; }}
+          onClicked={() => { ui.dialogs.inputCreate = true; }}
         />
       </div>
       <PresetOptionsTable />
@@ -75,13 +68,3 @@ SPDX-License-Identifier: LicenseRef-Qt-Commercial OR LGPL-3.0-only
     {/if}
   </div>
 </div>
-
-{#if openCreateDialog}
-  <InputDialog
-    acceptOnEnter
-    bind:open={openCreateDialog}
-    bind:value={newPresetName}
-    text={texts.wizard.enterNewPresetName}
-    onAccepted={() => { createCustomPreset(newPresetName); }}
-  />
-{/if}

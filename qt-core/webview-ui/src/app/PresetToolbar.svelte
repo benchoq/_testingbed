@@ -4,7 +4,6 @@ SPDX-License-Identifier: LicenseRef-Qt-Commercial OR LGPL-3.0-only
 -->
 
 <script lang="ts">
-  import { fade } from 'svelte/transition';
   import { Button } from 'flowbite-svelte';
   import { 
     EditOutline, 
@@ -29,12 +28,15 @@ SPDX-License-Identifier: LicenseRef-Qt-Commercial OR LGPL-3.0-only
   let openRenameDialog = $state(false);
   let openDeleteConfirm = $state(false);
   let newPresetName = $state('');
+  let saveEnabled = $derived.by(() => {
+    return ui.preset.canSave && (Object.keys(data.selected.optionChanges).length !== 0);
+  });
+
 </script>
 
 <div class={`w-full flex flex-row justify-end gap-2 ${className}`}>
   <IconButton
     icon={TrashBinOutline} flat 
-    class="px-3 py-2"
     visible={ui.preset.canDelete}
     tooltip={texts.wizard.buttons.delete}
     onClicked={() => { openDeleteConfirm = true; }}
@@ -42,23 +44,22 @@ SPDX-License-Identifier: LicenseRef-Qt-Commercial OR LGPL-3.0-only
 
   <IconButton
     icon={EditOutline} flat
-    class="px-3 py-2"
     visible={ui.preset.canRename}
     tooltip={texts.wizard.buttons.rename}
     onClicked={() => { openRenameDialog = true; }}
   />
   <div class="grow"></div>
 
-  {#if ui.preset.canSave && (Object.keys(data.selected.optionChanges).length !== 0)}
-    <div in:fade={{ duration: 200 }} out:fade={{ duration: 200 }}>
-      <Button
-        class="qt-button py-2"
-        on:click={updateCustomPreset}
-      >
-        {texts.wizard.buttons.update}
-      </Button>
-    </div>
-  {/if}
+  <Button
+    class={`
+      qt-button
+      transition-opacity duration-200
+      ${!saveEnabled ? 'opacity-0 pointer-events-none' : ''}
+    `}
+    on:click={updateCustomPreset}
+  >
+    {texts.wizard.buttons.update}
+  </Button>
 </div>
 
 <!-- dialogs -->

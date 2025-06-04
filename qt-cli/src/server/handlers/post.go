@@ -125,7 +125,7 @@ func PostCustomPreset(c *gin.Context) {
 		return
 	}
 
-	src, err := runner.Presets.Default.FindByUniqueId(req.PresetId)
+	src, err := runner.Presets.Any.FindByUniqueId(req.PresetId)
 	if err != nil {
 		ReplyErrorMsg(c, err.Error())
 		return

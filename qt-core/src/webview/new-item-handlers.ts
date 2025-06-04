@@ -135,6 +135,8 @@ export class NewItemCommandHandler {
   }
 
   private readonly onUiRenameCustomPreset = async (cmd: Command) => {
+    console.log("--------", cmd.payload)
+
     const id = _.get(cmd.payload, 'presetId', '');
     await this._qtcliRest.post('/presets', cmd.payload);
     await this._qtcliRest.delete(`/presets/${id}`);

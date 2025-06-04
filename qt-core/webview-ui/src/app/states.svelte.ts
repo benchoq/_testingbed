@@ -14,7 +14,7 @@ export const data = $state({
     type: 'project',
     preset: undefined as Preset | undefined,
     presetIndex: -1,
-    optionChanges: {} as Record<string, any>
+    unsavedOptionChanges: {} as Record<string, any>
   },
 });
 

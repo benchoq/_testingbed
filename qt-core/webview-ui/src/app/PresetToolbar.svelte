@@ -29,7 +29,7 @@ SPDX-License-Identifier: LicenseRef-Qt-Commercial OR LGPL-3.0-only
   let openDeleteConfirm = $state(false);
   let newPresetName = $state('');
   let saveEnabled = $derived.by(() => {
-    return ui.preset.canSave && (Object.keys(data.selected.optionChanges).length !== 0);
+    return ui.preset.canSave && (Object.keys(data.selected.unsavedOptionChanges).length !== 0);
   });
 
 </script>

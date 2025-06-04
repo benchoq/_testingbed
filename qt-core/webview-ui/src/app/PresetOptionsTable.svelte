@@ -20,7 +20,7 @@ SPDX-License-Identifier: LicenseRef-Qt-Commercial OR LGPL-3.0-only
 
   const steps = $derived(data.selected.preset?.prompt?.steps);
   function onValueChanged(step: PresetPromptStep, value: any) {
-    data.selected.optionChanges[step.id] = value;
+    data.selected.unsavedOptionChanges[step.id] = value;
   }
 </script>
 

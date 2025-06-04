@@ -89,7 +89,7 @@ export async function setSelectedPresetAt(index: number) {
   if (preset) {
     data.selected.preset = preset;
     data.selected.presetIndex = index;
-    data.selected.optionChanges = {};
+    data.selected.unsavedOptionChanges = {};
     updateToolbarStates();
 
     await refreshPresetDetails();
@@ -129,7 +129,7 @@ export async function createItemFromSelectedPreset() {
       name: input.name,
       workingDir: input.workingDir,
       presetId: data.selected.preset?.id,
-      options: data.selected.optionChanges,
+      options: $state.snapshot(data.selected.unsavedOptionChanges),
       saveProjectDir: input.saveProjectDir
     });
   } catch (e) {
@@ -168,7 +168,7 @@ export async function validateInput() {
 
 export async function createCustomPreset(name: string) {
   const presetId = data.selected.preset?.id;
-  const options = $state.snapshot(data.selected.optionChanges)
+  const options = $state.snapshot(data.selected.unsavedOptionChanges)
   if (!presetId) {
     return;
   }
@@ -202,14 +202,14 @@ export async function renameCustomPreset(newName: string) {
 
 export async function updateCustomPreset() {
   const presetId = data.selected.preset?.id;
-  const options = $state.snapshot(data.selected.optionChanges)
+  const options = $state.snapshot(data.selected.unsavedOptionChanges)
   if (!presetId || Object.keys(options).length === 0) {
     return;
   }
   
   try {
     const payload = { presetId, options };
-    const r = await vscode.post(CommandId.UiUpdateCustomPreset, payload);
+    await vscode.post(CommandId.UiUpdateCustomPreset, payload);
     await setSelectedPresetAt(data.selected.presetIndex);
   } catch (e) {
     reportUiError('Error saving preset', e);

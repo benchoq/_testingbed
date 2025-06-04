@@ -26,7 +26,7 @@ SPDX-License-Identifier: LicenseRef-Qt-Commercial OR LGPL-3.0-only
   let newPresetName = $state("my_preset");
   let createEnabled = $derived.by(() => {
     return isDefaultPreset(data.selected.preset?.name) 
-          && (Object.keys(data.selected.optionChanges).length !== 0);
+          && (Object.keys(data.selected.unsavedOptionChanges).length !== 0);
   });
 </script>
 

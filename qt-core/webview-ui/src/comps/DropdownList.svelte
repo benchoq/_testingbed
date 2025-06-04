@@ -22,11 +22,6 @@ SPDX-License-Identifier: LicenseRef-Qt-Commercial OR LGPL-3.0-only
     const candidate = Math.max(0, Math.min(i, itemTexts.length - 1));
     if (currentIndex !== candidate) {
       currentIndex = candidate;
-
-      // const target = items[currentIndex];
-      // if (target) {
-      //   target.scrollIntoView({ block: 'nearest' });
-      // }
     }
   }
 

@@ -6,19 +6,24 @@ SPDX-License-Identifier: LicenseRef-Qt-Commercial OR LGPL-3.0-only
 <script lang="ts">
   import { Listgroup, ListgroupItem } from 'flowbite-svelte';
 
-  import { data, ui } from './states.svelte';
+  import { preset, ui } from './states.svelte';
+  import { PresetWrapper } from './types.svelte';
   import * as viewlogic from './viewlogic.svelte';
 
+  let wrappedPresets = $derived.by(() => {
+    return preset.all.map(p => new PresetWrapper(p));
+  });
+
   const adjustSelectedIndex = (offset: number) => {
-    if (!data.selected.preset || data.selected.presetIndex < 0) {
+    if (!preset.selection.isValid() || ui.selectedPresetIndex < 0) {
       return;
     }
 
-    let candidate = data.selected.presetIndex + offset;
+    let candidate = ui.selectedPresetIndex + offset;
     candidate = Math.max(0, candidate);
-    candidate = Math.min(candidate, data.presets.length - 1);
+    candidate = Math.min(candidate, preset.all.length - 1);
 
-    if (candidate != data.selected.presetIndex) {
+    if (candidate != ui.selectedPresetIndex) {
       viewlogic.setSelectedPresetAt(candidate);
     }
   };
@@ -29,8 +34,8 @@ SPDX-License-Identifier: LicenseRef-Qt-Commercial OR LGPL-3.0-only
     } else if (e.key === 'ArrowDown') {
       adjustSelectedIndex(+1);
     } else if (e.key === 'Delete') {
-      if (viewlogic.isCustomPreset(data.selected.preset?.name)) {
-        ui.dialogs.confirmDelete = true;
+      if (preset.selection.isCustomPreset()) {
+        ui.dialogs.deleteConfirm = true;
       }
     } else {
       return;
@@ -39,7 +44,7 @@ SPDX-License-Identifier: LicenseRef-Qt-Commercial OR LGPL-3.0-only
     const el = e.currentTarget as HTMLElement;
     if (el) {
       const items = el?.querySelectorAll('button');
-      const item = items[data.selected.presetIndex];
+      const item = items[ui.selectedPresetIndex];
       if (item instanceof HTMLButtonElement) {
         item.focus();
       }
@@ -54,22 +59,22 @@ SPDX-License-Identifier: LicenseRef-Qt-Commercial OR LGPL-3.0-only
     onkeydown={onKeyPressed}
     tabindex={0}
   >
-    {#each data.presets as preset, index (index)}
+    {#each wrappedPresets as preset, index (index)}
       <ListgroupItem
-        class="qt-list-item flex flex-row"
+        class="qt-list-item flex flex-row"itemText
         currentClass="selected"
-        current={data.selected.presetIndex === index}
+        current={ui.selectedPresetIndex === index}
         on:click={() => {
           viewlogic.setSelectedPresetAt(index);
         }}
       >
         <div class="flex-1">
-          {viewlogic.createPresetDisplayText(preset)}
+          {preset.itemText}
         </div>
 
-        {#if viewlogic.isCustomPreset(preset.name)}
+        {#if preset.isCustomPreset()}
           <div class="ml-auto mr-0.5 qt-badge flex flex-row gap-2">
-            {preset.meta.title}
+            {preset.title}
           </div>
         {:else}
           <div></div>

@@ -10,16 +10,16 @@ SPDX-License-Identifier: LicenseRef-Qt-Commercial OR LGPL-3.0-only
   import IconButton from '@/comps/IconButton.svelte';
   import SectionLabel from '@/comps/SectionLabel.svelte';
   import * as texts from './texts';
-  import { ui, data } from './states.svelte';
-  import { isCustomPreset, isDefaultPreset } from './viewlogic.svelte';
+  import { ui, preset } from './states.svelte';
   import PresetList from './PresetList.svelte';
   import PresetToolbar from './PresetToolbar.svelte';
   import PresetTypeSelector from './PresetTypeSelector.svelte';
   import PresetOptionsTable from './PresetOptionsTable.svelte';
 
   let createEnabled = $derived.by(() => {
-    return isDefaultPreset(data.selected.preset?.name) 
-          && (Object.keys(data.selected.unsavedOptionChanges).length !== 0);
+    return preset.selection.isDefaultPreset() 
+      && preset.selection.hasSteps()
+      && (Object.keys(ui.unsavedOptionChanges).length !== 0);
   });
 </script>
 
@@ -37,15 +37,12 @@ SPDX-License-Identifier: LicenseRef-Qt-Commercial OR LGPL-3.0-only
     <SectionLabel text={texts.wizard.description} />
     <div>
       <P class="qt-label whitespace-pre-wrap leading-relaxed"
-        >{(data.selected.preset?.meta?.description ?? '').replaceAll(
-          '\n',
-          '\n\n'
-        )}
+        >{preset.selection.description}
       </P>
     </div>
     <div class="flex-grow"></div>
 
-    {#if data.selected.preset?.prompt?.steps}
+    {#if preset.selection.steps}
       <div class="w-full flex items-end justify-between mb-2">
         <div><SectionLabel text={texts.wizard.options} /></div>
         <IconButton
@@ -56,14 +53,13 @@ SPDX-License-Identifier: LicenseRef-Qt-Commercial OR LGPL-3.0-only
           `}
           tooltip={texts.wizard.buttons.saveAsTooltip}
           tooltipPlacement="top-end"
-          visible={ui.preset.canCreate}
-          onClicked={() => { ui.dialogs.inputCreate = true; }}
+          onClicked={() => { ui.dialogs.createInput = true; }}
         />
       </div>
       <PresetOptionsTable />
     {/if}
 
-    {#if isCustomPreset(data.selected.preset?.name)}
+    {#if preset.selection.isCustomPreset()}
       <PresetToolbar class="mt-2"/>
     {/if}
   </div>

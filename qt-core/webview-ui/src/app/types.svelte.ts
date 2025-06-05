@@ -6,11 +6,20 @@ import _ from 'lodash';
 export interface Preset {
   id: string;
   name: string;
-  meta: {
-    title: string;
-    description: string;
-  };
+  meta: PresetMeta;
   prompt?: PresetPrompt;
+}
+
+export interface PresetMeta {
+  type: string;
+  title: string;
+  description: string;
+}
+
+export interface PresetPrompt {
+  version: string;
+  steps: PresetPromptStep[];
+  consts: object[];
 }
 
 export interface PresetPromptStep {
@@ -30,10 +39,43 @@ export interface PresetPromptListItem {
   checked: string
 }
 
-export interface PresetPrompt {
-  version: string;
-  steps: PresetPromptStep[];
-  consts: object[];
+export class PresetWrapper {
+  private _raw = $state(undefined as Preset | undefined);
+
+  constructor(data?: Preset) {
+    this.setData(data);
+  }
+
+  get id() { return this._raw?.id ?? ''; }
+  get name() { return this._raw?.name ?? ''; }
+  get title() { return this._raw?.meta.title; }
+  get description() { return this._raw?.meta.description?? ''; }
+  get steps() { return this._raw?.prompt?.steps; }
+  get itemText() {
+    if (this.isValid() && this.isDefaultPreset() && this._raw?.meta.title) {
+      return this._raw?.meta.title;
+    }
+    
+    return this.name;
+  }
+  
+  public isValid() { return this._raw !== undefined; }
+  
+  public isCustomPreset() {
+    return this.name.length > 0 && !this.name.startsWith("@")
+  }
+
+  public isDefaultPreset() {
+    return this.name.length > 0 && this.name.startsWith("@")
+  }
+
+  public hasSteps() {
+    return (this.steps !== undefined) && (this.steps.length > 0);
+  }
+
+  public setData(data: Preset | undefined) {
+    this._raw = data;
+  }
 }
 
 export class InputIssue {

@@ -9,7 +9,7 @@ SPDX-License-Identifier: LicenseRef-Qt-Commercial OR LGPL-3.0-only
 }
 
 .qt-backdrop {
-  @apply bg-black/50;
+  @apply bg-black/60;
 }
 
 .qt-roundness {

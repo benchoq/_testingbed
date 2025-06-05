@@ -9,7 +9,7 @@ SPDX-License-Identifier: LicenseRef-Qt-Commercial OR LGPL-3.0-only
 
   import InputWithIssue from '@/comps/InputWithIssue.svelte';
   import * as texts from './texts';
-  import { input } from './states.svelte';
+  import { ui } from './states.svelte';
   import { onWorkingDirBrowseClicked, validateInput } from './viewlogic.svelte';
 </script>
 
@@ -22,9 +22,9 @@ SPDX-License-Identifier: LicenseRef-Qt-Commercial OR LGPL-3.0-only
   </Button>
 
   <InputWithIssue
-    bind:value={input.workingDir}
+    bind:value={ui.input.workingDir}
     onInput={validateInput}
-    level={input.issues.workingDir.level}
-    message={input.issues.workingDir.message}
+    level={ui.input.issues.workingDir.level}
+    message={ui.input.issues.workingDir.message}
   />
 </div>

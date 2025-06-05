@@ -2,7 +2,7 @@
 // SPDX-License-Identifier: LicenseRef-Qt-Commercial OR LGPL-3.0-only
 
 import { CommandId } from '@shared/message';
-import { data } from '@/app/states.svelte';
+import { preset } from '@/app/states.svelte';
 import _presetsFile from './data/_presets_file.json';
 import _presetsProject from './data/_presets_project.json';
 import _presetCppQtQuick from './data/_preset_cppqtquick.json';
@@ -28,7 +28,7 @@ class MockHandler {
       }
 
       case CommandId.UiGetPresetById: {
-        if (data.selected.preset?.name === 'ttt') {
+        if (preset.selection.name === 'ttt') {
           return _presetCustom as T;
         } else {
           return _presetCppQtQuick as T;

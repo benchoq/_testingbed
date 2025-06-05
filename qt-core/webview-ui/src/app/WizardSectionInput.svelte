@@ -12,7 +12,7 @@ SPDX-License-Identifier: LicenseRef-Qt-Commercial OR LGPL-3.0-only
   import InputWithIssue from '@/comps/InputWithIssue.svelte';
   import WorkingDirInput from './WorkingDirInput.svelte';
   import * as texts from './texts';
-  import { data, input, ui } from './states.svelte';
+  import { ui } from './states.svelte';
   import {
     createItemFromSelectedPreset,
     validateInput
@@ -30,10 +30,10 @@ SPDX-License-Identifier: LicenseRef-Qt-Commercial OR LGPL-3.0-only
 
   <P class="qt-label pl-4">{texts.wizard.name}</P>
   <InputWithIssue
-    bind:value={input.name}
+    bind:value={ui.input.name}
     onInput={validateInput}
-    level={input.issues.name.level}
-    message={input.issues.name.message}
+    level={ui.input.issues.name.level}
+    message={ui.input.issues.name.message}
   />
 
   <P class="qt-label pl-4">{texts.wizard.workingDir}</P>
@@ -41,10 +41,10 @@ SPDX-License-Identifier: LicenseRef-Qt-Commercial OR LGPL-3.0-only
 
   <div></div>
   <div class="flex flex-row gap-2">
-    {#if data.selected.type === 'project'}
+    {#if ui.selectedType === 'project'}
       <Checkbox
         class="self-start qt-checkbox grow"
-        bind:checked={input.saveProjectDir}
+        bind:checked={ui.input.saveProjectDir}
       >
         {texts.wizard.workingDirSaveCheckbox}
       </Checkbox>

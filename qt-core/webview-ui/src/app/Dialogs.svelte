@@ -10,7 +10,7 @@ SPDX-License-Identifier: LicenseRef-Qt-Commercial OR LGPL-3.0-only
     createCustomPreset,
   } from './viewlogic.svelte';
   import * as texts from './texts';
-  import { data, ui } from './states.svelte';
+  import { preset, ui } from './states.svelte';
   import InputDialog from '@/comps/InputDialog.svelte';
   import ConfirmDialog from '@/comps/ConfirmDialog.svelte';
   
@@ -18,29 +18,29 @@ SPDX-License-Identifier: LicenseRef-Qt-Commercial OR LGPL-3.0-only
   let presetNameCreate = $state("my_preset");
 </script>
 
-{#if ui.dialogs.inputRename}
+{#if ui.dialogs.renameInput}
   <InputDialog
     acceptOnEnter
-    bind:open={ui.dialogs.inputRename}
+    bind:open={ui.dialogs.renameInput}
     bind:value={presetNameRename}
     text={texts.wizard.enterNewPresetName}
-    onReady={() => { presetNameRename = data.selected.preset?.name?? ''; }}
+    onReady={() => { presetNameRename = preset.selection.name?? ''; }}
     onAccepted={() => { renameCustomPreset(presetNameRename); }}
   />
 {/if}
 
-{#if ui.dialogs.confirmDelete}
+{#if ui.dialogs.deleteConfirm}
   <ConfirmDialog
-    bind:open={ui.dialogs.confirmDelete}
+    bind:open={ui.dialogs.deleteConfirm}
     text={texts.wizard.confirmDeletePreset}
     onAccepted={deleteCustomPreset}
   />
 {/if}
 
-{#if ui.dialogs.inputCreate}
+{#if ui.dialogs.createInput}
   <InputDialog
     acceptOnEnter
-    bind:open={ui.dialogs.inputCreate}
+    bind:open={ui.dialogs.createInput}
     bind:value={presetNameCreate}
     text={texts.wizard.enterNewPresetName}
     onAccepted={() => { createCustomPreset(presetNameCreate); }}

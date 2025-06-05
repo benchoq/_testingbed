@@ -12,7 +12,7 @@ SPDX-License-Identifier: LicenseRef-Qt-Commercial OR LGPL-3.0-only
 
   import { updateCustomPreset } from './viewlogic.svelte';
   import * as texts from './texts';
-  import { data, ui } from './states.svelte';
+  import { preset, ui } from './states.svelte';
   import IconButton from '@/comps/IconButton.svelte';
 
   let {
@@ -20,7 +20,8 @@ SPDX-License-Identifier: LicenseRef-Qt-Commercial OR LGPL-3.0-only
   } = $props();
   
   let saveEnabled = $derived.by(() => {
-    return ui.preset.canSave && (Object.keys(data.selected.unsavedOptionChanges).length !== 0);
+    return preset.selection.isCustomPreset() 
+      && (Object.keys(ui.unsavedOptionChanges).length !== 0);
   });
 
 </script>
@@ -28,16 +29,16 @@ SPDX-License-Identifier: LicenseRef-Qt-Commercial OR LGPL-3.0-only
 <div class={`w-full flex flex-row justify-end gap-2 ${className}`}>
   <IconButton
     icon={TrashBinOutline} flat 
-    visible={ui.preset.canDelete}
+    visible={preset.selection.isCustomPreset()}
     tooltip={texts.wizard.buttons.delete}
-    onClicked={() => { ui.dialogs.confirmDelete = true; }}
+    onClicked={() => { ui.dialogs.deleteConfirm = true; }}
   />
 
   <IconButton
     icon={EditOutline} flat
-    visible={ui.preset.canRename}
+    visible={preset.selection.isCustomPreset()}
     tooltip={texts.wizard.buttons.rename}
-    onClicked={() => { ui.dialogs.inputRename = true; }}
+    onClicked={() => { ui.dialogs.renameInput = true; }}
   />
   <div class="grow"></div>
 

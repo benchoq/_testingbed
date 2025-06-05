@@ -9,7 +9,7 @@ SPDX-License-Identifier: LicenseRef-Qt-Commercial OR LGPL-3.0-only
   import StepInput from './StepInput.svelte';
   import StepPicker from './StepPicker.svelte';
   import StepConfirm from './StepConfirm.svelte';
-  import { data } from './states.svelte';
+  import { ui, preset } from './states.svelte';
   import type { PresetPromptStep } from './types.svelte';
 
   const stepComponents: Record<string, any> = {
@@ -18,15 +18,14 @@ SPDX-License-Identifier: LicenseRef-Qt-Commercial OR LGPL-3.0-only
     confirm: StepConfirm
   };
 
-  const steps = $derived(data.selected.preset?.prompt?.steps);
   function onValueChanged(step: PresetPromptStep, value: any) {
-    data.selected.unsavedOptionChanges[step.id] = value;
+    ui.unsavedOptionChanges[step.id] = value;
   }
 </script>
 
-{#if steps}
+{#if preset.selection.steps}
   <div class="grid grid-cols-[1fr_max-content] gap-1">
-    {#each steps as step (step.id)}
+    {#each preset.selection.steps as step (step.id)}
       <P class="qt-label">{step.question}</P>
       {#if step.type in stepComponents}
       {@const StepComp = stepComponents[step.type]}

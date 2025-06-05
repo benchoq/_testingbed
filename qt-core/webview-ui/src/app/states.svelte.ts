@@ -1,7 +1,7 @@
 // Copyright (C) 2025 The Qt Company Ltd.
 // SPDX-License-Identifier: LicenseRef-Qt-Commercial OR LGPL-3.0-only
 
-import { type Preset, InputIssue } from './types.svelte';
+import { type Preset, PresetWrapper, InputIssue } from './types.svelte';
 
 export const data = $state({
   serverReady: false,
@@ -9,24 +9,11 @@ export const data = $state({
     newFileBaseDir: '',
     newProjectBaseDir: ''
   },
-  presets: [] as Preset[],
-  selected: {
-    type: 'project',
-    preset: undefined as Preset | undefined,
-    presetIndex: -1,
-    unsavedOptionChanges: {} as Record<string, any>
-  },
 });
 
-export const input = $state({
-  name: 'untitled',
-  workingDir: '',
-  saveProjectDir: false,
-
-  issues: {
-    name: new InputIssue(),
-    workingDir: new InputIssue()
-  }
+export const preset = $state({
+  all: [] as Preset[],
+  selection: new PresetWrapper()
 });
 
 export const ui = $state({
@@ -37,18 +24,24 @@ export const ui = $state({
     delayedTimerId: null as NodeJS.Timeout | null
   },
 
-  preset: {
-    canDelete: false,
-    canRename: false,
-    canSave: false,
-    canCreate: false
+  dialogs: {
+    createInput: false,
+    renameInput: false,
+    deleteConfirm: false
   },
   
-  dialogs: {
-    inputCreate: false,
-    inputRename: false,
-    confirmDelete: false
+  input: {
+    name: 'untitled',
+    workingDir: '',
+    saveProjectDir: false,
+    issues: {
+      name: new InputIssue(),
+      workingDir: new InputIssue()
+    }
   },
 
+  selectedType: 'project',
+  selectedPresetIndex: -1,
+  unsavedOptionChanges: {} as Record<string, any>,
   canCreateItem: true,
 });

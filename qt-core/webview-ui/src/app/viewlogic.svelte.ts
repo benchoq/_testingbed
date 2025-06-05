@@ -4,8 +4,8 @@
 import { vscode } from '@/app/vscode';
 import { isErrorResponse } from '@shared/types';
 import { type CommandReply, CommandId } from '@shared/message';
-import { type Preset, isPreset, isPresetArray } from './types.svelte';
-import { data, input, ui } from './states.svelte';
+import { isPreset, isPresetArray } from './types.svelte';
+import { data, preset, ui } from './states.svelte';
 
 export async function onAppMount() {
   vscode.onDidReceiveNotification(async (r: CommandReply) => {
@@ -45,10 +45,10 @@ export function onModalClosed() {
 
 export function onWorkingDirBrowseClicked() {
   void vscode
-    .post(CommandId.UiSelectWorkingDir, input.workingDir)
+    .post(CommandId.UiSelectWorkingDir, ui.input.workingDir)
     .then((data) => {
-      if (typeof data === 'string' && input.workingDir != data) {
-        input.workingDir = data;
+      if (typeof data === 'string' && ui.input.workingDir != data) {
+        ui.input.workingDir = data;
         void validateInput();
       }
     })
@@ -58,8 +58,8 @@ export function onWorkingDirBrowseClicked() {
 }
 
 export async function setPresetType(type: string) {
-  if (data.selected.type !== type) {
-    data.selected.type = type;
+  if (ui.selectedType !== type) {
+    ui.selectedType = type;
     loadDefaultWorkingDir();
 
     try {
@@ -75,7 +75,7 @@ export async function setPresetType(type: string) {
 }
 
 export async function setSelectedPresetByName(name: string) {
-  const index = data.presets.findIndex(p => p.name === name);
+  const index = preset.all.findIndex(p => p.name === name);
   if (index !== -1) {
     setSelectedPresetAt(index);
   }
@@ -83,54 +83,51 @@ export async function setSelectedPresetByName(name: string) {
 
 export async function setSelectedPresetAt(index: number) {
   if (!data.serverReady) return;
-  if (index < 0 || index >= data.presets.length) return;
+  if (index < 0 || index >= preset.all.length) return;
 
-  const preset = data.presets[index];
-  if (preset) {
-    data.selected.preset = preset;
-    data.selected.presetIndex = index;
-    data.selected.unsavedOptionChanges = {};
-    updateToolbarStates();
+  const p = preset.all[index];
+  if (p) {
+    ui.selectedPresetIndex = index;
+    ui.unsavedOptionChanges = {};
+    preset.selection.setData(p);
 
     await refreshPresetDetails();
   }
 }
 
 async function refreshPresetDetails() {
-  const preset = data.selected.preset;
-  if (!preset) {
+  if (!preset.selection.isValid()) {
     return;
   }
 
-  if (preset.id.length > 0) {
-    try {
-      const r = await vscode.post(CommandId.UiGetPresetById, preset.id);
-      if (isPreset(r)) {
-        data.selected.preset = r;
-        updateToolbarStates();
-      }
-    } catch (e) {
-      reportUiError('Error getting preset by id', e);
+  try {
+    const id = preset.selection.id;
+    if (id.length === 0) {
+      return;
     }
+
+    const r = await vscode.post(CommandId.UiGetPresetById, id);
+    if (isPreset(r)) {
+      preset.selection.setData(r);
+    }
+  } catch (e) {
+    reportUiError('Error getting preset by id', e);
   }
 }
 
-export function createPresetDisplayText(preset: Preset | undefined): string {
-  if (!preset) return '';
-  return isDefaultPreset(preset.name) ? preset.meta.title : preset.name;
-}
-
 export async function createItemFromSelectedPreset() {
-  if (!data.selected.preset) return;
+   if (!preset.selection.isValid()) {
+    return;
+  }
 
   try {
     await vscode.post(CommandId.UiItemCreationRequested, {
-      type: data.selected.type,
-      name: input.name,
-      workingDir: input.workingDir,
-      presetId: data.selected.preset?.id,
-      options: $state.snapshot(data.selected.unsavedOptionChanges),
-      saveProjectDir: input.saveProjectDir
+      type: ui.selectedType,
+      name: ui.input.name,
+      workingDir: ui.input.workingDir,
+      presetId: preset.selection.id,
+      options: $state.snapshot(ui.unsavedOptionChanges),
+      saveProjectDir: ui.input.saveProjectDir
     });
   } catch (e) {
     reportUiError('Error creating item', e);
@@ -141,9 +138,9 @@ export async function validateInput() {
   if (!data.serverReady) return;
 
   const payload = {
-    name: input.name,
-    workingDir: input.workingDir,
-    presetId: data.selected.preset?.id
+    name: ui.input.name,
+    workingDir: ui.input.workingDir,
+    presetId: preset.selection.id
   };
 
   try {
@@ -155,20 +152,20 @@ export async function validateInput() {
     if (isErrorResponse(e)) {
       e.details?.forEach(function (item) {
         const field = item.field.toLowerCase();
-        if (field === 'name') input.issues.name.loadFrom(item);
-        if (field === 'workingdir') input.issues.workingDir.loadFrom(item);
+        if (field === 'name') ui.input.issues.name.loadFrom(item);
+        if (field === 'workingdir') ui.input.issues.workingDir.loadFrom(item);
       });
 
       ui.canCreateItem = !(
-        input.issues.name.isError() || input.issues.workingDir.isError()
+        ui.input.issues.name.isError() || ui.input.issues.workingDir.isError()
       );
     }
   }
 }
 
 export async function createCustomPreset(name: string) {
-  const presetId = data.selected.preset?.id;
-  const options = $state.snapshot(data.selected.unsavedOptionChanges)
+  const presetId = preset.selection.id;
+  const options = $state.snapshot(ui.unsavedOptionChanges)
   if (!presetId) {
     return;
   }
@@ -185,7 +182,7 @@ export async function createCustomPreset(name: string) {
 
 
 export async function renameCustomPreset(newName: string) {
-  const presetId = data.selected.preset?.id;
+  const presetId = preset.selection.id;
   if (!presetId || newName.length === 0) {
     return;
   }
@@ -201,8 +198,8 @@ export async function renameCustomPreset(newName: string) {
 }
 
 export async function updateCustomPreset() {
-  const presetId = data.selected.preset?.id;
-  const options = $state.snapshot(data.selected.unsavedOptionChanges)
+  const presetId = preset.selection.id;
+  const options = $state.snapshot(ui.unsavedOptionChanges)
   if (!presetId || Object.keys(options).length === 0) {
     return;
   }
@@ -210,61 +207,35 @@ export async function updateCustomPreset() {
   try {
     const payload = { presetId, options };
     await vscode.post(CommandId.UiUpdateCustomPreset, payload);
-    await setSelectedPresetAt(data.selected.presetIndex);
+    await setSelectedPresetAt(ui.selectedPresetIndex);
   } catch (e) {
     reportUiError('Error saving preset', e);
   }
 }
 
 export async function deleteCustomPreset() {
-  const presetId = data.selected.preset?.id;
-  if (!presetId || !isCustomPreset(data.selected.preset?.name)) {
+  const presetId = preset.selection.id;
+  if (!presetId || !preset.selection.isCustomPreset()) {
     return;
   }
 
   try {
     await vscode.post(CommandId.UiDeleteCustomPreset, presetId);
     await loadPresets();
-    await setSelectedPresetAt(Math.max(0, data.selected.presetIndex - 1));
+    await setSelectedPresetAt(Math.max(0, ui.selectedPresetIndex - 1));
   } catch (e) {
     reportUiError('Error deleting preset', e);
   }
 }
 
-export function isDefaultPreset(name: string | undefined): boolean {
-  return ((name !== undefined) && name.startsWith('@'));
-}
-
-export function isCustomPreset(name: string | undefined): boolean {
-  return ((name !== undefined) && !name.startsWith('@'));
-}
-
 // helpers
-function updateToolbarStates() {
-  if (data.selected.preset === undefined) {
-    ui.preset.canDelete = false;
-    ui.preset.canRename = false;
-    ui.preset.canSave = false;
-    ui.preset.canCreate = false;
-    return;
-  }
-
-  const steps = data.selected.preset.prompt?.steps;
-  const custom = isCustomPreset(data.selected.preset.name);
-
-  ui.preset.canDelete = custom;
-  ui.preset.canRename = custom;
-  ui.preset.canSave = custom;
-  ui.preset.canCreate = !custom && (steps !== undefined) && (steps.length > 0);
-}
-
 async function loadPresets() {
   if (!data.serverReady) return;
 
   try {
-    const r = await vscode.post(CommandId.UiGetAllPresets, data.selected.type);
+    const r = await vscode.post(CommandId.UiGetAllPresets, ui.selectedType);
     if (isPresetArray(r)) {
-      data.presets = r;
+      preset.all = r;
     }
   } catch (e) {
     reportUiError('Error loading presets', e);
@@ -272,24 +243,24 @@ async function loadPresets() {
 }
 
 function loadDefaultWorkingDir() {
-  let candidate = input.workingDir;
+  let candidate = ui.input.workingDir;
 
   if (import.meta.env.DEV) {
     candidate = '/dev';
   } else {
     candidate =
-      data.selected.type === 'file'
+      ui.selectedType === 'file'
         ? data.configs.newFileBaseDir
         : data.configs.newProjectBaseDir;
   }
 
-  if (input.workingDir !== candidate) {
-    input.workingDir = candidate;
+  if (ui.input.workingDir !== candidate) {
+    ui.input.workingDir = candidate;
   }
 }
 
 async function selectAnyPresetAndValidate() {
-  if (data.presets.length > 0) {
+  if (preset.all.length > 0) {
     await setSelectedPresetAt(0);
     await validateInput();
   }
@@ -301,8 +272,8 @@ function reportUiError(msg: string, e?: unknown) {
 }
 
 function clearInputErrors() {
-  input.issues.name.clear();
-  input.issues.workingDir.clear();
+  ui.input.issues.name.clear();
+  ui.input.issues.workingDir.clear();
   ui.canCreateItem = true;
 }
 

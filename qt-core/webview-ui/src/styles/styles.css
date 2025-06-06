@@ -83,7 +83,15 @@ html {
   border: 1px solid var(--qt-widget-borderGuaranteed);
 }
 
-.qt-button.flat:hover {
+.qt-button.inline {
+  color: var(--qt-text-normal);
+  background: transparent;
+  border: none;
+  @apply p-0;
+}
+
+.qt-button.flat:hover
+.qt-button.inline:hover {
   color: var(--qt-button-text);
   background: var(--qt-button-fillHover);
   border: 1px solid var(--qt-widget-border);
@@ -189,10 +197,10 @@ html {
   border-radius: 0px;
   border-width: 1px 0px 1px 0px;
   border-color: transparent;
-  padding: 5px 10px 5px 10px;
   cursor: pointer;
   box-shadow: none;
   @apply text-base font-normal;
+  @apply px-3 py-1.5;
 }
 
 .qt-list-item:hover {
@@ -308,4 +316,13 @@ html {
   border: 1px solid var(--qt-tooltip-border);
   border-radius: var(--qt-border-radius);
   @apply px-4 py-2;
+}
+
+.qt-popover {
+  color: var(--qt-tooltip-text);
+  background: var(--qt-tooltip-fill);
+  border: 1px solid var(--qt-tooltip-border);
+  border-radius: var(--qt-border-radius);
+  @apply p-0 m-0;
+
 }

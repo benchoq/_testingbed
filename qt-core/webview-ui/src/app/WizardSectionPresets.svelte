@@ -4,15 +4,15 @@ SPDX-License-Identifier: LicenseRef-Qt-Commercial OR LGPL-3.0-only
 -->
 
 <script lang="ts">
-  import { P } from 'flowbite-svelte';
+  import { P, Button } from 'flowbite-svelte';
   import { PlusOutline } from 'flowbite-svelte-icons';
 
   import IconButton from '@/comps/IconButton.svelte';
   import SectionLabel from '@/comps/SectionLabel.svelte';
   import * as texts from './texts';
   import { ui, preset } from './states.svelte';
+  import { updateCustomPreset } from './viewlogic.svelte';
   import PresetList from './PresetList.svelte';
-  import PresetToolbar from './PresetToolbar.svelte';
   import PresetTypeSelector from './PresetTypeSelector.svelte';
   import PresetOptionsTable from './PresetOptionsTable.svelte';
 
@@ -21,14 +21,19 @@ SPDX-License-Identifier: LicenseRef-Qt-Commercial OR LGPL-3.0-only
       && preset.selection.hasSteps()
       && (Object.keys(ui.unsavedOptionChanges).length !== 0);
   });
+
+  let saveEnabled = $derived.by(() => {
+    return preset.selection.isCustomPreset() 
+      && (Object.keys(ui.unsavedOptionChanges).length !== 0);
+  });
 </script>
 
 <div
   class={`
-      grow grid gap-2
-      grid-rows-[min-content_1fr] 
-      grid-cols-[min-content_minmax(300px,1fr)_1fr]
-      `}
+    grow grid gap-2
+    grid-rows-[min-content_1fr] 
+    grid-cols-[min-content_minmax(300px,1fr)_1fr]
+    `}
 >
   <SectionLabel text={texts.wizard.presetList} class="w-full col-span-3" />
   <PresetTypeSelector />
@@ -44,23 +49,34 @@ SPDX-License-Identifier: LicenseRef-Qt-Commercial OR LGPL-3.0-only
 
     {#if preset.selection.steps}
       <div class="w-full flex items-end justify-between mb-2">
-        <div><SectionLabel text={texts.wizard.options} /></div>
-        <IconButton
-          icon={PlusOutline}
-          class={`
-            transition-opacity duration-200
-            ${!createEnabled ? 'opacity-0 pointer-events-none' : ''}
-          `}
-          tooltip={texts.wizard.buttons.saveAsTooltip}
-          tooltipPlacement="top-end"
-          onClicked={() => { ui.dialogs.createInput = true; }}
-        />
+        <div>
+          <SectionLabel text={texts.wizard.options} />
+        </div>
+        <div>
+          <IconButton
+            icon={PlusOutline}
+            class={`
+              transition-opacity duration-200
+              ${!createEnabled ? 'opacity-0 pointer-events-none' : ''}
+            `}
+            tooltip={texts.wizard.buttons.saveAsTooltip}
+            tooltipPlacement="top-end"
+            onClicked={() => { ui.dialogs.createInput = true; }}
+          />
+
+          <Button
+            class={`
+              qt-button py-1
+              transition-opacity duration-200
+              ${!saveEnabled ? 'opacity-0 pointer-events-none' : ''}
+            `}
+            on:click={updateCustomPreset}
+          >
+            {texts.wizard.buttons.update}
+          </Button>
+        </div>
       </div>
       <PresetOptionsTable />
-    {/if}
-
-    {#if preset.selection.isCustomPreset()}
-      <PresetToolbar class="mt-2"/>
     {/if}
   </div>
 </div>

@@ -4,11 +4,13 @@ SPDX-License-Identifier: LicenseRef-Qt-Commercial OR LGPL-3.0-only
 -->
 
 <script lang="ts">
-  import { Listgroup, ListgroupItem } from 'flowbite-svelte';
+  import { Listgroup, ListgroupItem, Popover, Dropdown, DropdownItem } from 'flowbite-svelte';
+  import { DotsHorizontalOutline } from 'flowbite-svelte-icons';
 
+  import PresetEditMenu from './PresetEditMenu.svelte';
   import { preset, ui } from './states.svelte';
   import { PresetWrapper } from './types.svelte';
-  import * as viewlogic from './viewlogic.svelte';
+  import { setSelectedPresetAt } from './viewlogic.svelte';
 
   let wrappedPresets = $derived.by(() => {
     return preset.all.map(p => new PresetWrapper(p));
@@ -24,7 +26,7 @@ SPDX-License-Identifier: LicenseRef-Qt-Commercial OR LGPL-3.0-only
     candidate = Math.min(candidate, preset.all.length - 1);
 
     if (candidate != ui.selectedPresetIndex) {
-      viewlogic.setSelectedPresetAt(candidate);
+      setSelectedPresetAt(candidate);
     }
   };
 
@@ -61,11 +63,11 @@ SPDX-License-Identifier: LicenseRef-Qt-Commercial OR LGPL-3.0-only
   >
     {#each wrappedPresets as preset, index (index)}
       <ListgroupItem
-        class="qt-list-item flex flex-row"itemText
+        class="qt-list-item flex flex-row"
         currentClass="selected"
         current={ui.selectedPresetIndex === index}
         on:click={() => {
-          viewlogic.setSelectedPresetAt(index);
+          setSelectedPresetAt(index);
         }}
       >
         <div class="flex-1">
@@ -75,6 +77,15 @@ SPDX-License-Identifier: LicenseRef-Qt-Commercial OR LGPL-3.0-only
         {#if preset.isCustomPreset()}
           <div class="ml-auto mr-0.5 qt-badge flex flex-row gap-2">
             {preset.title}
+            <DotsHorizontalOutline />
+            <!-- <Popover 
+              offset={10}
+              placement="right-start"
+              class="qt-popover"
+            >
+              <PresetToolbar />
+            </Popover> -->
+            <PresetEditMenu />
           </div>
         {:else}
           <div></div>

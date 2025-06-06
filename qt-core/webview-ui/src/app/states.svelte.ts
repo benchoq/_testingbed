@@ -29,6 +29,10 @@ export const ui = $state({
     renameInput: false,
     deleteConfirm: false
   },
+
+  popups: {
+    editCustomPreset: false,
+  },
   
   input: {
     name: 'untitled',

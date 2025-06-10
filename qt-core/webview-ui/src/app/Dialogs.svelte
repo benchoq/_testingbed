@@ -8,6 +8,7 @@ SPDX-License-Identifier: LicenseRef-Qt-Commercial OR LGPL-3.0-only
     renameCustomPreset,
     deleteCustomPreset,
     createCustomPreset,
+    validatePresetName,
   } from './viewlogic.svelte';
   import * as texts from './texts';
   import { preset, ui } from './states.svelte';
@@ -23,8 +24,14 @@ SPDX-License-Identifier: LicenseRef-Qt-Commercial OR LGPL-3.0-only
     acceptOnEnter
     bind:open={ui.dialogs.renameInput}
     bind:value={presetNameRename}
+    message="aaa"
+    level="error"
     text={texts.wizard.enterNewPresetName}
     onReady={() => { presetNameRename = preset.selection.name?? ''; }}
+    onInput={() => {
+      validatePresetName(presetNameRename);
+    }
+    }
     onAccepted={() => { renameCustomPreset(presetNameRename); }}
   />
 {/if}

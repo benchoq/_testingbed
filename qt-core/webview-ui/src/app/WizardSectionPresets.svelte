@@ -52,25 +52,22 @@ SPDX-License-Identifier: LicenseRef-Qt-Commercial OR LGPL-3.0-only
         <div>
           <SectionLabel text={texts.wizard.options} />
         </div>
-        <div>
+        <div class={`
+          flex flex-row transition-opacity duration-200
+          ${!(createEnabled || saveEnabled) ? 'opacity-0 pointer-events-none' : ''}
+          `}
+        >
           <IconButton
             icon={PlusOutline}
-            class={`
-              transition-opacity duration-200
-              ${!createEnabled ? 'opacity-0 pointer-events-none' : ''}
-            `}
             tooltip={texts.wizard.buttons.saveAsTooltip}
             tooltipPlacement="top-end"
+            visible={createEnabled}
             onClicked={() => { ui.dialogs.createInput = true; }}
           />
 
-          <Button
-            class={`
-              qt-button py-1
-              transition-opacity duration-200
-              ${!saveEnabled ? 'opacity-0 pointer-events-none' : ''}
-            `}
+          <Button class="qt-button"
             on:click={updateCustomPreset}
+            hidden={!saveEnabled}
           >
             {texts.wizard.buttons.update}
           </Button>

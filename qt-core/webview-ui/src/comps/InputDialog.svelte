@@ -15,13 +15,17 @@ SPDX-License-Identifier: LicenseRef-Qt-Commercial OR LGPL-3.0-only
     acceptText = 'Okay',
     rejectText = 'Cancel',
     value = $bindable(""),
+    level = '',
+    message = undefined,
     acceptOnEnter = false,
     onReady = () => {},
+    onInput = () => {},
     onAccepted = (input: string) => {},
     onRejected = () => {}
   } = $props();
 
   let inputComp: InputWithIssue | undefined;
+  let acceptable = $derived(level !== 'error');
 
   function onAcceptClicked() {
     open = false;
@@ -63,8 +67,10 @@ SPDX-License-Identifier: LicenseRef-Qt-Commercial OR LGPL-3.0-only
     <InputWithIssue
       class="qt-input"
       bind:this={inputComp}
-      bind:value={value}
-      onInput={() => {}}
+      bind:value
+      bind:level
+      bind:message
+      onInput={onInput}
       onEnter={onEnter}
     />
 
@@ -73,7 +79,10 @@ SPDX-License-Identifier: LicenseRef-Qt-Commercial OR LGPL-3.0-only
       <Button class="qt-button min-w-[75px] flat" on:click={onRejectClicked}>
         {rejectText}
       </Button>
-      <Button class="qt-button min-w-[75px]" on:click={onAcceptClicked}>
+      <Button 
+        class='qt-button min-w-[75px]'
+        disabled={!acceptable}
+        on:click={onAcceptClicked}>
         {acceptText}
       </Button>
     </div>

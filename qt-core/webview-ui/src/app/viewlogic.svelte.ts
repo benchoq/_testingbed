@@ -228,6 +228,10 @@ export async function deleteCustomPreset() {
   }
 }
 
+export function validatePresetName(name: string) {
+  console.log("aa", name)
+}
+
 // helpers
 async function loadPresets() {
   if (!data.serverReady) return;

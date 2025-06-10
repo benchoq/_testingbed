@@ -9,6 +9,7 @@ SPDX-License-Identifier: LicenseRef-Qt-Commercial OR LGPL-3.0-only
 
   let {
     itemTexts = [] as string[],
+    offset = -1,
     currentIndex = -1,
     onRejected = () => {},
     onAccepted = (i: number) => {},
@@ -76,14 +77,14 @@ SPDX-License-Identifier: LicenseRef-Qt-Commercial OR LGPL-3.0-only
   class="qt-dropdown-wrapper max-h-[200px] z-[100]"
   style={`position: absolute; 
     left: ${triggerRect.left}px; 
-    top: ${triggerRect.bottom}px; 
+    top: ${triggerRect.bottom + offset}px; 
     width: ${triggerRect.width}px;`}
 >
   {#each itemTexts as text, i (i)}
     <P
       bind:this={items[i]}
       role="option"
-      class={`qt-list-item ${i === currentIndex ? 'selected' : ''}`}
+      class={`qt-dropdown-item ${i === currentIndex ? 'selected' : ''}`}
       onclick={() => onItemClicked(i)}
     >
       {text}

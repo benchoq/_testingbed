@@ -17,6 +17,7 @@ SPDX-License-Identifier: LicenseRef-Qt-Commercial OR LGPL-3.0-only
 
 <Modal
   open
+  dismissable={false}
   size="lg"
   color="none"
   class="qt-modal w-[80vw] h-[90vh] min-w-[500px] min-h-[500px]"

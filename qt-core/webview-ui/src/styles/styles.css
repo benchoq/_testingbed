@@ -229,7 +229,7 @@ html {
 }
 
 /* dropdown (i.e. combobox) */
-.qt-dropdown {
+.qt-dropdown-trigger {
   color: var(--qt-dropdown-text);
   background-color: var(--qt-dropdown-fill);
   border-color: var(--qt-widget-border);
@@ -241,8 +241,12 @@ html {
   @apply px-2;
 }
 
-.qt-dropdown:hover {
-  background-color: var(--qt-dropdown-fillHover);
+.qt-dropdown-trigger.open,
+.qt-dropdown-trigger:hover {
+  color: var(--qt-itemSelection-text);
+  background-color: var(--qt-itemSelection-fill);
+  border-color: var(--qt-widget-border);
+  /* background-color: var(--qt-dropdown-fillHover); */
 }
 
 .qt-dropdown-wrapper {
@@ -252,6 +256,24 @@ html {
   border-radius: var(--qt-border-radius);
   @apply shadow-md;
   @apply overflow-y-auto;
+}
+
+.qt-dropdown-item {
+  color: var(--qt-item-text);
+  background-color: var(--qt-item-fill);
+  border-radius: 0px;
+  border-width: 0px;
+  border-color: transparent;
+  cursor: pointer;
+  box-shadow: none;
+  @apply text-base font-normal;
+  @apply px-3 py-1.5;
+}
+
+.qt-dropdown-item:hover {
+  color: var(--qt-itemSelection-text);
+  background-color: var(--qt-itemSelection-fill);
+  border-color: var(--qt-widget-border);
 }
 
 /* vertical tab */
@@ -300,12 +322,6 @@ html {
 }
 
 /* others */
-.qt-simple-table {
-  color: var(--qt-widget-separator);
-  @apply bg-transparent;
-  @apply text-base;
-}
-
 .qt-tooltip {
   color: var(--qt-tooltip-text);
   background: var(--qt-tooltip-fill);
@@ -314,11 +330,3 @@ html {
   @apply px-4 py-2;
 }
 
-.qt-popover {
-  color: var(--qt-tooltip-text);
-  background: var(--qt-tooltip-fill);
-  border: 1px solid var(--qt-tooltip-border);
-  border-radius: var(--qt-border-radius);
-  @apply p-0 m-0;
-
-}

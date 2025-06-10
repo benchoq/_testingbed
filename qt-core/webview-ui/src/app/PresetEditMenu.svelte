@@ -5,39 +5,51 @@ SPDX-License-Identifier: LicenseRef-Qt-Commercial OR LGPL-3.0-only
 
 <script lang="ts">
   import { Dropdown } from 'flowbite-svelte';
-  import { EditOutline, TrashBinOutline } from 'flowbite-svelte-icons';
+  import {
+    EditOutline,
+    TrashBinOutline,
+    FileCloneOutline
+  } from 'flowbite-svelte-icons';
 
   import * as texts from './texts';
-  import { preset, ui } from './states.svelte';
+  import { ui } from './states.svelte';
   import IconButton from '@/comps/IconButton.svelte';
 
   let { class: className = '' } = $props();
+  let open = $state(false);
+
+  const items = [
+    { icon: TrashBinOutline, text: texts.wizard.buttons.delete },
+    { icon: EditOutline, text: texts.wizard.buttons.rename },
+    { icon: FileCloneOutline, text: texts.wizard.buttons.duplicate }
+  ];
+
+  function onItemClickedAt(index: number) {
+    open = false;
+
+    if (index === 0) {
+      ui.dialogs.deleteConfirm = true;
+    } else if (index === 1) {
+      ui.dialogs.renameInput = true;
+    } else if (index === 2) {
+      ui.dialogs.renameInput = true;
+    }
+  }
 </script>
 
-<Dropdown class="p-3 flex flex-col gap-2" placement="right-start">
-  <li class="flex flex-row">
-    <TrashBinOutline />Delete
-  </li>
-  <li class="flex flex-row">
-    <EditOutline />Rename
-  </li>
-  <li class="flex flex-row">
-    <TrashBinOutline />Duplicate
-  </li>
+<Dropdown bind:open
+  class="flex flex-col m-0 p-1" 
+  placement="bottom-start"
+  offset={2}
+>
+  <div class={`flex flex-col ${className}`}>
+    {#each items as item, index (index)}
+      <IconButton flat borderless
+        icon={item.icon}
+        text={item.text}
+        class={"p-2"}
+        onClicked={() => { onItemClickedAt(index); }}
+      />
+    {/each}
+  </div>
 </Dropdown>
-<!-- 
-<div class={`flex flex-row justify-end gap-2 ${className}`}>
-  <IconButton
-    icon={TrashBinOutline} flat 
-    visible={preset.selection.isCustomPreset()}
-    tooltip={texts.wizard.buttons.delete}
-    onClicked={() => { ui.dialogs.deleteConfirm = true; }}
-  />
-
-  <IconButton
-    icon={EditOutline} flat
-    visible={preset.selection.isCustomPreset()}
-    tooltip={texts.wizard.buttons.rename}
-    onClicked={() => { ui.dialogs.renameInput = true; }}
-  />
-</div> -->

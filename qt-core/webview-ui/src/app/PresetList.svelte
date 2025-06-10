@@ -30,7 +30,7 @@ SPDX-License-Identifier: LicenseRef-Qt-Commercial OR LGPL-3.0-only
     }
   };
 
-  const onKeyPressed = (e: KeyboardEvent) => {
+  const onKeyDown = (e: KeyboardEvent) => {
     if (e.key === 'ArrowUp') {
       adjustSelectedIndex(-1);
     } else if (e.key === 'ArrowDown') {
@@ -58,7 +58,7 @@ SPDX-License-Identifier: LicenseRef-Qt-Commercial OR LGPL-3.0-only
   <Listgroup
     active
     class="flex-grow overflow-y-auto qt-list items-center"
-    onkeydown={onKeyPressed}
+    onkeydown={onKeyDown}
     tabindex={0}
   >
     {#each wrappedPresets as preset, index (index)}
@@ -78,13 +78,6 @@ SPDX-License-Identifier: LicenseRef-Qt-Commercial OR LGPL-3.0-only
           <div class="ml-auto mr-0.5 qt-badge flex flex-row gap-2">
             {preset.title}
             <DotsHorizontalOutline />
-            <!-- <Popover 
-              offset={10}
-              placement="right-start"
-              class="qt-popover"
-            >
-              <PresetToolbar />
-            </Popover> -->
             <PresetEditMenu />
           </div>
         {:else}

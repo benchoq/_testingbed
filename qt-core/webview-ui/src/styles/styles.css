@@ -83,15 +83,11 @@ html {
   border: 1px solid var(--qt-widget-borderGuaranteed);
 }
 
-.qt-button.inline {
-  color: var(--qt-text-normal);
-  background: transparent;
-  border: none;
-  @apply p-0;
+.qt-button.flat.borderless {
+  border-color: transparent;
 }
 
-.qt-button.flat:hover
-.qt-button.inline:hover {
+.qt-button.flat:hover {
   color: var(--qt-button-text);
   background: var(--qt-button-fillHover);
   border: 1px solid var(--qt-widget-border);

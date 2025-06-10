@@ -6,6 +6,7 @@ export const wizard = {
   buttons: {
     create: 'Create',
     rename: 'Rename',
+    duplicate: 'Duplicate',
     delete: 'Delete',
     update: 'Save',
     saveAs: 'Save as ...',

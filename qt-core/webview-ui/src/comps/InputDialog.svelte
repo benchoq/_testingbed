@@ -55,14 +55,14 @@ SPDX-License-Identifier: LicenseRef-Qt-Commercial OR LGPL-3.0-only
 <Modal
   bind:open
   color="none"
-  class="qt-modal"
+  class="qt-modal md:-translate-y-[100px]"
   size="sm"
   classBackdrop="qt-backdrop"
   bodyClass="p-4"
   outsideclose
   on:close={() => { onRejectClicked(); }}
 >
-  <P class='qt-label dialog'>{text}</P>
+  <P class='qt-label dialog pb-3'>{text}</P>
 
   <div class="flex flex-col gap-2">
     <InputWithIssue

@@ -12,7 +12,7 @@ SPDX-License-Identifier: LicenseRef-Qt-Commercial OR LGPL-3.0-only
   import LoadingMask from '@/comps/LoadingMask.svelte';
   import WizardSectionInput from './WizardSectionInput.svelte';
   import WizardSectionPresets from './WizardSectionPresets.svelte';
-  import Dialogs from './Dialogs.svelte';
+  import AllDialogs from './AllDialogs.svelte';
 </script>
 
 <Modal
@@ -38,7 +38,7 @@ SPDX-License-Identifier: LicenseRef-Qt-Commercial OR LGPL-3.0-only
       busyText={texts.loading.busy}
       closeText={texts.loading.close}
     />
-    <Dialogs />
+    <AllDialogs />
   </div>
 
 </Modal>

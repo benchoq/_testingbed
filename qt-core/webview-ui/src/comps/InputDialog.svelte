@@ -8,6 +8,7 @@ SPDX-License-Identifier: LicenseRef-Qt-Commercial OR LGPL-3.0-only
   import { Modal, Button, P } from 'flowbite-svelte';
 
   import InputWithIssue from './InputWithIssue.svelte';
+    import { values } from 'lodash';
 
   let {
     open = $bindable(true),
@@ -16,8 +17,7 @@ SPDX-License-Identifier: LicenseRef-Qt-Commercial OR LGPL-3.0-only
     rejectText = 'Cancel',
     value = $bindable(""),
     level = '',
-    message = undefined,
-    closeOnAccept = true,
+    message = undefined as string | undefined,
     acceptOnEnter = false,
     onReady = () => {},
     onInput = () => {},
@@ -29,7 +29,7 @@ SPDX-License-Identifier: LicenseRef-Qt-Commercial OR LGPL-3.0-only
   let acceptable = $derived(level !== 'error');
 
   function onAcceptClicked() {
-    open = closeOnAccept ? false : open;
+    open = false;
     onAccepted(value);
   }
 
@@ -66,11 +66,11 @@ SPDX-License-Identifier: LicenseRef-Qt-Commercial OR LGPL-3.0-only
 
   <div class="flex flex-col gap-2">
     <InputWithIssue
-      class="qt-input"
       bind:this={inputComp}
       bind:value
-      bind:level
-      bind:message
+      {level}
+      {message}
+      alertPosition="bottom"
       onInput={onInput}
       onEnter={onEnter}
     />

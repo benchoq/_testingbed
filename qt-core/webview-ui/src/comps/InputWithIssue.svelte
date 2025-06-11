@@ -10,8 +10,9 @@ SPDX-License-Identifier: LicenseRef-Qt-Commercial OR LGPL-3.0-only
 
   let {
     value = $bindable(''),
-    level = $bindable(''),
-    message = $bindable(undefined as string | undefined),
+    level = '',
+    message = undefined as string | undefined,
+    alertPosition = 'top' as 'top' | 'bottom',
     onInput,
     onEnter = () => {},
     ...restProps
@@ -20,7 +21,7 @@ SPDX-License-Identifier: LicenseRef-Qt-Commercial OR LGPL-3.0-only
   const id = `input_${nanoid()}`;
   let hovered = $state(false);
   let focused = $state(false);
-  let hasIssue = $derived(message && message.length > 0);
+  let hasIssue = $derived(message !== undefined && message.length > 0);
 
   export function focus() {
     document.getElementById(id)?.focus();
@@ -38,7 +39,10 @@ SPDX-License-Identifier: LicenseRef-Qt-Commercial OR LGPL-3.0-only
     <Alert
       border
       color="none"
-      class="absolute w-full bottom-full -mb-0.5 qt-alert"
+      class={
+        `qt-alert absolute w-full z-1
+        ${alertPosition === 'top' ? 'bottom-full -mb-0.5' : 'top-full -mt-0.5'}
+      `}
     >
       {message}
     </Alert>

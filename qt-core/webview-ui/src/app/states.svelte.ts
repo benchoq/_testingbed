@@ -24,7 +24,7 @@ export const ui = $state({
     delayedTimerId: null as NodeJS.Timeout | null
   },
 
-  dialogs: {
+  activeDialog: {
     input: undefined as 'create' | 'rename' | 'duplicate' | undefined,
     confirm: undefined as 'delete' | undefined,
   },

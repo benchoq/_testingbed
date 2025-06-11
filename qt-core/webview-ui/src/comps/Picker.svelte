@@ -5,8 +5,8 @@ SPDX-License-Identifier: LicenseRef-Qt-Commercial OR LGPL-3.0-only
 
 <script lang="ts">
   import _ from "lodash";
-  import DropdownList from './DropdownList.svelte';
-  import DropdownTrigger from './DropdownTrigger.svelte';
+  import PickerList from './PickerList.svelte';
+  import PickerTrigger from './PickerTrigger.svelte';
 
   let {
     open = false,
@@ -45,14 +45,14 @@ SPDX-License-Identifier: LicenseRef-Qt-Commercial OR LGPL-3.0-only
   })
 </script>
 
-<DropdownTrigger
+<PickerTrigger
   text={itemTexts[currentIndex]}
   bind:open={open}
   aboutToOpen={onAboutToOpen}
 />
 
 {#if open}
-  <DropdownList 
+  <PickerList 
     {itemTexts} 
     {triggerRect}
     {onAccepted}

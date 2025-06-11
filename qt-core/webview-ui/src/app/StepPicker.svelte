@@ -7,7 +7,7 @@ SPDX-License-Identifier: LicenseRef-Qt-Commercial OR LGPL-3.0-only
   import _ from 'lodash';
 
   import { type PresetPromptStep } from './types.svelte';
-  import Dropdown from '@/comps/Dropdown.svelte';
+  import Picker from '@/comps/Picker.svelte';
 
   let {
     step = undefined as PresetPromptStep | undefined,
@@ -30,7 +30,7 @@ SPDX-License-Identifier: LicenseRef-Qt-Commercial OR LGPL-3.0-only
   }
 </script>
 
-<Dropdown 
+<Picker 
   {itemTexts} 
   {defaultText}
   {onSelected}

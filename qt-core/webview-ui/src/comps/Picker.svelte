@@ -5,12 +5,15 @@ SPDX-License-Identifier: LicenseRef-Qt-Commercial OR LGPL-3.0-only
 
 <script lang="ts">
   import _ from "lodash";
+  import { FileCloneOutline } from 'flowbite-svelte-icons';
+
   import PickerList from './PickerList.svelte';
   import PickerTrigger from './PickerTrigger.svelte';
 
   let {
     open = false,
-    itemTexts = [] as string[],
+    showIcon = true,
+    items = [] as { text: string, icon: (typeof FileCloneOutline | undefined) }[],
     defaultText = '',
     onSelected = (i: number) => {}
   } = $props();
@@ -31,32 +34,33 @@ SPDX-License-Identifier: LicenseRef-Qt-Commercial OR LGPL-3.0-only
   function onAboutToOpen(r: DOMRect) {
     triggerRect = r;
 
-    if (currentIndex === -1 && defaultText.length !== 0) {
-      currentIndex = itemTexts.indexOf(defaultText)
+    if (currentIndex === -1 && defaultText.length > 0) {
+      currentIndex = items.findIndex((e) => e.text === defaultText);
     }
   }
 
   $effect(() => {
     if (currentIndex === -1) {
-      if ((itemTexts.length > 0) && (defaultText.length > 0)) {
-        currentIndex = itemTexts.indexOf(defaultText)
+      if ((items.length > 0) && (defaultText.length > 0)) {
+        currentIndex = items.findIndex((e) => e.text === defaultText);
       }
     }
   })
 </script>
 
 <PickerTrigger
-  text={itemTexts[currentIndex]}
-  bind:open={open}
+  text={items[currentIndex]?.text ?? '-'}
+  bind:open
   aboutToOpen={onAboutToOpen}
 />
 
-{#if open}
-  <PickerList 
-    width={triggerRect.width}
-    {itemTexts} 
-    {onAccepted}
-    {onRejected}
-    {currentIndex}
-  />
-{/if}
+<PickerList 
+  bind:open
+  {showIcon}
+  width={triggerRect.width}
+  {items}
+  {onAccepted}
+  {onRejected}
+  {currentIndex}
+/>
+

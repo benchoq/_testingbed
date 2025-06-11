@@ -4,7 +4,6 @@ SPDX-License-Identifier: LicenseRef-Qt-Commercial OR LGPL-3.0-only
 -->
 
 <script lang="ts">
-  import { Dropdown } from 'flowbite-svelte';
   import {
     EditOutline,
     TrashBinOutline,
@@ -40,7 +39,7 @@ SPDX-License-Identifier: LicenseRef-Qt-Commercial OR LGPL-3.0-only
 
 <PickerList
   bind:open
-  itemTexts={items.map(e => e.text)}
+  {items}
   width={100}
   offset={10}
   onAccepted={onItemClickedAt}

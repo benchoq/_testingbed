@@ -6,24 +6,24 @@ SPDX-License-Identifier: LicenseRef-Qt-Commercial OR LGPL-3.0-only
 <script lang="ts">
   import { nanoid } from 'nanoid';
   import { onMount, tick } from 'svelte';
+  import { FileCloneOutline } from 'flowbite-svelte-icons';
   import { P, Dropdown } from 'flowbite-svelte';
 
   let {
     open = $bindable(false),
     width = -1,
     offset = -1,
-    itemTexts = [] as string[],
+    showIcon = true,
+    items = [] as { text: string, icon: (typeof FileCloneOutline | undefined) }[],
     currentIndex = -1,
     onRejected = () => {},
     onAccepted = (i: number) => {},
   } = $props();
 
   const id = `pickerlist_${nanoid()}`;
-  let dd: Dropdown | undefined = undefined;
-  let items = $state([] as (P | null)[]);
 
   function setCurrentIndex(i: number) {
-    const candidate = Math.max(0, Math.min(i, itemTexts.length - 1));
+    const candidate = Math.max(0, Math.min(i, items.length - 1));
     if (currentIndex !== candidate) {
       currentIndex = candidate;
     }
@@ -78,14 +78,23 @@ SPDX-License-Identifier: LicenseRef-Qt-Commercial OR LGPL-3.0-only
   onkeydown={onKeyDown}
   onblur={() => { onRejected(); }}
 >
-  {#each itemTexts as text, i (i)}
+  {#each items as item, i (i)}
     <P
-      bind:this={items[i]}
       role="option"
-      class={`qt-picker-item ${i === currentIndex ? 'selected' : ''}`}
+      class={`
+        flex flex-row gap-2 items-center
+        qt-picker-item ${i === currentIndex ? 'selected' : ''}`}
       onclick={() => onItemClicked(i)}
     >
-      {text}
+      {#if showIcon}
+        {@const IconComp = item.icon}
+        {#if IconComp}
+          <IconComp class="aspect-square h-5"/>
+        {:else}
+          <div class="aspect-square h-5"></div>
+        {/if}
+      {/if}
+      {item.text}
     </P>
   {/each}
 </Dropdown>

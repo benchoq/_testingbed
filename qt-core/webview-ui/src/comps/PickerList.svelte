@@ -9,6 +9,7 @@ SPDX-License-Identifier: LicenseRef-Qt-Commercial OR LGPL-3.0-only
   import { P, Dropdown } from 'flowbite-svelte';
 
   let {
+    open = $bindable(false),
     width = -1,
     offset = -1,
     itemTexts = [] as string[],
@@ -67,7 +68,8 @@ SPDX-License-Identifier: LicenseRef-Qt-Commercial OR LGPL-3.0-only
   })
 </script>
 
-<Dropdown open
+<Dropdown
+  {open}
   {id}
   class='qt-picker-wrapper p-0'
   style={`width: ${width - 1}px`}

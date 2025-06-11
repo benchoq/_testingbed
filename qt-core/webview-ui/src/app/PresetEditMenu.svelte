@@ -14,10 +14,10 @@ SPDX-License-Identifier: LicenseRef-Qt-Commercial OR LGPL-3.0-only
   import * as texts from './texts';
   import { ui } from './states.svelte';
   import PickerList from '@/comps/PickerList.svelte';
-  import IconButton from '@/comps/IconButton.svelte';
 
-  let { class: className = '' } = $props();
-  let open = $state(false);
+  let { 
+    open = $bindable(false)
+   } = $props();
 
   const items = [
     { icon: TrashBinOutline, text: texts.wizard.buttons.delete },
@@ -39,6 +39,7 @@ SPDX-License-Identifier: LicenseRef-Qt-Commercial OR LGPL-3.0-only
 </script>
 
 <PickerList
+  bind:open
   itemTexts={items.map(e => e.text)}
   width={100}
   offset={10}

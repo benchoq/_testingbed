@@ -8,7 +8,6 @@ SPDX-License-Identifier: LicenseRef-Qt-Commercial OR LGPL-3.0-only
   import { Modal, Button, P } from 'flowbite-svelte';
 
   import InputWithIssue from './InputWithIssue.svelte';
-    import { values } from 'lodash';
 
   let {
     open = $bindable(true),

@@ -228,10 +228,10 @@ html {
   font-size: 0.8rem;
 }
 
-/* dropdown (i.e. combobox) */
-.qt-dropdown-trigger {
-  color: var(--qt-dropdown-text);
-  background-color: var(--qt-dropdown-fill);
+/* picker (combobox, menu, etc) */
+.qt-picker-trigger {
+  color: var(--qt-picker-text);
+  background-color: var(--qt-picker-fill);
   border-color: var(--qt-widget-border);
   border-width: 1px;
   border-radius: var(--qt-border-radius);
@@ -241,24 +241,23 @@ html {
   @apply px-2;
 }
 
-.qt-dropdown-trigger.open,
-.qt-dropdown-trigger:hover {
+.qt-picker-trigger.open,
+.qt-picker-trigger:hover {
   color: var(--qt-itemSelection-text);
   background-color: var(--qt-itemSelection-fill);
   border-color: var(--qt-widget-border);
-  /* background-color: var(--qt-dropdown-fillHover); */
 }
 
-.qt-dropdown-wrapper {
-  background-color: var(--qt-dropdown-wrapper-fill);
-  border-color: var(--qt-dropdown-wrapper-border);
+.qt-picker-wrapper {
+  background-color: var(--qt-picker-wrapper-fill);
+  border-color: var(--qt-picker-wrapper-border);
   border-width: 1px;
   border-radius: var(--qt-border-radius);
   @apply shadow-md;
   @apply overflow-y-auto;
 }
 
-.qt-dropdown-item {
+.qt-picker-item {
   color: var(--qt-item-text);
   background-color: var(--qt-item-fill);
   border-radius: 0px;
@@ -270,7 +269,12 @@ html {
   @apply px-3 py-1.5;
 }
 
-.qt-dropdown-item:hover {
+.qt-picker-item:hover {
+  color: var(--qt-item-textHover);
+  background-color: var(--qt-item-fillHover);
+}
+
+.qt-picker-item.selected {
   color: var(--qt-itemSelection-text);
   background-color: var(--qt-itemSelection-fill);
   border-color: var(--qt-widget-border);

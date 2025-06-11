@@ -48,11 +48,11 @@ html.dev {
   --qt-itemSelection-text: white;
   --qt-itemSelection-fill: var(--color-green-600);
 
-  --qt-dropdown-text: var(--color-gray-200);
-  --qt-dropdown-fill: var(--color-gray-600);
-  --qt-dropdown-fillHover: var(--color-gray-500);
-  --qt-dropdown-wrapper-fill: var(--color-gray-400);
-  --qt-dropdown-wrapper-border: var(--qt-widget-borderFocus);
+  --qt-picker-text: var(--color-gray-200);
+  --qt-picker-fill: var(--color-gray-600);
+  --qt-picker-fillHover: var(--color-gray-500);
+  --qt-picker-wrapper-fill: var(--color-gray-400);
+  --qt-picker-wrapper-border: var(--qt-widget-borderFocus);
 
   --qt-alert-text: white;
   --qt-alert-fill: rgb(86, 66, 66);

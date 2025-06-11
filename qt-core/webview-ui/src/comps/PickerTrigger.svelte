@@ -43,7 +43,7 @@ SPDX-License-Identifier: LicenseRef-Qt-Commercial OR LGPL-3.0-only
 <button
   class={`
     w-full flex items-center justify-between
-    qt-dropdown-trigger ${open ? 'open' : ''}
+    qt-picker-trigger ${open ? 'open' : ''}
   `}
   bind:this={rawElement}
   onclick={onTrigged}

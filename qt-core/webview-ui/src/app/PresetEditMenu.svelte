@@ -13,6 +13,7 @@ SPDX-License-Identifier: LicenseRef-Qt-Commercial OR LGPL-3.0-only
 
   import * as texts from './texts';
   import { ui } from './states.svelte';
+  import PickerList from '@/comps/PickerList.svelte';
   import IconButton from '@/comps/IconButton.svelte';
 
   let { class: className = '' } = $props();
@@ -37,19 +38,9 @@ SPDX-License-Identifier: LicenseRef-Qt-Commercial OR LGPL-3.0-only
   }
 </script>
 
-<Dropdown bind:open
-  class="flex flex-col m-0 p-1" 
-  placement="bottom-start"
-  offset={2}
->
-  <div class={`flex flex-col ${className}`}>
-    {#each items as item, index (index)}
-      <IconButton flat borderless
-        icon={item.icon}
-        text={item.text}
-        class={"p-2"}
-        onClicked={() => { onItemClickedAt(index); }}
-      />
-    {/each}
-  </div>
-</Dropdown>
+<PickerList
+  itemTexts={items.map(e => e.text)}
+  width={100}
+  offset={10}
+  onAccepted={onItemClickedAt}
+/>

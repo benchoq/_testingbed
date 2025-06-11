@@ -4,19 +4,21 @@ SPDX-License-Identifier: LicenseRef-Qt-Commercial OR LGPL-3.0-only
 -->
 
 <script lang="ts">
-  import { onMount, onDestroy } from 'svelte';
-  import { P } from 'flowbite-svelte';
+  import { nanoid } from 'nanoid';
+  import { onMount, tick } from 'svelte';
+  import { P, Dropdown } from 'flowbite-svelte';
 
   let {
-    itemTexts = [] as string[],
+    width = -1,
     offset = -1,
+    itemTexts = [] as string[],
     currentIndex = -1,
     onRejected = () => {},
     onAccepted = (i: number) => {},
-    triggerRect = new DOMRect()
   } = $props();
 
-  let wrapper: HTMLDivElement;
+  const id = `pickerlist_${nanoid()}`;
+  let dd: Dropdown | undefined = undefined;
   let items = $state([] as (P | null)[]);
 
   function setCurrentIndex(i: number) {
@@ -47,19 +49,9 @@ SPDX-License-Identifier: LicenseRef-Qt-Commercial OR LGPL-3.0-only
     e.preventDefault();
   }
 
-  onMount(() => {
-    wrapper.focus();
-    document.body.appendChild(wrapper);
-    window.addEventListener('keydown', onKeyDown);
-  });
-
-  onDestroy(() => {
-    if (wrapper?.parentNode) {
-      wrapper.parentNode.removeChild(wrapper);
-    }
-
-    window.removeEventListener('keydown', onKeyDown);
-  });
+  function focus() {
+    document.getElementById(id)?.focus();
+  }
 
   $effect(() => {
     if (currentIndex === -1) {
@@ -68,26 +60,30 @@ SPDX-License-Identifier: LicenseRef-Qt-Commercial OR LGPL-3.0-only
       }
     }
   });
+
+  onMount(async () => {
+    await tick();
+    focus();
+  })
 </script>
 
-<div
-  bind:this={wrapper}
-  tabindex="0"
-  role="listbox"
-  class="qt-dropdown-wrapper max-h-[200px] z-[100]"
-  style={`position: absolute; 
-    left: ${triggerRect.left}px; 
-    top: ${triggerRect.bottom + offset}px; 
-    width: ${triggerRect.width}px;`}
+<Dropdown open
+  {id}
+  class='qt-picker-wrapper p-0'
+  style={`width: ${width - 1}px`}
+  {offset}
+  tabindex={0}
+  onkeydown={onKeyDown}
+  onblur={() => { onRejected(); }}
 >
   {#each itemTexts as text, i (i)}
     <P
       bind:this={items[i]}
       role="option"
-      class={`qt-dropdown-item ${i === currentIndex ? 'selected' : ''}`}
+      class={`qt-picker-item ${i === currentIndex ? 'selected' : ''}`}
       onclick={() => onItemClicked(i)}
     >
       {text}
     </P>
   {/each}
-</div>
+</Dropdown>

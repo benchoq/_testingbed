@@ -52,11 +52,11 @@ html.prod {
   --qt-itemSelection-text: var(--vscode-button-foreground);
   --qt-itemSelection-fill: var(--vscode-button-background);
 
-  --qt-dropdown-text: var(--vscode-dropdown-foreground);
-  --qt-dropdown-fill: var(--vscode-dropdown-background);
-  --qt-dropdown-fillHover: var(--vscode-button-hoverBackground);
-  --qt-dropdown-wrapper-fill: var(--vscode-dropdown-listBackground, var(--qt-list-fill));
-  --qt-dropdown-wrapper-border: var(--vscode-dropdown-border);
+  --qt-picker-text: var(--vscode-dropdown-foreground);
+  --qt-picker-fill: var(--vscode-dropdown-background);
+  --qt-picker-fillHover: var(--vscode-button-hoverBackground);
+  --qt-picker-wrapper-fill: var(--vscode-dropdown-listBackground, var(--qt-list-fill));
+  --qt-picker-wrapper-border: var(--vscode-dropdown-border);
 
   --qt-alert-text: var(--vscode-foreground);
   --qt-alert-fill: var(--vscode-inputValidation-warningBackground);

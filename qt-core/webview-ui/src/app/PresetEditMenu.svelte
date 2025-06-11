@@ -16,7 +16,7 @@ SPDX-License-Identifier: LicenseRef-Qt-Commercial OR LGPL-3.0-only
 
   let { 
     open = $bindable(false)
-   } = $props();
+  } = $props();
 
   const items = [
     { icon: TrashBinOutline, text: texts.wizard.buttons.delete },

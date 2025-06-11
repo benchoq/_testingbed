@@ -69,7 +69,7 @@ SPDX-License-Identifier: LicenseRef-Qt-Commercial OR LGPL-3.0-only
 </script>
 
 <Dropdown
-  {open}
+  bind:open
   {id}
   class='qt-picker-wrapper p-0'
   style={`width: ${width - 1}px`}

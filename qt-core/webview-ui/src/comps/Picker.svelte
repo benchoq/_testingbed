@@ -4,63 +4,68 @@ SPDX-License-Identifier: LicenseRef-Qt-Commercial OR LGPL-3.0-only
 -->
 
 <script lang="ts">
-  import _ from "lodash";
-  import { FileCloneOutline } from 'flowbite-svelte-icons';
+  import { onMount } from 'svelte';
 
+  import type { PickerItem } from '@/app/types.svelte';
   import PickerList from './PickerList.svelte';
   import PickerTrigger from './PickerTrigger.svelte';
 
   let {
-    open = false,
+    open = $bindable(false),
     showIcon = true,
-    items = [] as { text: string, icon: (typeof FileCloneOutline | undefined) }[],
+    items = [] as PickerItem[],
     defaultText = '',
     onSelected = (i: number) => {}
   } = $props();
 
-  let triggerRect = $state(new DOMRect());
+  let width = $state(100);
   let currentIndex = $state(-1);
-  
+  let pickerList: PickerList;
+
   function onRejected() {
     open = false;
   }
 
   function onAccepted(i: number) {
-    currentIndex = i;
     open = false;
-    onSelected(currentIndex)
+    currentIndex = i;
+    onSelected(currentIndex);
   }
 
-  function onAboutToOpen(r: DOMRect) {
-    triggerRect = r;
+  function onTriggered(r: DOMRect) {
+    if (open) {
+      open = false;
+      return;
+    }
 
+    open = true;
+    width = r.width;
+    pickerList.focus();
+    updateIndexFromDefault();
+  }
+
+  function updateIndexFromDefault() {
     if (currentIndex === -1 && defaultText.length > 0) {
       currentIndex = items.findIndex((e) => e.text === defaultText);
     }
   }
 
-  $effect(() => {
-    if (currentIndex === -1) {
-      if ((items.length > 0) && (defaultText.length > 0)) {
-        currentIndex = items.findIndex((e) => e.text === defaultText);
-      }
-    }
-  })
+  onMount(updateIndexFromDefault);
 </script>
 
 <PickerTrigger
   text={items[currentIndex]?.text ?? '-'}
-  bind:open
-  aboutToOpen={onAboutToOpen}
+  active={open}
+  {onTriggered}
 />
 
-<PickerList 
-  bind:open
-  {showIcon}
-  width={triggerRect.width}
+<PickerList
+  bind:this={pickerList}
+  active={open}
   {items}
+  {width}
+  {showIcon}
   {onAccepted}
   {onRejected}
   {currentIndex}
 />
-

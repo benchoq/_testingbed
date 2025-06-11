@@ -241,7 +241,7 @@ html {
   @apply px-2;
 }
 
-.qt-picker-trigger.open,
+.qt-picker-trigger.active,
 .qt-picker-trigger:hover {
   color: var(--qt-itemSelection-text);
   background-color: var(--qt-itemSelection-fill);

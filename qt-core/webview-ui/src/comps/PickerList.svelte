@@ -5,16 +5,16 @@ SPDX-License-Identifier: LicenseRef-Qt-Commercial OR LGPL-3.0-only
 
 <script lang="ts">
   import { nanoid } from 'nanoid';
-  import { onMount, tick } from 'svelte';
-  import { FileCloneOutline } from 'flowbite-svelte-icons';
   import { P, Dropdown } from 'flowbite-svelte';
 
+  import type { PickerItem } from '@/app/types.svelte';
+
   let {
-    open = $bindable(false),
+    active = false,
     width = -1,
     offset = -1,
     showIcon = true,
-    items = [] as { text: string, icon: (typeof FileCloneOutline | undefined) }[],
+    items = [] as PickerItem[],
     currentIndex = -1,
     onRejected = () => {},
     onAccepted = (i: number) => {},
@@ -50,27 +50,20 @@ SPDX-License-Identifier: LicenseRef-Qt-Commercial OR LGPL-3.0-only
     e.preventDefault();
   }
 
-  function focus() {
+  export function focus() {
     document.getElementById(id)?.focus();
   }
 
   $effect(() => {
-    if (currentIndex === -1) {
-      if (items && items.length > 0) {
-        setCurrentIndex(0);
-      }
+    if (currentIndex === -1 && items && items.length > 0) {
+      setCurrentIndex(0);
     }
   });
-
-  onMount(async () => {
-    await tick();
-    focus();
-  })
 </script>
 
 <Dropdown
-  bind:open
   {id}
+  open={active}
   class='qt-picker-wrapper p-0'
   style={`width: ${width - 1}px`}
   {offset}

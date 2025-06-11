@@ -4,11 +4,8 @@ SPDX-License-Identifier: LicenseRef-Qt-Commercial OR LGPL-3.0-only
 -->
 
 <script lang="ts">
-  import _ from 'lodash';
-  import { FileCloneOutline } from 'flowbite-svelte-icons';
-
-  import { type PresetPromptStep } from './types.svelte';
   import Picker from '@/comps/Picker.svelte';
+  import type { PresetPromptStep, PickerItem } from './types.svelte';
 
   let {
     step = undefined as PresetPromptStep | undefined,
@@ -18,7 +15,7 @@ SPDX-License-Identifier: LicenseRef-Qt-Commercial OR LGPL-3.0-only
   let defaultText = $derived(step?.default ?? '');
   let items = $derived.by(() => {
     if (!step?.items) {
-      return [] as { text: string, icon: (typeof FileCloneOutline | undefined) }[];
+      return [] as PickerItem[];
     }
 
     return step.items.map((e) => {
@@ -31,7 +28,7 @@ SPDX-License-Identifier: LicenseRef-Qt-Commercial OR LGPL-3.0-only
   }
 </script>
 
-<Picker 
+<Picker
   {items}
   {defaultText}
   {onSelected}

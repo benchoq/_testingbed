@@ -4,18 +4,18 @@ SPDX-License-Identifier: LicenseRef-Qt-Commercial OR LGPL-3.0-only
 -->
 
 <script lang="ts">
-  import { Checkbox, P } from 'flowbite-svelte';
-  import { CheckOutline } from 'flowbite-svelte-icons';
+  import { Checkbox, P, Button } from 'flowbite-svelte';
+  import { CheckOutline, FolderOpenOutline } from 'flowbite-svelte-icons';
 
   import IconButton from '@/comps/IconButton.svelte';
   import SectionLabel from '@/comps/SectionLabel.svelte';
   import InputWithIssue from '@/comps/InputWithIssue.svelte';
-  import WorkingDirInput from './WorkingDirInput.svelte';
   import * as texts from './texts';
   import { ui } from './states.svelte';
   import {
-    createItemFromSelectedPreset,
-    validateInput
+    validateInput,
+    onWorkingDirBrowseClicked,
+    createItemFromSelectedPreset
   } from './viewlogic.svelte';
 </script>
 
@@ -28,6 +28,7 @@ SPDX-License-Identifier: LicenseRef-Qt-Commercial OR LGPL-3.0-only
     <SectionLabel text={texts.wizard.nameAndLocation} />
   </div>
 
+  <!-- name -->
   <P class="qt-label pl-4">{texts.wizard.name}</P>
   <InputWithIssue
     bind:value={ui.input.name}
@@ -36,9 +37,25 @@ SPDX-License-Identifier: LicenseRef-Qt-Commercial OR LGPL-3.0-only
     message={ui.input.issues.name.message}
   />
 
+  <!-- working directory -->
   <P class="qt-label pl-4">{texts.wizard.workingDir}</P>
-  <WorkingDirInput />
+  <div class="w-full grid grid-cols-[min-content_1fr] gap-0">
+    <Button
+      class="qt-button px-2 py-0 rounded-r-none! z-1"
+      title={texts.wizard.workingDirTooltip}
+      on:click={onWorkingDirBrowseClicked}
+      ><FolderOpenOutline />
+    </Button>
 
+    <InputWithIssue
+      bind:value={ui.input.workingDir}
+      onInput={validateInput}
+      level={ui.input.issues.workingDir.level}
+      message={ui.input.issues.workingDir.message}
+    />
+  </div>
+
+  <!-- options, create button -->
   <div></div>
   <div class="flex flex-row gap-2">
     {#if ui.selectedType === 'project'}

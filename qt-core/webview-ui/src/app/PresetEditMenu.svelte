@@ -38,7 +38,7 @@ SPDX-License-Identifier: LicenseRef-Qt-Commercial OR LGPL-3.0-only
 </script>
 
 <PickerList
-  bind:open
+  active={open}
   {items}
   width={100}
   offset={10}

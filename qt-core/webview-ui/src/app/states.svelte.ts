@@ -25,9 +25,8 @@ export const ui = $state({
   },
 
   dialogs: {
-    createInput: false,
-    renameInput: false,
-    deleteConfirm: false
+    input: undefined as 'create' | 'rename' | 'duplicate' | undefined,
+    confirm: undefined as 'delete' | undefined,
   },
 
   popups: {

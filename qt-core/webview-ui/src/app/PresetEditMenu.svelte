@@ -28,11 +28,11 @@ SPDX-License-Identifier: LicenseRef-Qt-Commercial OR LGPL-3.0-only
     open = false;
 
     if (index === 0) {
-      ui.dialogs.deleteConfirm = true;
+      ui.dialogs.confirm = 'delete';
     } else if (index === 1) {
-      ui.dialogs.renameInput = true;
+      ui.dialogs.input = 'rename';
     } else if (index === 2) {
-      ui.dialogs.renameInput = true;
+      ui.dialogs.input = 'duplicate';
     }
   }
 </script>

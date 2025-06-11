@@ -15,44 +15,55 @@ SPDX-License-Identifier: LicenseRef-Qt-Commercial OR LGPL-3.0-only
   import InputDialog from '@/comps/InputDialog.svelte';
   import ConfirmDialog from '@/comps/ConfirmDialog.svelte';
   
-  let rename = $state({
+  let input = $state({
     value: '',
-    errorMessage: undefined as string | undefined,
+    error: {
+      level: '',
+      message: undefined as string | undefined,
+    },
   })
-
-  let presetNameCreate = $state("my_preset");
 </script>
 
-{#if ui.dialogs.renameInput}
+{#if ui.dialogs.input}
   <InputDialog
     acceptOnEnter
-    bind:open={ui.dialogs.renameInput}
-    bind:value={rename.value}
-    message={rename.errorMessage}
-    level={rename.errorMessage !== undefined ? 'error' : ''}
+    bind:value={input.value}
+    level={input.error.level}
+    message={input.error.message}
     text={texts.wizard.enterNewPresetName}
-    onReady={() => { rename.value = preset.selection.name?? ''; }}
-    onInput={() => {
-      rename.errorMessage = validatePresetName(rename.value);
+    onReady={() => {
+      const p = ui.dialogs.input;
+      if (p === 'rename') {
+        input.value = preset.selection.name?? ''; 
+      } else if (p === 'create') {
+        input.value = "mynewpreset";
+      }
     }}
-    onAccepted={() => { renameCustomPreset(rename.value); }}
+    onInput={() => {
+      input.error.message = validatePresetName(input.value);
+      input.error.level = (input.error.message !== undefined ? 'error' : '')
+    }}
+    onAccepted={() => {
+      const p = ui.dialogs.input;
+      if (p === 'rename') {
+        renameCustomPreset(input.value); 
+      } else if (p === 'create') {
+        createCustomPreset(input.value)
+      }
+      
+      ui.dialogs.input = undefined;
+    }}
+    onRejected={() => { ui.dialogs.input = undefined; }}
   />
 {/if}
 
-{#if ui.dialogs.deleteConfirm}
+{#if ui.dialogs.confirm}
   <ConfirmDialog
-    bind:open={ui.dialogs.deleteConfirm}
     text={texts.wizard.confirmDeletePreset}
-    onAccepted={deleteCustomPreset}
-  />
-{/if}
-
-{#if ui.dialogs.createInput}
-  <InputDialog
-    acceptOnEnter
-    bind:open={ui.dialogs.createInput}
-    bind:value={presetNameCreate}
-    text={texts.wizard.enterNewPresetName}
-    onAccepted={() => { createCustomPreset(presetNameCreate); }}
+    onAccepted={() => {
+      ui.dialogs.confirm = undefined;
+      deleteCustomPreset();
+    }}
+    onRejected={() => { ui.dialogs.confirm = undefined; }}
   />
 {/if}

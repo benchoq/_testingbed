@@ -62,7 +62,7 @@ SPDX-License-Identifier: LicenseRef-Qt-Commercial OR LGPL-3.0-only
             tooltip={texts.wizard.buttons.saveAsTooltip}
             tooltipPlacement="top-end"
             visible={createEnabled}
-            onClicked={() => { ui.dialogs.createInput = true; }}
+            onClicked={() => { ui.dialogs.input = 'create'; }}
           />
 
           <Button class="qt-button"

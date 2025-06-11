@@ -34,9 +34,7 @@ SPDX-License-Identifier: LicenseRef-Qt-Commercial OR LGPL-3.0-only
   classBackdrop="qt-backdrop"
   bodyClass="p-4"
   outsideclose
-  on:close={() => {
-    onRejected();
-  }}
+  on:close={() => { onRejected(); }}
 >
   <P class='qt-label dialog'>{text}</P>
 

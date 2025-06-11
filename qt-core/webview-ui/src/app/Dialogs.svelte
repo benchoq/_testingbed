@@ -8,14 +8,18 @@ SPDX-License-Identifier: LicenseRef-Qt-Commercial OR LGPL-3.0-only
     renameCustomPreset,
     deleteCustomPreset,
     createCustomPreset,
-    validatePresetName,
+    validatePresetName
   } from './viewlogic.svelte';
   import * as texts from './texts';
   import { preset, ui } from './states.svelte';
   import InputDialog from '@/comps/InputDialog.svelte';
   import ConfirmDialog from '@/comps/ConfirmDialog.svelte';
   
-  let presetNameRename = $state('');
+  let rename = $state({
+    value: '',
+    errorMessage: undefined as string | undefined,
+  })
+
   let presetNameCreate = $state("my_preset");
 </script>
 
@@ -23,16 +27,15 @@ SPDX-License-Identifier: LicenseRef-Qt-Commercial OR LGPL-3.0-only
   <InputDialog
     acceptOnEnter
     bind:open={ui.dialogs.renameInput}
-    bind:value={presetNameRename}
-    message="aaa"
-    level="error"
+    bind:value={rename.value}
+    message={rename.errorMessage}
+    level={rename.errorMessage !== undefined ? 'error' : ''}
     text={texts.wizard.enterNewPresetName}
-    onReady={() => { presetNameRename = preset.selection.name?? ''; }}
+    onReady={() => { rename.value = preset.selection.name?? ''; }}
     onInput={() => {
-      validatePresetName(presetNameRename);
-    }
-    }
-    onAccepted={() => { renameCustomPreset(presetNameRename); }}
+      rename.errorMessage = validatePresetName(rename.value);
+    }}
+    onAccepted={() => { renameCustomPreset(rename.value); }}
   />
 {/if}
 

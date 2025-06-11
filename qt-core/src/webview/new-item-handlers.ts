@@ -130,10 +130,22 @@ export class NewItemCommandHandler {
   }
 
   private readonly onUiRenameCustomPreset = async (cmd: Command) => {
-    const id = _.get(cmd.payload, 'presetId', '');
-    await this._qtcliRest.post('/presets', cmd.payload);
-    await this._qtcliRest.delete(`/presets/${id}`);
-    this._panel?.postDataReply(cmd, cmd.payload);
+    try {
+      const id = _.get(cmd.payload, 'presetId', '');
+      await this._qtcliRest.post('/presets', cmd.payload);
+      await this._qtcliRest.delete(`/presets/${id}`);
+      this._panel?.postDataReply(cmd, cmd.payload);
+    } catch (e) {
+      if (e instanceof QtcliRestError) {
+        await vscode.window.showErrorMessage(e.toString());
+        this._panel?.postErrorReply(cmd, {
+          error: e.message,
+          details: e.details
+        } as ErrorResponse);
+
+        console.log(">>>>>>>>>", e);
+      }
+    }
   }
   
   private readonly onUiUpdateCustomPreset = async (cmd: Command) => {

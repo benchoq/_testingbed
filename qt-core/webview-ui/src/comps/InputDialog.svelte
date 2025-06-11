@@ -17,6 +17,7 @@ SPDX-License-Identifier: LicenseRef-Qt-Commercial OR LGPL-3.0-only
     value = $bindable(""),
     level = '',
     message = undefined,
+    closeOnAccept = true,
     acceptOnEnter = false,
     onReady = () => {},
     onInput = () => {},
@@ -28,7 +29,7 @@ SPDX-License-Identifier: LicenseRef-Qt-Commercial OR LGPL-3.0-only
   let acceptable = $derived(level !== 'error');
 
   function onAcceptClicked() {
-    open = false;
+    open = closeOnAccept ? false : open;
     onAccepted(value);
   }
 
@@ -61,9 +62,9 @@ SPDX-License-Identifier: LicenseRef-Qt-Commercial OR LGPL-3.0-only
   outsideclose
   on:close={() => { onRejectClicked(); }}
 >
-  <div class="flex flex-col gap-2">
-    <P class='qt-label dialog'>{text}</P>
+  <P class='qt-label dialog'>{text}</P>
 
+  <div class="flex flex-col gap-2">
     <InputWithIssue
       class="qt-input"
       bind:this={inputComp}

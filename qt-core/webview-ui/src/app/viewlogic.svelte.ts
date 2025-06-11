@@ -1,6 +1,8 @@
 // Copyright (C) 2025 The Qt Company Ltd.
 // SPDX-License-Identifier: LicenseRef-Qt-Commercial OR LGPL-3.0-only
 
+import { z } from 'zod';
+
 import { vscode } from '@/app/vscode';
 import { isErrorResponse } from '@shared/types';
 import { type CommandReply, CommandId } from '@shared/message';
@@ -180,20 +182,21 @@ export async function createCustomPreset(name: string) {
   }
 }
 
-
 export async function renameCustomPreset(newName: string) {
   const presetId = preset.selection.id;
-  if (!presetId || newName.length === 0) {
+  const currentName = preset.selection.name;
+  const candidate = newName.trim();
+  if (!presetId || candidate === currentName || candidate.length === 0) {
     return;
   }
 
   try {
-    const payload = { name: newName, presetId };
+    const payload = { name: candidate, presetId };
     await vscode.post(CommandId.UiRenameCustomPreset, payload);
     await loadPresets();
-    await setSelectedPresetByName(newName);
+    await setSelectedPresetByName(candidate);
   } catch (e) {
-    reportUiError('Error deleting preset', e);
+    reportUiError('Error renaming preset', e);
   }
 }
 
@@ -228,8 +231,28 @@ export async function deleteCustomPreset() {
   }
 }
 
-export function validatePresetName(name: string) {
-  console.log("aa", name)
+export function validatePresetName(name: string): string | undefined {
+  const current = preset.selection.name;
+  if (name.trim() === current) {
+    return undefined;
+  }
+
+  const existing = preset.all.map((p) => { return p.name; })
+  const schema = z
+    .string()
+    .trim()
+    .nonempty({ message: 'The name cannot be empty' })
+    .regex(/^[a-zA-Z0-9_-]+$/i,
+      { message: 'The name is invalid'})
+    .refine((v) => !existing.includes(v),
+      { message: "This name is already taken" })
+  
+  const result = schema.safeParse(name);
+  if (!result.success) {
+    return result.error.errors[0].message;
+  }
+
+  return undefined;
 }
 
 // helpers

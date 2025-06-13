@@ -24,10 +24,11 @@ html.prod {
   --qt-text-normal: var(--vscode-foreground);
   --qt-text-highlight: var(--vscode-settings-headerForeground);
 
-  --qt-button-text: var(--vscode-button-foreground);
+  --qt-button-text: var(--vscode-button-foreground, var(--qt-text-normal));
   --qt-button-fill: var(--vscode-button-background);
   --qt-button-fillHover: var(--vscode-button-hoverBackground);
 
+  --qt-checkbox-text: var(--qt-button-text);
   --qt-checkbox-fill: var(--qt-button-fill, transparent);
   --qt-checkbox-fillHover: var(--qt-button-fillHover, transparent);
   --qt-checkbox-border: var(--qt-widget-separator);

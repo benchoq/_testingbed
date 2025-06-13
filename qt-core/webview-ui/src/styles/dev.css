@@ -26,6 +26,7 @@ html.dev {
   --qt-button-fillHover: var(--color-green-500);
   --qt-button-fillDisabled: gray;
 
+  --qt-checkbox-text: var(--qt-button-text);
   --qt-checkbox-fill: var(--qt-button-fill, transparent);
   --qt-checkbox-fillHover: var(--qt-button-fillHover, transparent);
   --qt-checkbox-border: var(--qt-widget-border);

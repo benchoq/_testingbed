@@ -10,7 +10,7 @@ SPDX-License-Identifier: LicenseRef-Qt-Commercial OR LGPL-3.0-only
   import * as texts from './texts';
   import { ui, preset } from './states.svelte';
   import type { PresetPromptStep } from './types.svelte';
-  import { updateCustomPreset } from './viewlogic.svelte';
+  import { manageCustomPreset } from './viewlogic.svelte';
 
   import IconButton from '@/comps/IconButton.svelte';
   import SectionLabel from '@/comps/SectionLabel.svelte';
@@ -62,14 +62,12 @@ SPDX-License-Identifier: LicenseRef-Qt-Commercial OR LGPL-3.0-only
           tooltip={texts.wizard.buttons.saveAsTooltip}
           tooltipPlacement="top-end"
           visible={createEnabled}
-          onClicked={() => {
-            ui.activeDialog.input = 'create';
-          }}
+          onClicked={() => { ui.activeDialog = 'create'; }}
         />
 
         <Button
           class="qt-button"
-          on:click={updateCustomPreset}
+          on:click={() => { manageCustomPreset({ action: 'update' }); }}
           hidden={!saveEnabled}
         >
           {texts.wizard.buttons.update}

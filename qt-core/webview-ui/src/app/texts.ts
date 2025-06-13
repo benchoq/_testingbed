@@ -30,7 +30,13 @@ export const wizard = {
   workingDirSaveCheckbox: 'Use as default project directory',
 
   enterNewPresetName: 'Enter a new name for the custom preset',
-  confirmDeletePreset: 'Do you want to delete the preset?' 
+  confirmDeletePreset: 'Do you want to delete the preset?',
+
+  presetNameError: {
+    empty: 'The name cannot be empty',
+    invalid: 'The name is invalid',
+    alreadyTaken: 'This name is already taken'
+  }
 };
 
 export const loading = {

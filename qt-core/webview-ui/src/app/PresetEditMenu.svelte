@@ -4,11 +4,7 @@ SPDX-License-Identifier: LicenseRef-Qt-Commercial OR LGPL-3.0-only
 -->
 
 <script lang="ts">
-  import {
-    EditOutline,
-    TrashBinOutline,
-    FileCloneOutline
-  } from 'flowbite-svelte-icons';
+  import { EditOutline, TrashBinOutline } from 'flowbite-svelte-icons';
 
   import * as texts from './texts';
   import { ui } from './states.svelte';
@@ -21,17 +17,14 @@ SPDX-License-Identifier: LicenseRef-Qt-Commercial OR LGPL-3.0-only
 
   const items = [
     { icon: TrashBinOutline, text: texts.wizard.buttons.delete },
-    { icon: EditOutline, text: texts.wizard.buttons.rename },
-    { icon: FileCloneOutline, text: texts.wizard.buttons.duplicate }
+    { icon: EditOutline, text: texts.wizard.buttons.rename }
   ];
 
   function onItemClickedAt(index: number) {
     if (index === 0) {
-      ui.activeDialog.confirm = 'delete';
+      ui.activeDialog = 'delete';
     } else if (index === 1) {
-      ui.activeDialog.input = 'rename';
-    } else if (index === 2) {
-      ui.activeDialog.input = 'duplicate';
+      ui.activeDialog = 'rename';
     }
 
     open = false;

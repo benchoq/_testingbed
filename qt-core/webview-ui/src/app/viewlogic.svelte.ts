@@ -5,10 +5,14 @@ import { z } from 'zod';
 
 import { vscode } from '@/app/vscode';
 import { isErrorResponse } from '@shared/types';
-import { type CommandReply, CommandId } from '@shared/message';
-import { isPreset, isPresetArray } from './types.svelte';
-import { data, preset, ui } from './states.svelte';
+import {
+  CommandId,
+  type CommandReply,
+  type ManageCustomPresetArgs
+} from '@shared/message';
 import * as texts from './texts';
+import { data, preset, ui } from './states.svelte';
+import { isPreset, isPresetArray } from './types.svelte';
 
 export async function onAppMount() {
   vscode.onDidReceiveNotification(async (r: CommandReply) => {
@@ -119,7 +123,7 @@ async function refreshPresetDetails() {
 }
 
 export async function createItemFromSelectedPreset() {
-   if (!preset.selection.isValid()) {
+  if (!preset.selection.isValid()) {
     return;
   }
 
@@ -166,69 +170,56 @@ export async function validateInput() {
   }
 }
 
-export async function createCustomPreset(name: string) {
+export async function manageCustomPreset(args: ManageCustomPresetArgs) {
   const presetId = preset.selection.id;
-  const options = $state.snapshot(ui.unsavedOptionChanges)
   if (!presetId) {
     return;
   }
-  
-  try {
-    const payload = { name, presetId, options }
-    const r = await vscode.post(CommandId.UiCreateCustomPreset, payload);
-    await loadPresets();
-    await setSelectedPresetByName(name);
-  } catch (e) {
-    reportUiError('Error saving preset', e);
-  }
-}
 
-export async function renameCustomPreset(newName: string) {
-  const presetId = preset.selection.id;
-  const currentName = preset.selection.name;
-  const candidate = newName.trim();
-  if (!presetId || candidate === currentName || candidate.length === 0) {
-    return;
-  }
+  const action = args.action;
+  const options = $state.snapshot(ui.unsavedOptionChanges);
+  const isCustom = preset.selection.isCustomPreset();
+  const isDefault = preset.selection.isDefaultPreset();
 
-  try {
-    const payload = { name: candidate, presetId };
-    await vscode.post(CommandId.UiRenameCustomPreset, payload);
-    await loadPresets();
-    await setSelectedPresetByName(candidate);
-  } catch (e) {
-    reportUiError('Error renaming preset', e);
-  }
-}
+  switch (args.action) {
+    case 'create': {
+      const name = args.name.trim();
+      if (isDefault && name.length !== 0) {
+        const payload = { action, presetId, name, options };
+        await vscode.post(CommandId.UiManageCustomPreset, payload);
+        await loadPresets();
+        await setSelectedPresetByName(name);
+      }
+      break;
+    }
 
-export async function updateCustomPreset() {
-  const presetId = preset.selection.id;
-  const options = $state.snapshot(ui.unsavedOptionChanges)
-  if (!presetId || Object.keys(options).length === 0) {
-    return;
-  }
-  
-  try {
-    const payload = { presetId, options };
-    await vscode.post(CommandId.UiUpdateCustomPreset, payload);
-    await setSelectedPresetAt(ui.selectedPresetIndex);
-  } catch (e) {
-    reportUiError('Error saving preset', e);
-  }
-}
+    case 'rename': {
+      const name = args.name.trim();
+      if (isCustom && name.length !== 0 && name !== preset.selection.name) {
+        const payload = { action, presetId, name };
+        await vscode.post(CommandId.UiManageCustomPreset, payload);
+        await loadPresets();
+        await setSelectedPresetByName(name);
+      }
+      break;
+    }
 
-export async function deleteCustomPreset() {
-  const presetId = preset.selection.id;
-  if (!presetId || !preset.selection.isCustomPreset()) {
-    return;
-  }
+    case 'update':
+      if (isCustom && Object.keys(options).length !== 0) {
+        const payload = { action, presetId, options };
+        await vscode.post(CommandId.UiManageCustomPreset, payload);
+        await setSelectedPresetAt(ui.selectedPresetIndex);
+      }
+      break;
 
-  try {
-    await vscode.post(CommandId.UiDeleteCustomPreset, presetId);
-    await loadPresets();
-    await setSelectedPresetAt(Math.max(0, ui.selectedPresetIndex - 1));
-  } catch (e) {
-    reportUiError('Error deleting preset', e);
+    case 'delete':
+      if (isCustom) {
+        const payload = { action, presetId }
+        await vscode.post(CommandId.UiManageCustomPreset, payload);
+        await loadPresets();
+        await setSelectedPresetAt(Math.max(0, ui.selectedPresetIndex - 1));
+      }
+      break;
   }
 }
 
@@ -246,7 +237,7 @@ export function validatePresetName(name: string): string | undefined {
     .nonempty({ message: m.empty })
     .regex(/^[a-zA-Z0-9_-]+$/i, { message: m.invalid })
     .refine((v) => !taken.includes(v), { message: m.alreadyTaken })
-  
+
   const result = schema.safeParse(name);
   if (!result.success) {
     return result.error.errors[0].message;

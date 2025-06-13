@@ -15,6 +15,7 @@ import { getUri, getNonce } from './utils';
 import { CommandId, Command } from '@/webview/shared/message';
 import { NewItemCommandHandler } from './new-item-handlers';
 import * as texts from '@/texts';
+import { ErrorResponse, Issue } from './shared/types';
 
 const logger = createLogger('new-item-panel');
 let qtcliRunner: QtcliRunner | undefined = undefined;
@@ -97,6 +98,13 @@ export class NewItemPanel {
 
   public postErrorReply(cmd: Command, error: unknown) {
     this.post(cmd.id, { error }, cmd.tag);
+  }
+
+  public postErrorReplyFrom(cmd: Command, msg: string, details: Issue[]) {
+    this.postErrorReply(cmd, {
+      error: msg,
+      details
+    } as ErrorResponse);
   }
 }
 

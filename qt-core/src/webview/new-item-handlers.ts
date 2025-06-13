@@ -10,7 +10,6 @@ import * as texts from '@/texts';
 import { QtcliRestClient, QtcliRestError } from '@/qtcli/rest';
 import { openFilesUnder, openUri } from '@/qtcli/common';
 import { setDefaultProjectDir, getNewProjectBaseDir } from '@/qtcli/commands';
-import { ErrorResponse } from '@/webview/shared/types';
 import { Command, CommandId, IsCommand } from '@/webview/shared/message';
 import type { NewItemPanel } from './new-item-panel';
 
@@ -31,10 +30,7 @@ export class NewItemCommandHandler {
       [CommandId.UiGetAllPresets, this.onUiGetAllPresets],
       [CommandId.UiGetPresetById, this.onUiGetPresetById],
       [CommandId.UiValidateInputs, this.onUiValidateInputs],
-      [CommandId.UiCreateCustomPreset, this.onUiCreateCustomPreset],
-      [CommandId.UiRenameCustomPreset, this.onUiRenameCustomPreset],
-      [CommandId.UiUpdateCustomPreset, this.onUiUpdateCustomPreset],
-      [CommandId.UiDeleteCustomPreset, this.onUiDeleteCustomPreset],
+      [CommandId.UiManageCustomPreset, this.onUiManageCustomPreset],
       [CommandId.UiSelectWorkingDir, this.onUiSelectWorkingDir]
     ]);
   }
@@ -124,40 +120,46 @@ export class NewItemCommandHandler {
     this._panel?.postDataReply(cmd, data);
   };
 
-  private readonly onUiCreateCustomPreset = async (cmd: Command) => {
-    const data = await this._qtcliRest.post('/presets', cmd.payload);
-    this._panel?.postDataReply(cmd, data);
-  }
+  private readonly onUiManageCustomPreset = async (cmd: Command) => {
+    const action = _.get(cmd.payload, 'action', '') as string;
+    const presetId = _.get(cmd.payload, 'presetId', '') as string;
+    if (presetId.length === 0) {
+      return;
+    }
 
-  private readonly onUiRenameCustomPreset = async (cmd: Command) => {
     try {
-      const id = _.get(cmd.payload, 'presetId', '');
-      await this._qtcliRest.post('/presets', cmd.payload);
-      await this._qtcliRest.delete(`/presets/${id}`);
-      this._panel?.postDataReply(cmd, cmd.payload);
+      switch (action) {
+        case 'create': {
+          const data = await this._qtcliRest.post('/presets', cmd.payload);
+          this._panel?.postDataReply(cmd, data);
+          break;
+        }
+
+        case 'rename': {
+          await this._qtcliRest.post('/presets', cmd.payload);
+          await this._qtcliRest.delete(`/presets/${presetId}`);
+          this._panel?.postDataReply(cmd, cmd.payload);
+          break;
+        }
+        
+        case 'update': {
+          await this._qtcliRest.patch(`/presets/${presetId}`, cmd.payload);
+          this._panel?.postDataReply(cmd, cmd.payload);
+          break;
+        }
+
+        case 'delete': {
+          const data = await this._qtcliRest.delete(`/presets/${presetId}`);
+          this._panel?.postDataReply(cmd, data);
+          break;
+        }
+      }
     } catch (e) {
       if (e instanceof QtcliRestError) {
         await vscode.window.showErrorMessage(e.toString());
-        this._panel?.postErrorReply(cmd, {
-          error: e.message,
-          details: e.details
-        } as ErrorResponse);
-
-        console.log(">>>>>>>>>", e);
+        this._panel?.postErrorReplyFrom(cmd, e.message, e.details);
       }
     }
-  }
-  
-  private readonly onUiUpdateCustomPreset = async (cmd: Command) => {
-    const id = _.get(cmd.payload, 'presetId', '');
-    await this._qtcliRest.patch(`/presets/${id}`, cmd.payload);
-    this._panel?.postDataReply(cmd, cmd.payload);
-  }
-
-  private readonly onUiDeleteCustomPreset = async (cmd: Command) => {
-    const id = _.toString(cmd.payload);
-    const data = await this._qtcliRest.delete(`/presets/${id}`);
-    this._panel?.postDataReply(cmd, data);
   }
 
   private readonly onUiValidateInputs = async (cmd: Command) => {
@@ -166,10 +168,7 @@ export class NewItemCommandHandler {
       this._panel?.postDataReply(cmd, data);
     } catch (e) {
       if (e instanceof QtcliRestError) {
-        this._panel?.postErrorReply(cmd, {
-          error: e.message,
-          details: e.details
-        } as ErrorResponse);
+        this._panel?.postErrorReplyFrom(cmd, e.message, e.details);
       }
     }
   };

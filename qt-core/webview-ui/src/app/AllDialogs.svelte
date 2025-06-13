@@ -4,14 +4,9 @@ SPDX-License-Identifier: LicenseRef-Qt-Commercial OR LGPL-3.0-only
 -->
 
 <script lang="ts">
-  import {
-    renameCustomPreset,
-    deleteCustomPreset,
-    createCustomPreset,
-    validatePresetName
-  } from './viewlogic.svelte';
   import * as texts from './texts';
   import { preset, ui } from './states.svelte';
+  import { manageCustomPreset, validatePresetName } from './viewlogic.svelte';
   import InputDialog from '@/comps/InputDialog.svelte';
   import ConfirmDialog from '@/comps/ConfirmDialog.svelte';
 
@@ -29,35 +24,30 @@ SPDX-License-Identifier: LicenseRef-Qt-Commercial OR LGPL-3.0-only
   }
 
   function onInputAccepted() {
-    if (ui.activeDialog.input === 'create') {
-      createCustomPreset(input.value)
-    } else if (ui.activeDialog.input === 'rename') {
-      renameCustomPreset(input.value);
-    } else if (ui.activeDialog.input === 'duplicate') {
-      createCustomPreset(input.value);
+    if (ui.activeDialog === 'create' || ui.activeDialog === 'rename') {
+      manageCustomPreset({ 
+        action: ui.activeDialog, 
+        name: input.value.trim()
+      });
     }
 
     closeDialogs();
   }
 
   function onInputDialongReady() {
-    if (ui.activeDialog.input === 'create') {
+    if (ui.activeDialog === 'create') {
       input.value = "mynewpreset";
-    } else if (ui.activeDialog.input === 'rename') {
+    } else if (ui.activeDialog === 'rename') {
       input.value = preset.selection.name?? '';
-    } else if (ui.activeDialog.input === 'duplicate') {
-      input.value = preset.selection.name
-        ? preset.selection.name + '_copy' : '';
     }
   }
 
   function closeDialogs() {
-    ui.activeDialog.input = undefined;
-    ui.activeDialog.confirm = undefined;
+    ui.activeDialog = undefined;
   }
 </script>
 
-{#if ui.activeDialog.input}
+{#if ui.activeDialog === 'create' || ui.activeDialog === 'rename' }
   <InputDialog
     acceptOnEnter
     bind:value={input.value}
@@ -71,12 +61,12 @@ SPDX-License-Identifier: LicenseRef-Qt-Commercial OR LGPL-3.0-only
   />
 {/if}
 
-{#if ui.activeDialog.confirm}
+{#if ui.activeDialog === 'delete' }
   <ConfirmDialog
     text={texts.wizard.confirmDeletePreset}
     onAccepted={() => {
       closeDialogs();
-      deleteCustomPreset();
+      manageCustomPreset({ action: 'delete' });
     }}
     onRejected={closeDialogs}
   />

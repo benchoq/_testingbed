@@ -38,7 +38,7 @@ SPDX-License-Identifier: LicenseRef-Qt-Commercial OR LGPL-3.0-only
       adjustSelectedIndex(+1);
     } else if (e.key === 'Delete') {
       if (preset.selection.isCustomPreset()) {
-        ui.activeDialog.confirm = 'delete';
+        ui.activeDialog = 'delete';
       }
     } else {
       return;

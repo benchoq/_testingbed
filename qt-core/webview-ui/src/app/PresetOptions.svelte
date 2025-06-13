@@ -83,7 +83,7 @@ SPDX-License-Identifier: LicenseRef-Qt-Commercial OR LGPL-3.0-only
         <P class="qt-label">{step.question}</P>
         {#if step.type in stepComponents}
           {@const StepComp = stepComponents[step.type]}
-          <div class="w-[120px]">
+          <div class="w-[120px] flex item-center">
             <StepComp enabled={true} {step} {onValueChanged} />
           </div>
         {:else}

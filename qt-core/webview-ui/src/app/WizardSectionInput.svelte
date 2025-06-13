@@ -41,7 +41,7 @@ SPDX-License-Identifier: LicenseRef-Qt-Commercial OR LGPL-3.0-only
   <P class="qt-label pl-4">{texts.wizard.workingDir}</P>
   <div class="w-full grid grid-cols-[min-content_1fr] gap-0">
     <Button
-      class="qt-button px-2 py-0 rounded-r-none! focus:z-1"
+      class="qt-button px-2 py-0 rounded-r-none! -mr-0.5 focus:z-1"
       title={texts.wizard.workingDirTooltip}
       on:click={onWorkingDirBrowseClicked}
       ><FolderOpenOutline />
@@ -49,7 +49,7 @@ SPDX-License-Identifier: LicenseRef-Qt-Commercial OR LGPL-3.0-only
 
     <InputWithIssue
       bind:value={ui.input.workingDir}
-      class="rounded-l-none! -ml-1"
+      class="rounded-l-none!"
       onInput={validateInput}
       level={ui.input.issues.workingDir.level}
       message={ui.input.issues.workingDir.message}

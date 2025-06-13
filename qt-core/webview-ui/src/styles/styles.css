@@ -137,7 +137,7 @@ html {
   font-size: 0.65rem;
   font-weight: bold;
   color: var(--qt-checkbox-text);
-  background-color: var(--qt-checkbox-fill);
+  background: var(--qt-checkbox-fill);
   border: 1px solid var(--qt-checkbox-border);
   border-radius: var(--qt-border-radius);
   @apply flex items-center justify-center;
@@ -147,7 +147,6 @@ html {
 .qt-checkbox > input[type='checkbox']:hover::before {
   background: var(--qt-checkbox-fillHover);
 }
-
 
 /* input (text-field) */
 .qt-input {

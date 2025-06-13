@@ -8,6 +8,7 @@ import { isErrorResponse } from '@shared/types';
 import { type CommandReply, CommandId } from '@shared/message';
 import { isPreset, isPresetArray } from './types.svelte';
 import { data, preset, ui } from './states.svelte';
+import * as texts from './texts';
 
 export async function onAppMount() {
   vscode.onDidReceiveNotification(async (r: CommandReply) => {
@@ -237,15 +238,14 @@ export function validatePresetName(name: string): string | undefined {
     return undefined;
   }
 
-  const existing = preset.all.map((p) => { return p.name; })
+  const m = texts.wizard.presetNameError;
+  const taken = preset.all.map((p) => { return p.name; });
   const schema = z
     .string()
     .trim()
-    .nonempty({ message: 'The name cannot be empty' })
-    .regex(/^[a-zA-Z0-9_-]+$/i,
-      { message: 'The name is invalid'})
-    .refine((v) => !existing.includes(v),
-      { message: "This name is already taken" })
+    .nonempty({ message: m.empty })
+    .regex(/^[a-zA-Z0-9_-]+$/i, { message: m.invalid })
+    .refine((v) => !taken.includes(v), { message: m.alreadyTaken })
   
   const result = schema.safeParse(name);
   if (!result.success) {

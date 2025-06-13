@@ -13,6 +13,7 @@ SPDX-License-Identifier: LicenseRef-Qt-Commercial OR LGPL-3.0-only
     level = '',
     message = undefined as string | undefined,
     alertPosition = 'top' as 'top' | 'bottom',
+    class: className = '',
     onInput,
     onEnter = () => {},
     ...restProps
@@ -52,7 +53,7 @@ SPDX-License-Identifier: LicenseRef-Qt-Commercial OR LGPL-3.0-only
     {id}
     type="text"
     required
-    class={`qt-input ${hasIssue ? 'error' : ''}`}
+    class={`qt-input ${hasIssue ? 'error' : ''} ${className}`}
     bind:value
     onblur={() => {
       focused = false;

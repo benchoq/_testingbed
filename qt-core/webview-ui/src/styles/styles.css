@@ -5,7 +5,10 @@ SPDX-License-Identifier: LicenseRef-Qt-Commercial OR LGPL-3.0-only
 
 /* common */
 @utility qt-focusRing {
-  @apply focus:ring-1 focus:ring-[var(--qt-widget-borderFocus)];
+  /* outline: 2px solid var(--qt-widget-borderFocus); */
+  box-shadow: 0 0 0 1.5px var(--qt-widget-borderFocus);
+  border-radius: var(--qt-border-radius);
+  outline: none;
 }
 
 .qt-backdrop {
@@ -19,6 +22,10 @@ SPDX-License-Identifier: LicenseRef-Qt-Commercial OR LGPL-3.0-only
 /* basic tags */
 html {
   font-size: var(--qt-font-size);
+}
+
+:focus-visible {
+  @apply qt-focusRing;
 }
 
 /* label */
@@ -68,8 +75,8 @@ html {
   border-radius: var(--qt-border-radius);
   line-height: normal;
   cursor: pointer;
-  @apply ring-offset-0;
-  @apply qt-focusRing;
+  /* @apply ring-offset-0; */
+  /* @apply qt-focusRing; */
   @apply text-base font-normal;
 }
 
@@ -113,8 +120,6 @@ html {
   border-radius: var(--qt-border-radius);
   padding: 2px;
   background-clip: padding-box;
-  @apply ring-offset-0;
-  @apply qt-focusRing;
 }
 
 .qt-checkbox > input[type='checkbox']:checked {
@@ -147,14 +152,14 @@ html {
   border-width: 1px;
   border-radius: var(--qt-border-radius);
   padding: 5px 0px 5px 10px;
-  box-shadow: none;
+  /* box-shadow: none; */
   @apply text-base;
 }
 
-.qt-input:focus {
+/* .qt-input:focus {
   border-color: var(--qt-widget-borderFocus);
   outline: none;
-}
+} */
 
 .qt-input::selection {
   color: var(--qt-inputSelection-text);
@@ -170,8 +175,8 @@ html {
   background-color: transparent;
   padding: 0px 5px;
   cursor: pointer;
-  @apply ring-offset-0;
-  @apply qt-focusRing;
+  /* @apply ring-offset-0; */
+  /* @apply qt-focusRing; */
 }
 
 /* list and list-item */
@@ -183,44 +188,29 @@ html {
 }
 
 .qt-list:focus-within {
-  border-color: var(--qt-widget-borderFocus);
-  outline: none;
+  @apply qt-focusRing;
 }
 
 .qt-list-item {
   color: var(--qt-item-text);
   background-color: var(--qt-item-fill);
   border-radius: 0px;
-  border-width: 1px 0px 1px 0px;
-  border-color: transparent;
+  border-width: 0px;
   cursor: pointer;
-  box-shadow: none;
   @apply text-base font-normal;
-  @apply px-3 py-1.5;
+  @apply px-3 py-2;
+  @apply my-0.5 first:mt-0;
 }
 
+.qt-list-item:focus-visible,
 .qt-list-item:hover {
   color: var(--qt-item-textHover);
   background-color: var(--qt-item-fillHover);
 }
 
-.qt-list-item:focus {
-  border-color: var(--qt-widget-borderFocus);
-  outline: none;
-}
-
 .qt-list-item.selected {
   color: var(--qt-itemSelection-text);
   background-color: var(--qt-itemSelection-fill);
-  border-color: var(--qt-widget-border);
-}
-
-.qt-list-item.selected:focus {
-  border-color: var(--qt-widget-borderFocus);
-}
-
-.qt-list-item:first-child {
-  border-top-width: 0px;
 }
 
 .qt-list-item .qt-badge {
@@ -264,7 +254,7 @@ html {
   border-width: 0px;
   border-color: transparent;
   cursor: pointer;
-  box-shadow: none;
+  /* box-shadow: none; */
   @apply text-base font-normal;
   @apply px-3 py-1.5;
 }
@@ -285,18 +275,12 @@ html {
   color: var(--qt-text-normal);
   background: transparent;
   border-radius: var(--qt-border-radius);
-  border-bottom: 1px solid var(--qt-widget-separator);
   border: 1px solid transparent;
   line-height: normal;
   cursor: pointer;
-  @apply ring-offset-0;
-  @apply qt-focusRing;
+  /* @apply ring-offset-0; */
+  /* @apply qt-focusRing; */
   @apply text-base font-normal;
-}
-
-.qt-vtab-item:last-of-type,
-.qt-vtab-item:has(+ .qt-vtab-item.selected) {
-  border-bottom: none;
 }
 
 .qt-vtab-item.selected {

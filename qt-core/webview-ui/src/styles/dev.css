@@ -28,7 +28,7 @@ html.dev {
 
   --qt-checkbox-fill: var(--qt-button-fill, transparent);
   --qt-checkbox-fillHover: var(--qt-button-fillHover, transparent);
-  --qt-checkbox-border: var(--qt-widget-separator);
+  --qt-checkbox-border: var(--qt-widget-border);
 
   --qt-input-text: var(--color-gray-200);
   --qt-input-textError: var(--color-red-300);

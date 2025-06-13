@@ -12,7 +12,7 @@ SPDX-License-Identifier: LicenseRef-Qt-Commercial OR LGPL-3.0-only
   import { PresetWrapper } from './types.svelte';
   import { setSelectedPresetAt } from './viewlogic.svelte';
 
-  let menuOpen = $state(false);
+  let openIndex = $state(-1);
   let wrappedPresets = $derived.by(() => {
     return preset.all.map(p => new PresetWrapper(p));
   });
@@ -80,11 +80,11 @@ SPDX-License-Identifier: LicenseRef-Qt-Commercial OR LGPL-3.0-only
         {#if preset.isCustomPreset()}
           <div class="ml-auto mr-0.5 qt-badge flex flex-row gap-2">
             {preset.title}
-            <DotsHorizontalOutline onclick={() => { menuOpen = true; }}/>
-            <PresetEditMenu bind:open={menuOpen} />
+            <DotsHorizontalOutline onclick={() => { openIndex = index; }}/>
+            <PresetEditMenu 
+              open={openIndex === index}
+              onClosed={() => { openIndex = -1;}} />
           </div>
-        {:else}
-          <div></div>
         {/if}
       </ListgroupItem>
     {/each}

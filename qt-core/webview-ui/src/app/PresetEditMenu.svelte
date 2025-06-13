@@ -15,7 +15,8 @@ SPDX-License-Identifier: LicenseRef-Qt-Commercial OR LGPL-3.0-only
   import PickerList from '@/comps/PickerList.svelte';
 
   let { 
-    open = $bindable(false)
+    open = false,
+    onClosed = () => {}
   } = $props();
 
   const items = [
@@ -25,8 +26,6 @@ SPDX-License-Identifier: LicenseRef-Qt-Commercial OR LGPL-3.0-only
   ];
 
   function onItemClickedAt(index: number) {
-    open = false;
-
     if (index === 0) {
       ui.activeDialog.confirm = 'delete';
     } else if (index === 1) {
@@ -34,6 +33,9 @@ SPDX-License-Identifier: LicenseRef-Qt-Commercial OR LGPL-3.0-only
     } else if (index === 2) {
       ui.activeDialog.input = 'duplicate';
     }
+
+    open = false;
+    onClosed();
   }
 </script>
 
@@ -42,5 +44,7 @@ SPDX-License-Identifier: LicenseRef-Qt-Commercial OR LGPL-3.0-only
   {items}
   width={100}
   offset={10}
+  currentIndex=-1
+  onRejected={onClosed}
   onAccepted={onItemClickedAt}
 />

@@ -240,7 +240,7 @@ html {
   border-width: 1px;
   border-radius: var(--qt-border-radius);
   @apply shadow-md;
-  @apply overflow-y-auto;
+  /* @apply overflow-y-auto; */
 }
 
 .qt-picker-item {

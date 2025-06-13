@@ -54,11 +54,6 @@ SPDX-License-Identifier: LicenseRef-Qt-Commercial OR LGPL-3.0-only
     document.getElementById(id)?.focus();
   }
 
-  $effect(() => {
-    if (currentIndex === -1 && items && items.length > 0) {
-      setCurrentIndex(0);
-    }
-  });
 </script>
 
 <Dropdown

@@ -53,7 +53,7 @@ html.dev {
   --qt-picker-fill: var(--color-gray-600);
   --qt-picker-fillHover: var(--color-gray-500);
   --qt-picker-wrapper-fill: var(--color-gray-400);
-  --qt-picker-wrapper-border: var(--qt-widget-borderFocus);
+  --qt-picker-wrapper-border: var(--qt-widget-border);
 
   --qt-alert-text: white;
   --qt-alert-fill: rgb(86, 66, 66);

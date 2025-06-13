@@ -56,6 +56,43 @@
     },
     {
       "type": "shell",
+      "label": "webview-dev-server",
+      "command": "npx vite --force",
+      "isBackground": true,
+      "options": {
+        "cwd": "${workspaceFolder}/qt-core/webview-ui"
+      },
+      "problemMatcher": {
+        "pattern": [
+          {
+            "regexp": ".*",
+            "file": 1,
+            "location": 2,
+            "message": 3
+          }
+        ],
+        "background": {
+          "activeOnStart": true,
+          "beginsPattern": ".*",
+          "endsPattern": "VITE v\\d+\\.\\d+\\.\\d+\\s+ready in \\d+ ms"
+        }
+      }
+    },
+     {
+      "type": "shell",
+      "label": "kill webview-dev-server",
+      "command": "npx kill-port 5173",
+    },
+    {
+      "label": "npm qt-core watch + webview",
+      "dependsOn": [
+        "webview-dev-server",
+        "npm qt-core watch"
+      ],
+      "dependsOrder": "parallel",
+    },
+    {
+      "type": "shell",
       "label": "npm qt-ui watch",
       "problemMatcher": "$tsc-watch",
       "command": "npm run watch",

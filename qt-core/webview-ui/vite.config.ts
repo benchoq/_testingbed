@@ -22,5 +22,15 @@ export default defineConfig({
       '@': path.resolve(__dirname, 'src'),
       '@shared': path.resolve(__dirname, '../src/webview/shared')
     }
+  },
+  server: {
+    cors: {
+      origin: /^vscode-webview:\/\//,
+    },
+    strictPort: true,
+    port: 5173, // dev port
+    headers: {
+      'Access-Control-Allow-Origin': '*',
+    },
   }
 });

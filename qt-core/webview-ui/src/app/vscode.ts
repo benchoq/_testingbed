@@ -37,10 +37,10 @@ class VSCodeApiWrapper {
     payload?: unknown,
     timeout = 10_000
   ): Promise<T> {
-    if (import.meta.env.DEV) {
-      const { mockHandler } = await import('@/mock/handler');
-      return mockHandler.mockRequest(id, payload);
-    }
+    // if (import.meta.env.DEV) {
+    //   const { mockHandler } = await import('@/mock/handler');
+    //   return mockHandler.mockRequest(id, payload);
+    // }
 
     if (!this._api) {
       return Promise.reject('VSCode API not available');

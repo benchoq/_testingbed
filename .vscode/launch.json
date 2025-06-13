@@ -27,7 +27,8 @@
       "request": "launch",
       "args": ["--extensionDevelopmentPath=${workspaceFolder}/qt-core"],
       "outFiles": ["${workspaceFolder}/qt-core/out/**/*.js"],
-      "preLaunchTask": "npm qt-core watch"
+      "preLaunchTask": "npm qt-core watch + webview",
+      "postDebugTask": "kill webview-dev-server"
     },
     {
       "name": "Run qt-ui Extension",

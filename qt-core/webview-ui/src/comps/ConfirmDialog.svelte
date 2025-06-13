@@ -29,7 +29,7 @@ SPDX-License-Identifier: LicenseRef-Qt-Commercial OR LGPL-3.0-only
 <Modal
   bind:open
   color="none"
-  class="qt-modal md:-translate-y-[100px]"
+  class="qt-modal dialog"
   size="sm"
   classBackdrop="qt-backdrop"
   bodyClass="p-4"

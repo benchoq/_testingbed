@@ -32,12 +32,14 @@ SPDX-License-Identifier: LicenseRef-Qt-Commercial OR LGPL-3.0-only
   }
 </script>
 
-<PickerList
-  active={open}
-  {items}
-  width={100}
-  offset={10}
-  currentIndex=-1
-  onRejected={onClosed}
-  onAccepted={onItemClickedAt}
-/>
+{#if open}
+  <PickerList
+    active={true}
+    {items}
+    width={100}
+    offset={10}
+    currentIndex=-1
+    onRejected={onClosed}
+    onAccepted={onItemClickedAt}
+  />
+{/if}

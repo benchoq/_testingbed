@@ -16,7 +16,6 @@ SPDX-License-Identifier: LicenseRef-Qt-Commercial OR LGPL-3.0-only
     icon = CheckOutline,
     flat = false,
     inline = false,
-    borderless = false,
     visible = true,
     disabled = false,
     class: className = '',
@@ -34,8 +33,7 @@ SPDX-License-Identifier: LicenseRef-Qt-Commercial OR LGPL-3.0-only
       qt-button m-0
       ${flat ? 'flat' : ''}
       ${inline ? 'inline' : ''}
-      ${borderless ? 'borderless' : ''}
-      ${iconOnly ? iconOnlyClass: ''}
+      ${iconOnly ? iconOnlyClass : ''}
       ${className}
     `}
     on:click={() => {

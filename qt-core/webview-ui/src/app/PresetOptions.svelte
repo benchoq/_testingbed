@@ -4,8 +4,8 @@ SPDX-License-Identifier: LicenseRef-Qt-Commercial OR LGPL-3.0-only
 -->
 
 <script lang="ts">
-  import { Button, P } from 'flowbite-svelte';
-  import { PlusOutline } from 'flowbite-svelte-icons';
+  import { P } from 'flowbite-svelte';
+  import { PlusOutline, FloppyDiskOutline } from 'flowbite-svelte-icons';
 
   import * as texts from './texts';
   import { ui, preset } from './states.svelte';
@@ -65,13 +65,12 @@ SPDX-License-Identifier: LicenseRef-Qt-Commercial OR LGPL-3.0-only
           onClicked={() => { ui.activeDialog = 'create'; }}
         />
 
-        <Button
-          class="qt-button"
-          on:click={() => { manageCustomPreset({ action: 'update' }); }}
-          hidden={!saveEnabled}
-        >
-          {texts.wizard.buttons.update}
-        </Button>
+        <IconButton
+          icon={FloppyDiskOutline}
+          visible={saveEnabled}
+          text={texts.wizard.buttons.update}
+          onClicked={() => { manageCustomPreset({ action: 'update' }); }}
+        />
       </div>
     </div>
 

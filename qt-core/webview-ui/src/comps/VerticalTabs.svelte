@@ -37,14 +37,14 @@ SPDX-License-Identifier: LicenseRef-Qt-Commercial OR LGPL-3.0-only
   });
 </script>
 
-<div class={`flex flex-col h-full gap-0.5 ${className}`}>
+<div class={`flex flex-col h-full gap-1 ${className}`}>
   {#each items as item, i (i)}
     <Button
       on:click={() => {
         setCurrentIndex(i);
       }}
-      class={`flex flex-col gap-1 qt-vtab-item ${buttonClass}
-        ${i === currentIndex ? 'selected' : ''}`}
+      class={`flex flex-col gap-1 qt-button-like ${buttonClass}
+        ${i !== currentIndex ? 'borderless' : ''}`}
     >
       <item.icon />
       {item.label}

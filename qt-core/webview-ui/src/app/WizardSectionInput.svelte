@@ -41,7 +41,7 @@ SPDX-License-Identifier: LicenseRef-Qt-Commercial OR LGPL-3.0-only
   <P class="qt-label pl-4">{texts.wizard.workingDir}</P>
   <div class="w-full grid grid-cols-[min-content_1fr] gap-0">
     <Button
-      class="qt-button px-2 py-0 rounded-r-none! -mr-0.5 focus:z-1"
+      class="qt-button-like px-2 py-0 rounded-r-none! -mr-0.5 focus:z-1"
       title={texts.wizard.workingDirTooltip}
       on:click={onWorkingDirBrowseClicked}
       ><FolderOpenOutline />

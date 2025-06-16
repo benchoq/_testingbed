@@ -12,7 +12,7 @@ SPDX-License-Identifier: LicenseRef-Qt-Commercial OR LGPL-3.0-only
   let {
     active = false,
     width = -1,
-    offset = -1,
+    offset = 1,
     showIcon = true,
     items = [] as PickerItem[],
     currentIndex = -1,
@@ -59,7 +59,7 @@ SPDX-License-Identifier: LicenseRef-Qt-Commercial OR LGPL-3.0-only
 <Dropdown
   {id}
   open={active}
-  class='qt-picker-wrapper p-0'
+  classContainer='qt-list'
   style={`width: ${width - 1}px`}
   {offset}
   tabindex={0}
@@ -71,7 +71,7 @@ SPDX-License-Identifier: LicenseRef-Qt-Commercial OR LGPL-3.0-only
       role="option"
       class={`
         flex flex-row gap-2 items-center
-        qt-picker-item ${i === currentIndex ? 'selected' : ''}`}
+        qt-list-item ${i === currentIndex ? 'selected' : ''}`}
       onclick={() => onItemClicked(i)}
     >
       {#if showIcon}

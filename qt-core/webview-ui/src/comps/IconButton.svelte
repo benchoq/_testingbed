@@ -30,7 +30,7 @@ SPDX-License-Identifier: LicenseRef-Qt-Commercial OR LGPL-3.0-only
   <Button
     {disabled}
     class={`
-      qt-button m-0
+      qt-button-like m-0
       ${flat ? 'flat' : ''}
       ${inline ? 'inline' : ''}
       ${iconOnly ? iconOnlyClass : ''}

@@ -80,7 +80,7 @@ SPDX-License-Identifier: LicenseRef-Qt-Commercial OR LGPL-3.0-only
         {#if preset.isCustomPreset()}
           <div class="ml-auto mr-0.5 qt-badge flex flex-row gap-2">
             {preset.title}
-            <DotsHorizontalOutline onclick={() => { openIndex = index; }}/>
+            <DotsHorizontalOutline class="qt-button-like borderless" onclick={() => { openIndex = index; }}/>
             <PresetEditMenu 
               open={openIndex === index}
               onClosed={() => { openIndex = -1;}} />

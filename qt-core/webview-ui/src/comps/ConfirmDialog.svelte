@@ -40,10 +40,10 @@ SPDX-License-Identifier: LicenseRef-Qt-Commercial OR LGPL-3.0-only
 
   <div class="flex flex-row gap-2 mt-5">
     <div class="grow"></div>
-    <Button class="qt-button-like" on:click={onAcceptClicked}>
+    <Button class="qt-button" on:click={onAcceptClicked}>
       {acceptText}
     </Button>
-    <Button class="qt-button-like" on:click={onRejectClicked}>
+    <Button class="qt-button" on:click={onRejectClicked}>
       {rejectText}
     </Button>
   </div>

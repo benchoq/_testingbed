@@ -76,11 +76,11 @@ SPDX-License-Identifier: LicenseRef-Qt-Commercial OR LGPL-3.0-only
 
     <div class="flex flex-row gap-2">
       <div class="grow"></div>
-      <Button class="qt-button-like min-w-[75px] flat" on:click={onRejectClicked}>
+      <Button class="qt-button min-w-[75px] flat" on:click={onRejectClicked}>
         {rejectText}
       </Button>
       <Button 
-        class='qt-button-like min-w-[75px]'
+        class='qt-button min-w-[75px]'
         disabled={!acceptable}
         on:click={onAcceptClicked}>
         {acceptText}

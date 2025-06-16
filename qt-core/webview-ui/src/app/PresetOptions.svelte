@@ -69,6 +69,7 @@ SPDX-License-Identifier: LicenseRef-Qt-Commercial OR LGPL-3.0-only
           icon={FloppyDiskOutline}
           visible={saveEnabled}
           text={texts.wizard.buttons.update}
+          class='px-4 py-2'
           onClicked={() => { manageCustomPreset({ action: 'update' }); }}
         />
       </div>
@@ -80,7 +81,7 @@ SPDX-License-Identifier: LicenseRef-Qt-Commercial OR LGPL-3.0-only
         <P class="qt-label">{step.question}</P>
         {#if step.type in stepComponents}
           {@const StepComp = stepComponents[step.type]}
-          <div class="flex item-center min-w-[100px]">
+          <div class="flex item-center min-w-[120px]">
             <StepComp enabled={true} {step} {onValueChanged} />
           </div>
         {:else}

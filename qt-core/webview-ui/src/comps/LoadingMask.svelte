@@ -31,7 +31,7 @@ SPDX-License-Identifier: LicenseRef-Qt-Commercial OR LGPL-3.0-only
     <div class="flex flex-col gap-4">
       <P>{error}</P>
       <Button
-        class="qt-button-like mx-auto"
+        class="qt-button mx-auto"
         on:click={() => {
           forceHidden = true;
         }}

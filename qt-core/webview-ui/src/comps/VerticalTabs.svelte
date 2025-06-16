@@ -43,7 +43,7 @@ SPDX-License-Identifier: LicenseRef-Qt-Commercial OR LGPL-3.0-only
       on:click={() => {
         setCurrentIndex(i);
       }}
-      class={`flex flex-col gap-1 qt-button-like ${buttonClass}
+      class={`flex flex-col gap-1 qt-button ${buttonClass}
         ${i !== currentIndex ? 'borderless' : ''}`}
     >
       <item.icon />

@@ -40,13 +40,12 @@ SPDX-License-Identifier: LicenseRef-Qt-Commercial OR LGPL-3.0-only
   <!-- working directory -->
   <P class="qt-label pl-4">{texts.wizard.workingDir}</P>
   <div class="w-full grid grid-cols-[min-content_1fr] gap-0">
-    <Button
-      class="qt-button-like px-2 py-0 rounded-r-none! -mr-0.5 focus:z-1"
-      title={texts.wizard.workingDirTooltip}
-      on:click={onWorkingDirBrowseClicked}
-      ><FolderOpenOutline />
-    </Button>
-
+    <IconButton
+      icon={FolderOpenOutline}
+      class="qt-button px-2 py-0 rounded-r-none! -mr-0.5 focus:z-1"
+      tooltip={texts.wizard.workingDirTooltip}
+      onClicked={onWorkingDirBrowseClicked}
+      />
     <InputWithIssue
       bind:value={ui.input.workingDir}
       class="rounded-l-none!"

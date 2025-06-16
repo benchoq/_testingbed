@@ -12,10 +12,6 @@ body {
     var(--vscode-widget-border,
     var(--vscode-settings-headerBorder, 
     var(--vscode-focusBorder, darkgray)));
-  }
-
-body.vscode-high-contrast {
-  --qt-border-radius: 0px;
 }
 
 /* utilities */
@@ -108,16 +104,6 @@ html {
 .qt-button-like:focus,
 .qt-button-like:focus-visible {
   @apply qt-focus-outline;
-}
-
-body.vscode-high-contrast {
-  .qt-button-like:hover {
-    border: 1px dashed var(--vscode-focusBorder);
-  }
-
-  .qt-button-like.selected {
-    border: 1px solid var(--vscode-focusBorder);
-  }
 }
 
 /* checkbox */
@@ -213,7 +199,7 @@ body.vscode-high-contrast {
   color: var(--vscode-foreground);
   background-color: transparent;
   border-radius: 0px;
-  border-width: 0px;
+  border: 1px solid transparent;
   box-shadow: none;
   cursor: pointer;
   @apply text-base font-normal;
@@ -241,6 +227,17 @@ body.vscode-high-contrast {
   border-radius: 0px;
 }
 
+body.vscode-high-contrast {
+  .qt-list-item:hover {
+    border: 1px dashed var(--vscode-focusBorder);
+    background: none;
+  }
+
+  .qt-list-item.selected {
+    border: 1px solid var(--vscode-widget-border);
+  }
+}
+
 /* picker (combobox, menu, etc) */
 .qt-picker-trigger {
   color: var(--vscode-dropdown-foreground);
@@ -265,21 +262,6 @@ body.vscode-high-contrast {
 .qt-picker-trigger:focus-visible {
   @apply qt-focus-outline;
 }
-/* 
-.qt-picker-wrapper {
-  background-color: var(--vscode-dropdown-listBackground, var(--vscode-input-background));
-  border-color: var(--vscode-dropdown-border);
-  border-width: 1px;
-  box-shadow: none;
-  @apply shadow-md;
-  @apply qt-border-radius;
-}
-
-.qt-picker-wrapper:focus,
-.qt-picker-wrapper:focus-visible,
-.qt-picker-wrapper:focus-within {
-  @apply qt-focus-outline;
-} */
 
 /* display */
 .qt-tooltip {

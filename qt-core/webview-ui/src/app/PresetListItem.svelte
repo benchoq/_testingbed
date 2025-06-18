@@ -57,7 +57,7 @@ SPDX-License-Identifier: LicenseRef-Qt-Commercial OR LGPL-3.0-only
   {/if}
 </ListgroupItem>
 
-{#if truncated}
+{#if truncated && (openIndex !== index) }
   <Tooltip class="qt-tooltip" placement={'top-start'} offset={2}>
     {preset.itemText}
   </Tooltip>

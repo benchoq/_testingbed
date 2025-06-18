@@ -199,6 +199,11 @@ body.vscode-high-contrast {
   @apply qt-focus-outlineFit;
 }
 
+.qt-list ul {
+  /* special treatment for <Dropdown> */
+  @apply p-0;
+}
+
 .qt-list-item {
   color: var(--vscode-foreground);
   background-color: transparent;

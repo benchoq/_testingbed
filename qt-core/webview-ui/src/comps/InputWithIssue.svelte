@@ -52,7 +52,6 @@ SPDX-License-Identifier: LicenseRef-Qt-Commercial OR LGPL-3.0-only
   <Input
     {id}
     type="text"
-    required
     class={`qt-input ${hasIssue ? 'error' : ''} ${className}`}
     bind:value
     onblur={() => {

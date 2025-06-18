@@ -7,7 +7,6 @@ import { vscode } from '@/app/vscode';
 import { isErrorResponse } from '@shared/types';
 import {
   CommandId,
-  type CommandReply,
   type ManageCustomPresetArgs
 } from '@shared/message';
 import * as texts from './texts';
@@ -15,28 +14,13 @@ import { data, preset, ui } from './states.svelte';
 import { isPreset, isPresetArray } from './types.svelte';
 
 export async function onAppMount() {
-  vscode.onDidReceiveNotification(async (r: CommandReply) => {
-    if (r.id === CommandId.PanelRevealed && r.payload) {
-      data.configs = {
-        ...data.configs,
-        ...r.payload
-      };
-
-      try {
-        void loadDefaultWorkingDir();
-        await validateInput();
-      } catch (e) {
-        reportUiError('Error in PanelRevealed handler:', e);
-      }
-    }
-  });
-
   try {
     startLoading();
 
     await vscode.post(CommandId.UiCheckIfQtcliReady);
     data.serverReady = true;
 
+    await loadConfigsAndInitInputs();
     await loadPresets();
     await selectAnyPresetAndValidate();
   } catch (e) {
@@ -67,7 +51,7 @@ export function onWorkingDirBrowseClicked() {
 export async function setPresetType(type: string) {
   if (ui.selectedType !== type) {
     ui.selectedType = type;
-    loadDefaultWorkingDir();
+    loadDefautInputs();
 
     try {
       startLoading(1000);
@@ -248,6 +232,23 @@ export function validatePresetName(name: string): string | undefined {
 }
 
 // helpers
+async function loadConfigsAndInitInputs() {
+  try {
+    const r = await vscode.post(CommandId.UiGetConfigs);
+    if (r && typeof r === "object") {
+      console.log("configs: ", r);
+      data.configs = {
+        ...data.configs,
+        ...r
+      };
+
+      loadDefautInputs();
+    }
+  } catch (e) {
+    reportUiError('Error loading configs', e);
+  }
+}
+
 async function loadPresets() {
   if (!data.serverReady) return;
 
@@ -261,12 +262,12 @@ async function loadPresets() {
   }
 }
 
-function loadDefaultWorkingDir() {
-  let candidate = ui.input.workingDir;
-
-  candidate = ui.selectedType === 'file'
+function loadDefautInputs() {
+  const candidate = ui.selectedType === 'file'
     ? data.configs.newFileBaseDir
     : data.configs.newProjectBaseDir;
+
+  console.log("loadDefaultWorkingDir, workingDir =", candidate, $state.snapshot(data.configs));
 
   if (ui.input.workingDir !== candidate) {
     ui.input.workingDir = candidate;

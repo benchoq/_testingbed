@@ -9,7 +9,12 @@ import { createLogger } from 'qt-lib';
 import * as texts from '@/texts';
 import { QtcliRestClient, QtcliRestError } from '@/qtcli/rest';
 import { openFilesUnder, openUri } from '@/qtcli/common';
-import { setDefaultProjectDir, getNewProjectBaseDir } from '@/qtcli/commands';
+import {
+  getNewFileBaseDir,
+  getNewProjectBaseDir,
+  setDefaultProjectDir
+} from '@/qtcli/commands';
+
 import { Command, CommandId, IsCommand } from '@/webview/shared/message';
 import type { NewItemPanel } from './new-item-panel';
 
@@ -27,6 +32,7 @@ export class NewItemCommandHandler {
       [CommandId.UiItemCreationRequested, this.onUiItemCreationRequested],
       [CommandId.UiHasError, this.onUiHasError],
       [CommandId.UiCheckIfQtcliReady, this.onUiCheckIfQtcliReady],
+      [CommandId.UiGetConfigs, this.onUiGetConfigs],
       [CommandId.UiGetAllPresets, this.onUiGetAllPresets],
       [CommandId.UiGetPresetById, this.onUiGetPresetById],
       [CommandId.UiValidateInputs, this.onUiValidateInputs],
@@ -107,6 +113,13 @@ export class NewItemCommandHandler {
     } catch {
       await vscode.window.showErrorMessage(texts.newItem.errorQtCliNotReady);
     }
+  };
+
+  private readonly onUiGetConfigs = async (cmd: Command) => {
+     this._panel?.postDataReply(cmd, {
+      newFileBaseDir: getNewFileBaseDir(),
+      newProjectBaseDir: getNewProjectBaseDir()
+    });
   };
 
   private readonly onUiGetAllPresets = async (cmd: Command) => {

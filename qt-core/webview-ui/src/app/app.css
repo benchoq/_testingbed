@@ -269,10 +269,9 @@ body.vscode-high-contrast {
 
 /* display */
 .qt-tooltip {
-  color: var(--vscode-foreground);
-  background: var(--vscode-input-background);
-  border: 1px solid var(--vscode-widget-border);
-  /* box-shadow: 0 0 0 1px var(--vscode-focusBorder); */
+  color: var(--vscode-button-foreground);
+  background: var(--vscode-sideBar-background);
+  border: 1px solid var(--vscode-widget-border, var(--vscode-focusBorder));
   @apply px-4 py-2;
   @apply text-base font-normal;
   @apply qt-border-radius;
@@ -301,7 +300,7 @@ body.vscode-high-contrast {
 }
 
 .qt-panel-header {
-  color: var(--vscode-sideBarTitle-foreground);
+  color: var(--vscode-settings-headerForeground, var(--vscode-sideBarTitle-foreground));
   border: none;
   font-size: 1.4rem;
   @apply font-semibold;

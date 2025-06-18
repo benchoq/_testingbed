@@ -48,7 +48,12 @@ SPDX-License-Identifier: LicenseRef-Qt-Commercial OR LGPL-3.0-only
   </Button>
   
   {#if tooltip.length !== 0}
-    <Tooltip placement={tooltipPlacement} class="qt-tooltip">
+    <Tooltip 
+      placement={tooltipPlacement}
+      data-placement={tooltipPlacement}
+      class="qt-tooltip"
+      offset={10}
+    >
       {tooltip}
     </Tooltip>
   {/if}

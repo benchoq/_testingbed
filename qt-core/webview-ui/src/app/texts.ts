@@ -32,9 +32,10 @@ export const wizard = {
   enterNewPresetName: 'Enter a new name for the custom preset',
   confirmDeletePreset: 'Do you want to delete the preset?',
 
-  presetNameError: {
+  presetNameErrors: {
     empty: 'The name cannot be empty',
     invalid: 'The name is invalid',
+    tooLong: "The name is too long",
     alreadyTaken: 'This name is already taken'
   }
 };

@@ -4,13 +4,14 @@ SPDX-License-Identifier: LicenseRef-Qt-Commercial OR LGPL-3.0-only
 -->
 
 <script lang="ts">
-  import { Listgroup, ListgroupItem, Popover, Dropdown, DropdownItem } from 'flowbite-svelte';
+  import { Listgroup, ListgroupItem } from 'flowbite-svelte';
   import { DotsHorizontalOutline } from 'flowbite-svelte-icons';
 
   import PresetEditMenu from './PresetEditMenu.svelte';
   import { preset, ui } from './states.svelte';
   import { PresetWrapper } from './types.svelte';
   import { setSelectedPresetAt } from './viewlogic.svelte';
+    import { onMount } from 'svelte';
 
   let openIndex = $state(-1);
   let wrappedPresets = $derived.by(() => {
@@ -55,6 +56,8 @@ SPDX-License-Identifier: LicenseRef-Qt-Commercial OR LGPL-3.0-only
     
     e.preventDefault();
   };
+
+  onMount(() => { openIndex = -1; })
 </script>
 
 <div class="flex flex-col">
@@ -80,10 +83,15 @@ SPDX-License-Identifier: LicenseRef-Qt-Commercial OR LGPL-3.0-only
         {#if preset.isCustomPreset()}
           <div class="ml-auto mr-0.5 qt-badge flex flex-row gap-1">
             {preset.title}
-            <DotsHorizontalOutline class="qt-button borderless" onclick={() => { openIndex = index; }}/>
-            <PresetEditMenu 
-              open={openIndex === index}
-              onClosed={() => { openIndex = -1;}} />
+            <DotsHorizontalOutline 
+              class="qt-button borderless" 
+              onclick={() => { openIndex = index; }}
+            />
+            {#if openIndex === index}
+              <PresetEditMenu 
+                open={true}
+                onClosed={() => { openIndex = -1;}} />
+            {/if}
           </div>
         {/if}
       </ListgroupItem>

@@ -37,7 +37,7 @@ SPDX-License-Identifier: LicenseRef-Qt-Commercial OR LGPL-3.0-only
     active={true}
     {items}
     width={100}
-    offset={10}
+    offset={12}
     currentIndex=-1
     onRejected={onClosed}
     onAccepted={onItemClickedAt}

@@ -229,12 +229,13 @@ export function validatePresetName(name: string): string | undefined {
     return undefined;
   }
 
-  const m = texts.wizard.presetNameError;
+  const m = texts.wizard.presetNameErrors;
   const taken = preset.all.map((p) => { return p.name; });
   const schema = z
     .string()
     .trim()
     .nonempty({ message: m.empty })
+    .max(30, { message: m.tooLong })
     .regex(/^[a-zA-Z0-9_-]+$/i, { message: m.invalid })
     .refine((v) => !taken.includes(v), { message: m.alreadyTaken })
 

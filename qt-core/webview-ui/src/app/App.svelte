@@ -10,9 +10,23 @@ SPDX-License-Identifier: LicenseRef-Qt-Commercial OR LGPL-3.0-only
   import { onAppMount } from './viewlogic.svelte';
   import Wizard from './Wizard.svelte';
 
-  onMount(onAppMount);
+  let container: HTMLDivElement;
+
+  function focusAnyChild() {
+    const selector = '[tabindex]:not([tabindex="-1"])';
+    const fallback = container?.querySelector(selector) as HTMLElement;
+    fallback?.focus();
+  }
+
+  onMount(() => { 
+    onAppMount();
+    requestAnimationFrame(focusAnyChild);
+  });
 </script>
 
-<div class="w-screen h-screen flex items-center justify-center">
+<div 
+  bind:this={container}
+  class="w-screen h-screen flex items-center justify-center"
+>
   <Wizard />
 </div>

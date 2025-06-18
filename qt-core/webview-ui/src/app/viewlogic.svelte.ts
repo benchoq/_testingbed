@@ -236,7 +236,6 @@ async function loadConfigsAndInitInputs() {
   try {
     const r = await vscode.post(CommandId.UiGetConfigs);
     if (r && typeof r === "object") {
-      console.log("configs: ", r);
       data.configs = {
         ...data.configs,
         ...r
@@ -266,8 +265,6 @@ function loadDefautInputs() {
   const candidate = ui.selectedType === 'file'
     ? data.configs.newFileBaseDir
     : data.configs.newProjectBaseDir;
-
-  console.log("loadDefaultWorkingDir, workingDir =", candidate, $state.snapshot(data.configs));
 
   if (ui.input.workingDir !== candidate) {
     ui.input.workingDir = candidate;

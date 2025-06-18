@@ -272,6 +272,7 @@ body.vscode-high-contrast {
   color: var(--vscode-foreground);
   background: var(--vscode-input-background);
   border: 1px solid var(--vscode-widget-border);
+  /* box-shadow: 0 0 0 1px var(--vscode-focusBorder); */
   @apply px-4 py-2;
   @apply text-base font-normal;
   @apply qt-border-radius;

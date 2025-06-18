@@ -9,6 +9,7 @@ SPDX-License-Identifier: LicenseRef-Qt-Commercial OR LGPL-3.0-only
 
   import { textOrFallback } from './utils';
   import type { PickerItem } from '@/app/types.svelte';
+    import { onMount } from 'svelte';
 
   let {
     active = false,
@@ -52,9 +53,12 @@ SPDX-License-Identifier: LicenseRef-Qt-Commercial OR LGPL-3.0-only
   }
 
   export function focus() {
-    document.getElementById(id)?.focus();
+    requestAnimationFrame(() => {
+      document.getElementById(id)?.focus();
+    });
   }
 
+  onMount(focus);
 </script>
 
 <Dropdown

@@ -276,6 +276,7 @@ body.vscode-high-contrast {
 body {
   --qt-tooltip-border: var(--vscode-widget-border, var(--vscode-focusBorder));
 }
+
 .qt-tooltip {
   color: var(--vscode-button-foreground);
   background: var(--vscode-sideBar-background);
@@ -342,12 +343,13 @@ body {
 
 .qt-popup {
   background: var(--vscode-sideBar-background);
-  border: 1px solid var(--vscode-widget-border);
+  border: 1px solid var(--vscode-focusBorder);
   border-radius: var(--qt-border-radius);
-  @apply md:-translate-y-[50px];
+  @apply translate-y-[100px];
+  @apply md:-translate-y-[100px];
   @apply shadow-lg;
 }
 
 .qt-popup-backdrop {
-  @apply bg-white/10;
+  display: none;
 }

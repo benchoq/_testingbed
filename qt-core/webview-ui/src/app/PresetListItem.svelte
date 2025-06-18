@@ -19,7 +19,7 @@ SPDX-License-Identifier: LicenseRef-Qt-Commercial OR LGPL-3.0-only
   } = $props();
 
   let truncated = $state(false);
-  let openIndex = $state(-1);
+  let menuOpened = $state(false);
 </script>
 
 <ListgroupItem
@@ -41,23 +41,19 @@ SPDX-License-Identifier: LicenseRef-Qt-Commercial OR LGPL-3.0-only
       {preset.title}
       <DotsHorizontalOutline
         class="qt-button borderless"
-        onclick={() => {
-          openIndex = index;
-        }}
+        onclick={() => { menuOpened = true; }}
       />
-      {#if openIndex === index}
+      {#if menuOpened }
         <PresetEditMenu
           open={true}
-          onClosed={() => {
-            openIndex = -1;
-          }}
+          onClosed={() => { menuOpened = false; }}
         />
       {/if}
     </div>
   {/if}
 </ListgroupItem>
 
-{#if truncated && (openIndex !== index) }
+{#if truncated && !menuOpened }
   <Tooltip 
     placement={'top'}
     data-placement={'top'}

@@ -74,9 +74,7 @@ export class NewItemPanel {
     }
 
     void startQtcliServer(uri);
-
     NewItemPanel.instance._panel.reveal(PanelColumn);
-    NewItemPanel.instance._panel
   }
 
   public post(

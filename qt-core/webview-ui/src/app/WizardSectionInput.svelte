@@ -29,7 +29,7 @@ SPDX-License-Identifier: LicenseRef-Qt-Commercial OR LGPL-3.0-only
   </div>
 
   <!-- name -->
-  <P class="qt-label pl-4">{texts.wizard.name}</P>
+  <P class="qt-label pl-5">{texts.wizard.name}</P>
   <InputWithIssue
     bind:value={ui.input.name}
     onInput={validateInput}
@@ -38,7 +38,7 @@ SPDX-License-Identifier: LicenseRef-Qt-Commercial OR LGPL-3.0-only
   />
 
   <!-- working directory -->
-  <P class="qt-label pl-4">{texts.wizard.workingDir}</P>
+  <P class="qt-label pl-5">{texts.wizard.workingDir}</P>
   <div class="w-full grid grid-cols-[min-content_1fr] gap-0">
     <IconButton
       icon={FolderOpenOutline}

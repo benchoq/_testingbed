@@ -20,11 +20,10 @@ SPDX-License-Identifier: LicenseRef-Qt-Commercial OR LGPL-3.0-only
     `}
 >
   <SectionLabel text={texts.wizard.presetList} class="w-full col-span-3" />
-  <PresetTypeSelector />
+  <PresetTypeSelector class="pl-4"/>
   <PresetList />
   <div class="flex flex-col justify-between">
     <PresetDescription />
-    <!-- <div class="flex-grow"></div> -->
     <PresetOptions />
   </div>
 </div>

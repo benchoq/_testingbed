@@ -10,6 +10,8 @@ SPDX-License-Identifier: LicenseRef-Qt-Commercial OR LGPL-3.0-only
   import { setPresetType } from './viewlogic.svelte';
   import { wizard } from './texts';
 
+  let { class: className = '' } = $props();
+
   const items = [
     { label: wizard.types.project, icon: FolderOpenOutline, data: 'project' },
     { label: wizard.types.file, icon: FileOutline, data: 'file' }
@@ -22,4 +24,9 @@ SPDX-License-Identifier: LicenseRef-Qt-Commercial OR LGPL-3.0-only
   }
 </script>
 
-<VerticalTabs {items} {onCurrentIndexChanged} buttonClass="p-3" />
+<VerticalTabs 
+  {items}
+  {onCurrentIndexChanged} 
+  class={className} 
+  buttonClass="p-3" 
+/>

@@ -6,6 +6,8 @@ SPDX-License-Identifier: LicenseRef-Qt-Commercial OR LGPL-3.0-only
 <script lang="ts">
   import { ChevronDownOutline } from 'flowbite-svelte-icons';
 
+  import { textOrFallback } from './utils';
+
   let {
     text = '-',
     active = false,
@@ -27,6 +29,6 @@ SPDX-License-Identifier: LicenseRef-Qt-Commercial OR LGPL-3.0-only
   bind:this={el}
   onclick={onClicked}
 >
-  <div class="truncate">{text}</div>
+  <div class="truncate">{textOrFallback(text)}</div>
   <ChevronDownOutline class="w-4 h-4" />
 </button>

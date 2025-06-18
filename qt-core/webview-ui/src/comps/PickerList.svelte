@@ -7,6 +7,7 @@ SPDX-License-Identifier: LicenseRef-Qt-Commercial OR LGPL-3.0-only
   import { nanoid } from 'nanoid';
   import { P, Dropdown } from 'flowbite-svelte';
 
+  import { textOrFallback } from './utils';
   import type { PickerItem } from '@/app/types.svelte';
 
   let {
@@ -82,7 +83,7 @@ SPDX-License-Identifier: LicenseRef-Qt-Commercial OR LGPL-3.0-only
           <div class="aspect-square h-5"></div>
         {/if}
       {/if}
-      {item.text}
+      {textOrFallback(item.text)}
     </P>
   {/each}
 </Dropdown>

@@ -83,7 +83,7 @@ html {
 .qt-button:disabled {
   color: var(--vscode-foreground);
   background: transparent;
-  border: 1px solid var(--vscode-button-background);
+  border: 1px solid var(--vscode-button-background, transparent);
   cursor: not-allowed;
 }
 

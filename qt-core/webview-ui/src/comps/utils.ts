@@ -4,3 +4,9 @@
 export function textOrFallback(text: string, fallback = '-') {
   return text.trim().length === 0 ? fallback : text;
 }
+
+export function focusAnyChild(el: HTMLElement) {
+  const selector = '[tabindex]:not([tabindex="-1"])';
+  const fallback = el?.querySelector(selector) as HTMLElement;
+  fallback?.focus();
+}

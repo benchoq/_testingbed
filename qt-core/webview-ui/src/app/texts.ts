@@ -18,6 +18,11 @@ export const wizard = {
     file: 'File'
   },
 
+  yes: "Yes",
+  no: "No",
+  cancel: "Cancel",
+  okay: "Okay",
+
   presetList: 'Available presets',
   description: 'Description',
   options: 'Options',

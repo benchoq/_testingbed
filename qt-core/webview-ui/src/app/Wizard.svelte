@@ -10,9 +10,9 @@ SPDX-License-Identifier: LicenseRef-Qt-Commercial OR LGPL-3.0-only
   import { ui } from './states.svelte';
   import { onModalClosed } from './viewlogic.svelte';
   import LoadingMask from '@/comps/LoadingMask.svelte';
-  import WizardSectionInput from './WizardSectionInput.svelte';
-  import WizardSectionPresets from './WizardSectionPresets.svelte';
-  import AllDialogs from './AllDialogs.svelte';
+  import WizardInputSection from './WizardInputSection.svelte';
+  import WizardPresetSection from './WizardPresetSection.svelte';
+  import WizardAllDialogs from './WizardAllDialogs.svelte';
 </script>
 
 <Modal
@@ -31,14 +31,14 @@ SPDX-License-Identifier: LicenseRef-Qt-Commercial OR LGPL-3.0-only
   </svelte:fragment>
 
   <div class="w-full h-full flex flex-col gap-4">
-    <WizardSectionPresets />
-    <WizardSectionInput />
+    <WizardPresetSection />
+    <WizardInputSection />
     <LoadingMask
       {...ui.loading}
       busyText={texts.loading.busy}
       closeText={texts.loading.close}
     />
-    <AllDialogs />
+    <WizardAllDialogs />
   </div>
 
 </Modal>

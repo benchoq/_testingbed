@@ -8,7 +8,7 @@ SPDX-License-Identifier: LicenseRef-Qt-Commercial OR LGPL-3.0-only
   import { DotsHorizontalOutline } from 'flowbite-svelte-icons';
 
   import TruncatableLabel from '@/comps/TruncatableLabel.svelte';
-  import PresetEditMenu from './PresetEditMenu.svelte';
+  import PresetListItemMenu from './PresetListItemMenu.svelte';
   import { ui } from './states.svelte';
   import { PresetWrapper } from './types.svelte';
   import { setSelectedPresetAt } from './viewlogic.svelte';
@@ -44,7 +44,7 @@ SPDX-License-Identifier: LicenseRef-Qt-Commercial OR LGPL-3.0-only
         onclick={() => { menuOpened = true; }}
       />
       {#if menuOpened }
-        <PresetEditMenu
+        <PresetListItemMenu
           open={true}
           onClosed={() => { menuOpened = false; }}
         />

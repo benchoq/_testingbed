@@ -28,12 +28,12 @@ export interface PresetPromptStep {
   type: string;
   question: string;
   default: string;
-  items: PresetPromptListItem[];
+  items: PresetPromptStepItem[];
   when: string;
   rules: object[];
 }
 
-export interface PresetPromptListItem {
+export interface PresetPromptStepItem {
   text: string;
   data: unknown;
   description: string;

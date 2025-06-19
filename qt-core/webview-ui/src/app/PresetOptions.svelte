@@ -14,9 +14,9 @@ SPDX-License-Identifier: LicenseRef-Qt-Commercial OR LGPL-3.0-only
 
   import IconButton from '@/comps/IconButton.svelte';
   import SectionLabel from '@/comps/SectionLabel.svelte';
-  import StepInput from './StepInput.svelte';
-  import StepPicker from './StepPicker.svelte';
-  import StepConfirm from './StepConfirm.svelte';
+  import PromptStepInput from './PromptStepInput.svelte';
+  import PromptStepPicker from './PromptStepPicker.svelte';
+  import PromptStepConfirm from './PromptStepConfirm.svelte';
 
   let createEnabled = $derived.by(() => {
     return (
@@ -34,9 +34,9 @@ SPDX-License-Identifier: LicenseRef-Qt-Commercial OR LGPL-3.0-only
   });
 
   const stepComponents: Record<string, any> = {
-    input: StepInput,
-    picker: StepPicker,
-    confirm: StepConfirm
+    input: PromptStepInput,
+    picker: PromptStepPicker,
+    confirm: PromptStepConfirm
   };
 
   function onValueChanged(step: PresetPromptStep, value: any) {
@@ -80,9 +80,9 @@ SPDX-License-Identifier: LicenseRef-Qt-Commercial OR LGPL-3.0-only
       {#each preset.selection.steps as step (step.id)}
         <P class="qt-label">{step.question}</P>
         {#if step.type in stepComponents}
-          {@const StepComp = stepComponents[step.type]}
+          {@const Comp = stepComponents[step.type]}
           <div class="flex item-center min-w-[120px]">
-            <StepComp enabled={true} {step} {onValueChanged} />
+            <Comp enabled={true} {step} {onValueChanged} />
           </div>
         {:else}
           <P class="qt-label">{step.default}</P>

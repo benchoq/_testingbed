@@ -6,6 +6,8 @@ SPDX-License-Identifier: LicenseRef-Qt-Commercial OR LGPL-3.0-only
 <script lang="ts">
   import { onMount } from "svelte";
   import { Checkbox } from "flowbite-svelte";
+
+  import * as texts from './texts';
   import type { PresetPromptStep } from "./types.svelte";
 
   let { 
@@ -24,5 +26,5 @@ SPDX-License-Identifier: LicenseRef-Qt-Commercial OR LGPL-3.0-only
   bind:checked={checked}
   on:change={() => { onValueChanged(step, checked) }}
 >
-Yes
+{texts.wizard.yes}
 </Checkbox>
